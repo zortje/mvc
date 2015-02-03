@@ -19,4 +19,14 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertSame($expected, $router->route('/login'));
 	}
+
+	/**
+	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
+	 * @expectedExceptionMessage Route /login is already connected
+	 */
+	public function testAlreadyConnectedException() {
+		$router = new Router();
+		$router->connect('/login', 'logins', 'index');
+		$router->connect('/login', 'logins', 'index');
+	}
 }

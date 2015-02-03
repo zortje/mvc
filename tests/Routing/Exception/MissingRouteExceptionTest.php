@@ -21,9 +21,9 @@ class MissingRouteExceptionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @expectedException Zortje\MVC\Routing\Exception\MissingRouteException
-	 * @expectedExceptionMessage Route foo is not connected
+	 * @expectedExceptionMessage Route /foo is not connected
 	 */
 	public function testMessageArray() {
-		throw new MissingRouteException(['foo']);
+		throw new MissingRouteException(['/foo']);
 	}
 }

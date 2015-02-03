@@ -21,9 +21,9 @@ class RouteAlreadyConnectedExceptionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
-	 * @expectedExceptionMessage Route foo is already connected
+	 * @expectedExceptionMessage Route /foo is already connected
 	 */
 	public function testMessageArray() {
-		throw new RouteAlreadyConnectedException(['foo']);
+		throw new RouteAlreadyConnectedException(['/foo']);
 	}
 }

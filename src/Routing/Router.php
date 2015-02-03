@@ -2,6 +2,9 @@
 
 namespace Zortje\MVC\Routing;
 
+use Zortje\MVC\Routing\Exception\MissingRouteException;
+use Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException;
+
 /**
  * Class Router
  *
@@ -20,10 +23,12 @@ class Router {
 	 * @param string $route      Route
 	 * @param string $controller Controller
 	 * @param string $action     Action
+	 *
+	 * @throws RouteAlreadyConnectedException When route is already connected
 	 */
 	public function connect($route, $controller, $action) {
 		if (isset($this->routes[$route]) === true) {
-			throw new \InvalidArgumentException('Route is already connected');
+			throw new RouteAlreadyConnectedException([$route]);
 		}
 
 		$this->routes[$route] = [
@@ -38,10 +43,12 @@ class Router {
 	 * @param string $route Route
 	 *
 	 * @return array Controller and action
+	 *
+	 * @throws MissingRouteException When route is not connected
 	 */
 	public function route($route) {
 		if (isset($this->routes[$route]) === false) {
-			throw new \InvalidArgumentException('Route is not connected');
+			throw new MissingRouteException([$route]);
 		}
 
 		$result = $this->routes[$route];

@@ -22,7 +22,7 @@ class Router {
 	 * @param string $action     Action
 	 */
 	public function connect($route, $controller, $action) {
-		if (isset($this->routes[$route])) {
+		if (isset($this->routes[$route]) === true) {
 			throw new \InvalidArgumentException('Route is already connected');
 		}
 
@@ -40,7 +40,7 @@ class Router {
 	 * @return array Controller and action
 	 */
 	public function route($route) {
-		if (!isset($this->routes[$route])) {
+		if (isset($this->routes[$route]) === false) {
 			throw new \InvalidArgumentException('Route is not connected');
 		}
 

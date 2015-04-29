@@ -7,7 +7,7 @@ namespace Zortje\MVC\Model;
  *
  * @package Zortje\MVC\Model
  */
-class Entity {
+abstract class Entity {
 
 	/**
 	 * @var int Entity ID
@@ -77,6 +77,14 @@ class Entity {
 	public function getCreated() {
 		return $this->created;
 	}
+
+	/**
+	 * Return table structur for saving
+	 * Example: `['table_field_name' => $this->fieldName]`
+	 *
+	 * @return array
+	 */
+	abstract protected function toArray();
 
 	/**
 	 * @param int       $id

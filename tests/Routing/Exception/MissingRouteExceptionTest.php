@@ -7,11 +7,15 @@ use Zortje\MVC\Routing\Exception\MissingRouteException;
 /**
  * Class MissingRouteExceptionTest
  *
- * @package Zortje\MVC\Tests\Routing\Exception
+ * @package            Zortje\MVC\Tests\Routing\Exception
+ *
+ * @coversDefaultClass Zortje\MVC\Routing\Exception\MissingRouteException
  */
 class MissingRouteExceptionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
+	 * @covers ::__construct
+	 *
 	 * @expectedException Zortje\MVC\Routing\Exception\MissingRouteException
 	 * @expectedExceptionMessage foo
 	 */
@@ -20,6 +24,8 @@ class MissingRouteExceptionTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @covers ::__construct
+	 *
 	 * @expectedException Zortje\MVC\Routing\Exception\MissingRouteException
 	 * @expectedExceptionMessage Route /foo is not connected
 	 */

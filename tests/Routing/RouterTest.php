@@ -7,10 +7,16 @@ use Zortje\MVC\Routing\Router;
 /**
  * Class RouterTest
  *
- * @package Zortje\MVC\Tests\Routing
+ * @package            Zortje\MVC\Tests\Routing
+ *
+ * @coversDefaultClass Zortje\MVC\Routing\Router
  */
 class RouterTest extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * @covers ::connect
+	 * @covers ::route
+	 */
 	public function testConnect() {
 		$router = new Router();
 		$router->connect('/login', 'logins', 'index');
@@ -21,6 +27,8 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @covers ::connect
+	 *
 	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
 	 * @expectedExceptionMessage Route /login is already connected
 	 */

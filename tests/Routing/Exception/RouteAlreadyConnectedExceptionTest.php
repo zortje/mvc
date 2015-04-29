@@ -7,11 +7,15 @@ use Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException;
 /**
  * Class RouteAlreadyConnectedExceptionTest
  *
- * @package Zortje\MVC\Tests\Routing\Exception
+ * @package            Zortje\MVC\Tests\Routing\Exception
+ *
+ * @coversDefaultClass Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
  */
 class RouteAlreadyConnectedExceptionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
+	 * @covers ::__construct
+	 *
 	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
 	 * @expectedExceptionMessage foo
 	 */
@@ -20,6 +24,8 @@ class RouteAlreadyConnectedExceptionTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @covers ::__construct
+	 *
 	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
 	 * @expectedExceptionMessage Route /foo is already connected
 	 */

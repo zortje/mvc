@@ -23,6 +23,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @covers ::insertInto
+	 * @covers ::__construct
 	 */
 	public function testInsertInto() {
 		$table  = new CarTable($this->pdo);

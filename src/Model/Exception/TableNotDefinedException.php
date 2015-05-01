@@ -20,6 +20,6 @@ class TableNotDefinedException extends Exception {
 	 * {@inheritdoc}
 	 */
 	public function __construct() {
-		parent::__construct(null);
+		parent::__construct($this->template);
 	}
 }

@@ -2,12 +2,14 @@
 
 namespace Zortje\MVC\Model;
 
+use Zortje\MVC\Model\Exception\TableNotDefinedException;
+
 /**
  * Class Table
  *
  * @package Zortje\MVC\Model
  */
-class Table {
+abstract class Table {
 
 	/**
 	 * @var \PDO Connection
@@ -15,16 +17,71 @@ class Table {
 	protected $pdo;
 
 	/**
-	 * @param \PDO $pdo
+	 * @var string Table name
 	 */
-	public function __construct(\PDO $pdo) {
-		$this->pdo = $pdo;
+	protected $tableName;
+
+	/**
+	 * Get table name
+	 *
+	 * @return string Table name
+	 */
+	public function getTableName() {
+		return $this->tableName;
 	}
 
-	//public function insert(Entity $entity, );
+	public function select($entityId) {
+		//
+	}
 
-	//public function update(Entity $entity, \PDO $pdo);
+	/**
+	 * @param Entity $entity
+	 */
+	public function insert(Entity $entity) {
+		$command = $this->createCommand($entity);
 
-	//public function select($entityId, \PDO $pdo);
+		$stmt = $this->pdo->prepare($command->insertInto());
+
+		$stmt->execute([
+			':modified' => date('Y-m-d H:i:s'),
+			':created'  => date('Y-m-d H:i:s')
+		]);
+
+		// @todo should return the entity object with ID set (from insert_id)
+	}
+
+	public function update(Entity $entity) {
+		//
+	}
+
+	public function delete(Entity $entity) {
+		//
+	}
+
+	/**
+	 * Create SQLCommand for this Table with provided Entity
+	 *
+	 * @param Entity $entity
+	 *
+	 * @return SQLCommand SQL Command
+	 */
+	protected function createCommand(Entity $entity) {
+		$command = new SQLCommand($this, $entity);
+
+		return $command;
+	}
+
+	/**
+	 * @param \PDO $pdo
+	 *
+	 * @throws TableNotDefinedException
+	 */
+	public function __construct(\PDO $pdo) {
+		if (is_null($this->tableName)) {
+			new TableNotDefinedException();
+		}
+
+		$this->pdo = $pdo;
+	}
 
 }

@@ -91,7 +91,7 @@ abstract class Entity {
 	 * @param \DateTime $modified
 	 * @param \DateTime $created
 	 */
-	public function __construct($id, $modified, $created) {
+	public function __construct($id, \DateTime $modified, \DateTime $created) {
 		$this->id       = $id;
 		$this->modified = $modified;
 		$this->created  = $created;

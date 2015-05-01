@@ -84,7 +84,7 @@ abstract class Entity {
 	 *
 	 * @return array
 	 */
-	abstract protected function toArray();
+	abstract public function toArray();
 
 	/**
 	 * @param int       $id

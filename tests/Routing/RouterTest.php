@@ -37,4 +37,5 @@ class RouterTest extends \PHPUnit_Framework_TestCase {
 		$router->connect('/login', 'logins', 'index');
 		$router->connect('/login', 'logins', 'index');
 	}
+
 }

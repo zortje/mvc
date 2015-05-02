@@ -55,4 +55,5 @@ class Router {
 
 		return $result;
 	}
+
 }

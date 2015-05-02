@@ -13,18 +13,21 @@ class CarEntity extends Entity {
 
 	protected static $columns = [
 		'make'  => 'string',
-		'model' => 'string'
+		'model' => 'string',
+		'hp'    => 'integer'
 	];
 
 	/**
-	 * @param string $make
-	 * @param string $model
+	 * @param string  $make
+	 * @param string  $model
+	 * @param integer $hp
 	 */
-	public function __construct($make, $model) {
+	public function __construct($make, $model, $hp) {
 		parent::__construct(null, new \DateTime(), new \DateTime());
 
 		$this->set('make', $make);
 		$this->set('model', $model);
+		$this->set('hp', $hp);
 	}
 
 }

@@ -30,7 +30,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 
 		$sqlCommand = new SQLCommand($table->getTableName(), CarEntity::getColumns());
 
-		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `modified`, `created`) VALUES (NULL, :make, :model, :modified, :created);';
+		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `hp`, `modified`, `created`) VALUES (NULL, :make, :model, :hp, :modified, :created);';
 
 		$this->assertSame($expected, $sqlCommand->insertInto());
 	}

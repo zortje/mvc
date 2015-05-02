@@ -21,6 +21,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			'id'       => 'integer',
 			'make'     => 'string',
 			'model'    => 'string',
+			'hp'       => 'integer',
 			'modified' => 'DateTime',
 			'created'  => 'DateTime'
 		];
@@ -33,7 +34,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::get
 	 */
 	public function testSetAndGet() {
-		$car = new CarEntity('Ford', 'Model T');
+		$car = new CarEntity('Ford', 'Model T', 20);
 		$car->set('model', 'Model A');
 
 		$this->assertSame('Model A', $car->get('model'));

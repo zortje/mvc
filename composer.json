@@ -17,7 +17,7 @@
     "issues": "https://github.com/zortje/mvc/issues"
   },
   "require": {
-    "php": ">=5.4"
+    "php": ">=5.5"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.0"

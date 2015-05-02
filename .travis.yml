@@ -6,7 +6,6 @@ notifications:
     secure: JzGnFqEjxB4v1Pr94rMBRGlwz1ASKPtTUMHlyASnbcWyF/FORbpe7dm/RQFdVbOklzpFZ6ze3OpVRRSrSOfjZSBHLAN0AAczVjO4puIcvy5a9ZqOhpETtkkdJQM56/LYr3O4pFRQ6FO57Tcokq4IeuxdMbWTFnFnlsZjKnHE6m4=
 
 php:
-  - 5.4
   - 5.5
   - 5.6
 

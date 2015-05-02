@@ -40,4 +40,11 @@ class EntityFactory {
 		return $entity;
 	}
 
+	/**
+	 * @param string $entityClass
+	 */
+	public function __construct($entityClass) {
+		$this->entityClass = $entityClass;
+	}
+
 }

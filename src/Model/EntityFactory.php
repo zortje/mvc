@@ -33,7 +33,9 @@ class EntityFactory {
 		$arguments = [];
 
 		foreach ($columns as $column => $type) {
-			$arguments[$column] = $array[$column]; // @todo format $row[$column] so it conform it to $type
+			$property = new EntityProperty($type);
+
+			$arguments[$column] = $property->formatValue($array[$column]);
 		}
 
 		$entity = $reflector->newInstanceArgs($arguments);

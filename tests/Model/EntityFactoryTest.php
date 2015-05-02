@@ -15,6 +15,7 @@ use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	/**
+	 * @covers ::__construct
 	 * @covers ::createFromArray
 	 */
 	public function testCreateFromArray() {

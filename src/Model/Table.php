@@ -37,6 +37,28 @@ abstract class Table {
 		return $this->tableName;
 	}
 
+	/**
+	 * Find all entities
+	 *
+	 * @return Entity[] Entities
+	 */
+	public function findAll() {
+		$entities = [];
+
+		$command = $this->createCommand();
+
+		$stmt = $this->pdo->prepare($command->selectFrom());
+		$stmt->execute();
+
+		$entityFactory = new EntityFactory($this->entityClass);
+
+		foreach ($stmt as $row) {
+			$entities[] = $entityFactory->createFromArray($row);
+		}
+
+		return $entities;
+	}
+
 	public function select($entityId) {
 		//
 	}
@@ -45,9 +67,11 @@ abstract class Table {
 	 * @param Entity $entity
 	 */
 	public function insert(Entity $entity) {
-		$command = $this->createCommand($entity);
+		$command = $this->createCommand();
 
 		$stmt = $this->pdo->prepare($command->insertInto());
+
+		var_dump($entity);
 
 		$stmt->execute([
 			':modified' => date('Y-m-d H:i:s'),
@@ -68,12 +92,16 @@ abstract class Table {
 	/**
 	 * Create SQLCommand for this Table with provided Entity
 	 *
-	 * @param Entity $entity
-	 *
-	 * @return SQLCommand SQL Command
+	 * @return SQLCommand
 	 */
-	protected function createCommand(Entity $entity) {
-		return new SQLCommand($this, $entity);
+	protected function createCommand() {
+		$reflector = new \ReflectionClass($this->entityClass);
+
+		$entity = $reflector->newInstanceWithoutConstructor();
+
+		$columns = $entity::getColumns();
+
+		return new SQLCommand($this->tableName, $columns);
 	}
 
 	/**

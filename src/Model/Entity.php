@@ -2,6 +2,9 @@
 
 namespace Zortje\MVC\Model;
 
+use Zortje\MVC\Model\Exception\InvalidEntityPropertyException;
+use Zortje\MVC\Model\Exception\InvalidValueTypeForEntityPropertyException;
+
 /**
  * Class Entity
  *
@@ -10,72 +13,65 @@ namespace Zortje\MVC\Model;
 abstract class Entity {
 
 	/**
-	 * @var int Entity ID
+	 * @var array Columns
 	 */
-	protected $id;
+	protected static $columns = [];
 
 	/**
-	 * @var \DateTime Entity modified
+	 * @var array Internal entity properties
 	 */
-	protected $modified;
+	protected $_properties = [];
 
 	/**
-	 * @var \DateTime Entity created
-	 */
-	protected $created;
-
-	/**
-	 * Set entity ID
+	 * Get entity columns
 	 *
-	 * @param int $id
+	 * @return array Entity columns
 	 */
-	public function setId($id) {
-		$this->id = $id;
+	public static function getColumns() {
+		$columns = array_merge([
+			'id' => 'integer'
+		], static::$columns);
+
+		$columns = array_merge($columns, [
+			'modified' => 'DateTime',
+			'created'  => 'DateTime'
+		]);
+
+		return $columns;
 	}
 
 	/**
-	 * Get entity ID
+	 * Set entity property
 	 *
-	 * @return int Entity ID
+	 * @param string $key   Entity property name
+	 * @param mixed  $value Entity property value
+	 *
+	 * @throws InvalidEntityPropertyException If entity does not have that property
+	 * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
 	 */
-	public function getId() {
-		return $this->id;
+	public function set($key, $value) {
+		if (!isset(self::getColumns()[$key])) {
+			throw new InvalidEntityPropertyException([$key]);
+		}
+
+		$this->_properties[$key] = $this->validatePropertyForValue($key, $value);
 	}
 
 	/**
-	 * Set entity modified date
+	 * Get entity property
 	 *
-	 * @param \DateTime Entity modified date
+	 * @param string $key Entity property
+	 *
+	 * @return mixed Entity property value for given key
+	 *
+	 * @throws InvalidEntityPropertyException If entity does not have that property
 	 */
-	public function setModified($modified) {
-		$this->modified = $modified;
-	}
+	public function get($key) {
+		if (!isset(self::getColumns()[$key])) {
+			throw new InvalidEntityPropertyException([$key]);
+		}
 
-	/**
-	 * Get entity modified date
-	 *
-	 * @return \DateTime Entity modified date
-	 */
-	public function getModified() {
-		return $this->modified;
-	}
-
-	/**
-	 * Set entity created date
-	 *
-	 * @param \DateTime Entity created date
-	 */
-	public function setCreated($created) {
-		$this->created = $created;
-	}
-
-	/**
-	 * Get entity created date
-	 *
-	 * @return \DateTime Entity created date
-	 */
-	public function getCreated() {
-		return $this->created;
+		return $this->_properties[$key];
 	}
 
 	/**
@@ -84,7 +80,51 @@ abstract class Entity {
 	 *
 	 * @return array
 	 */
-	abstract public function toArray();
+	public function toArray() {
+		$array = [];
+
+		foreach (self::getColumns() as $column) {
+			$array[$column] = $this->get($column);
+		}
+
+		return $array;
+	}
+
+	/**
+	 * Validate property for given value
+	 *
+	 * @param string $key   Entity property name
+	 * @param mixed  $value Entity property value
+	 *
+	 * @return mixed Value
+	 * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
+	 */
+	protected function validatePropertyForValue($key, $value) {
+		/**
+		 * Allow NULL
+		 */
+		if (!is_null($value)) {
+			$type = gettype($value);
+
+			/**
+			 * Get class if object
+			 */
+			if ($type === 'object') {
+				$type = get_class($value);
+			}
+
+			if ($type !== self::getColumns()[$key]) {
+				throw new InvalidValueTypeForEntityPropertyException([
+					get_class($this),
+					$key,
+					self::getColumns()[$key],
+					$type
+				]);
+			}
+		}
+
+		return $value;
+	}
 
 	/**
 	 * @param int       $id
@@ -92,9 +132,9 @@ abstract class Entity {
 	 * @param \DateTime $created
 	 */
 	public function __construct($id, \DateTime $modified, \DateTime $created) {
-		$this->id       = $id;
-		$this->modified = $modified;
-		$this->created  = $created;
+		$this->set('id', $id);
+		$this->set('modified', $modified);
+		$this->set('created', $created);
 	}
 
 }

@@ -26,10 +26,9 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::__construct
 	 */
 	public function testInsertInto() {
-		$table  = new CarTable($this->pdo);
-		$entity = new CarEntity('Ford', 'Model T');
+		$table = new CarTable($this->pdo);
 
-		$sqlCommand = new SQLCommand($table, $entity);
+		$sqlCommand = new SQLCommand($table->getTableName(), CarEntity::getColumns());
 
 		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `modified`, `created`) VALUES (NULL, :make, :model, :modified, :created);';
 

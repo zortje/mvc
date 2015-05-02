@@ -14,45 +14,29 @@ use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 class EntityTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @covers ::setId
-	 * @covers ::getId
+	 * @covers ::getColumns
 	 */
-	public function testId() {
-		$carEntity = new CarEntity(null, null);
+	public function testGetColumns() {
+		$expected = [
+			'id'       => 'integer',
+			'make'     => 'string',
+			'model'    => 'string',
+			'modified' => 'DateTime',
+			'created'  => 'DateTime'
+		];
 
-		$this->assertSame(null, $carEntity->getId());
-
-		$carEntity->setId(42);
-
-		$this->assertSame(42, $carEntity->getId());
+		$this->assertSame($expected, CarEntity::getColumns());
 	}
 
 	/**
-	 * @covers ::setModified
-	 * @covers ::getModified
+	 * @covers ::set
+	 * @covers ::get
 	 */
-	public function testModified() {
-		$carEntity = new CarEntity(null, null);
+	public function testSetAndGet() {
+		$car = new CarEntity('Ford', 'Model T');
+		$car->set('model', 'Model A');
 
-		$carEntity->setModified(new \DateTime('2015-05-01 21:42:42'));
-
-		$expected = new \DateTime('2015-05-01 21:42:42');
-
-		$this->assertSame($expected->format('Y-m-d H:i:s'), $carEntity->getModified()->format('Y-m-d H:i:s'));
-	}
-
-	/**
-	 * @covers ::setCreated
-	 * @covers ::getCreated
-	 */
-	public function testCreated() {
-		$carEntity = new CarEntity(null, null);
-
-		$carEntity->setCreated(new \DateTime('2015-05-01 21:42:42'));
-
-		$expected = new \DateTime('2015-05-01 21:42:42');
-
-		$this->assertSame($expected->format('Y-m-d H:i:s'), $carEntity->getCreated()->format('Y-m-d H:i:s'));
+		$this->assertSame('Model A', $car->get('model'));
 	}
 
 }

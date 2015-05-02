@@ -11,18 +11,10 @@ use Zortje\MVC\Model\Entity;
  */
 class CarEntity extends Entity {
 
-	protected $make;
-	protected $model;
-
-	/**
-	 * @return array
-	 */
-	public function toArray() {
-		return [
-			'make'  => $this->make,
-			'model' => $this->model
-		];
-	}
+	protected static $columns = [
+		'make'  => 'string',
+		'model' => 'string'
+	];
 
 	/**
 	 * @param string $make
@@ -31,8 +23,8 @@ class CarEntity extends Entity {
 	public function __construct($make, $model) {
 		parent::__construct(null, new \DateTime(), new \DateTime());
 
-		$this->make  = $make;
-		$this->model = $model;
+		$this->set('make', $make);
+		$this->set('model', $model);
 	}
 
 }

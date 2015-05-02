@@ -28,6 +28,7 @@ class EntityFactory {
 		$entity = $reflector->newInstanceWithoutConstructor();
 
 		$columns = $entity::getColumns();
+		unset($columns['id'], $columns['modified'], $columns['created']);
 
 		$arguments = [];
 
@@ -36,6 +37,9 @@ class EntityFactory {
 		}
 
 		$entity = $reflector->newInstanceArgs($arguments);
+		$entity->set('id', (int) $array['id']);
+		$entity->set('modified', new \DateTime($array['modified']));
+		$entity->set('created', new \DateTime($array['created']));
 
 		return $entity;
 	}

@@ -71,8 +71,6 @@ abstract class Table {
 
 		$stmt = $this->pdo->prepare($command->insertInto());
 
-		var_dump($entity);
-
 		$stmt->execute([
 			':modified' => date('Y-m-d H:i:s'),
 			':created'  => date('Y-m-d H:i:s')

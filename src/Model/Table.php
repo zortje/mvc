@@ -2,7 +2,9 @@
 
 namespace Zortje\MVC\Model;
 
-use Zortje\MVC\Model\Exception\TableNotDefinedException;
+use Zortje\MVC\Model\Exception\TableNameNotDefinedException;
+use Zortje\MVC\Model\Exception\EntityClassNotDefinedException;
+use Zortje\MVC\Model\Exception\EntityClassNonexistentException;
 
 /**
  * Class Table
@@ -20,6 +22,11 @@ abstract class Table {
 	 * @var string Table name
 	 */
 	protected $tableName;
+
+	/**
+	 * @var String Entity class
+	 */
+	protected $entityClass;
 
 	/**
 	 * Get table name
@@ -66,19 +73,25 @@ abstract class Table {
 	 * @return SQLCommand SQL Command
 	 */
 	protected function createCommand(Entity $entity) {
-		$command = new SQLCommand($this, $entity);
-
-		return $command;
+		return new SQLCommand($this, $entity);
 	}
 
 	/**
 	 * @param \PDO $pdo
 	 *
-	 * @throws TableNotDefinedException
+	 * @throws TableNameNotDefinedException If table name is not defined in subclass
+	 * @throws EntityClassNotDefinedException If entity class is not defined in subclass
+	 * @throws EntityClassNonexistentException If entity class is nonexistent
 	 */
 	public function __construct(\PDO $pdo) {
 		if (is_null($this->tableName)) {
-			new TableNotDefinedException();
+			throw new TableNameNotDefinedException([get_class($this)]);
+		}
+
+		if (is_null($this->entityClass)) {
+			throw new EntityClassNotDefinedException([get_class($this)]);
+		} else if (!class_exists($this->entityClass)) {
+			throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
 		}
 
 		$this->pdo = $pdo;

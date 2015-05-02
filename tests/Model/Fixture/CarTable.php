@@ -13,4 +13,6 @@ class CarTable extends Table {
 
 	protected $tableName = 'cars';
 
+	protected $entityClass = CarEntity::class;
+
 }

@@ -36,8 +36,34 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	public function testSetAndGet() {
 		$car = new CarEntity('Ford', 'Model T', 20);
 		$car->set('model', 'Model A');
+		$car->set('hp', 65);
 
 		$this->assertSame('Model A', $car->get('model'));
+		$this->assertSame(65, $car->get('hp'));
 	}
 
+	/**
+	 * @covers ::toArray
+	 */
+	public function testToArray() {
+		$car = new CarEntity('Ford', 'Model T', 20);
+
+		$expected = [
+			'id'       => null,
+			'make'     => 'Ford',
+			'model'    => 'Model T',
+			'hp'       => 20,
+			'modified' => new \DateTime(),
+			'created'  => new \DateTime()
+		];
+
+		$toArray = $car->toArray();
+
+		$this->assertEquals($expected, $toArray);
+
+		$this->assertEquals(null, $toArray['id']);
+		$this->assertEquals('Ford', $toArray['make']);
+		$this->assertEquals('Model T', $toArray['model']);
+		$this->assertEquals(20, $toArray['hp']);
+	}
 }

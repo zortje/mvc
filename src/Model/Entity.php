@@ -51,7 +51,7 @@ abstract class Entity {
 	 */
 	public function set($key, $value) {
 		if (!isset(self::getColumns()[$key])) {
-			throw new InvalidEntityPropertyException([$key]);
+			throw new InvalidEntityPropertyException([get_class($this), $key]);
 		}
 
 		$this->_properties[$key] = $this->validatePropertyForValue($key, $value);
@@ -68,7 +68,7 @@ abstract class Entity {
 	 */
 	public function get($key) {
 		if (!isset(self::getColumns()[$key])) {
-			throw new InvalidEntityPropertyException([$key]);
+			throw new InvalidEntityPropertyException([get_class($this), $key]);
 		}
 
 		return $this->_properties[$key];
@@ -83,7 +83,7 @@ abstract class Entity {
 	public function toArray() {
 		$array = [];
 
-		foreach (self::getColumns() as $column) {
+		foreach (self::getColumns() as $column => $type) {
 			$array[$column] = $this->get($column);
 		}
 

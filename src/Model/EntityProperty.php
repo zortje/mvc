@@ -37,8 +37,8 @@ class EntityProperty {
 				$value = (float) $value;
 				break;
 
-			case 'Date':
-			case 'DateTime':
+			case 'Date': // @todo Should be converted with format 'Y-m-d' when inserting into DB
+			case 'DateTime': // @todo Should be converted back to format 'Y-m-d H:i:s' when inserting into DB
 				$value = new \DateTime($value);
 				break;
 		}

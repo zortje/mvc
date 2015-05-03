@@ -55,6 +55,24 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @covers ::selectFromWhere
+	 */
+	public function testSelectFromWhereWithArray() {
+		$expected = 'SELECT `id`, `make`, `model`, `hp`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
+
+		$this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
+	}
+
+	/**
+	 * @covers ::selectFromWhere
+	 */
+	public function testSelectFromWhereWithString() {
+		$expected = 'SELECT `id`, `make`, `model`, `hp`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
+
+		$this->assertSame($expected, $this->carsSqlCommand->selectFromWhere('make'));
+	}
+
+	/**
 	 * @covers ::__construct
 	 */
 	public function testConstruct() {

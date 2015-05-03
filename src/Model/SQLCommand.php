@@ -2,6 +2,8 @@
 
 namespace Zortje\MVC\Model;
 
+	// @todo Should this really be called `class SQLQuery`
+
 /**
  * Class SQLCommand
  *
@@ -10,20 +12,22 @@ namespace Zortje\MVC\Model;
 class SQLCommand {
 
 	/**
-	 * @var String
+	 * @var String Table name
 	 */
 	private $tableName;
 
 	/**
-	 * @var String[]
+	 * @var String[] Table columns
 	 */
 	private $columns;
 
 	/**
+	 * Create INSERT INTO command
+	 *
 	 * @return string INSERT INTO query
 	 */
 	public function insertInto() {
-		$tableColumnNames  = $this->getColumnNames($this->columns);
+		$tableColumnNames = $this->getColumnNames($this->columns);
 
 		$columns = $this->columns;
 		unset($columns['id']);
@@ -34,6 +38,8 @@ class SQLCommand {
 	}
 
 	/**
+	 * Create SELECT FROM command
+	 *
 	 * @return string SELECT FROM query
 	 */
 	public function selectFrom() {
@@ -42,13 +48,24 @@ class SQLCommand {
 		return "SELECT $tableColumnNames FROM `$this->tableName`;";
 	}
 
-	/*
-	public function selectFromWhere($where) {
+	/**
+	 * Create SELECT FROM command with WHERE
+	 *
+	 * @param string|string[] $keys WHERE keys
+	 *
+	 * @return string SELECT FROM query
+	 */
+	public function selectFromWhere($keys) {
+		$tableColumnNames = $this->getColumnNames($this->columns);
 
+		$where = $this->getWhereConditionFromKeys($keys);
+
+		return "SELECT $tableColumnNames FROM `$this->tableName` WHERE $where;";
 	}
-	*/
 
 	/**
+	 * Get columns names for SQL command
+	 *
 	 * @param String[] $columns
 	 *
 	 * @return string Column names for column list
@@ -60,6 +77,8 @@ class SQLCommand {
 	}
 
 	/**
+	 * Get columns values for SQL command
+	 *
 	 * @param String[] $columns
 	 *
 	 * @return string Column names for column values
@@ -68,6 +87,29 @@ class SQLCommand {
 		$tableColumnValues = implode(', :', array_keys($columns));
 
 		return ":{$tableColumnValues}";
+	}
+
+	/**
+	 * Get WHERE condition for SQL command
+	 *
+	 * @param string|string[] $keys
+	 *
+	 * @return string
+	 */
+	protected function getWhereConditionFromKeys($keys) {
+		$where = [];
+
+		if (is_string($keys)) {
+			$keys = [$keys];
+		} else if (!is_array($keys)) {
+			throw new \InvalidArgumentException('Keys must be a string or an array of strings');
+		}
+
+		foreach ($keys as $key) {
+			$where[] = "`$key` = :$key";
+		}
+
+		return implode(' AND ', $where);
 	}
 
 	/**

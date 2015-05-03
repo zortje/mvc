@@ -37,6 +37,7 @@ class EntityProperty {
 				$value = (float) $value;
 				break;
 
+			case 'Date':
 			case 'DateTime':
 				$value = new \DateTime($value);
 				break;

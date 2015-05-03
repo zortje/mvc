@@ -59,6 +59,22 @@ abstract class Table {
 		return $entities;
 	}
 
+	/**
+	 * Find all entities where key is equal to the given value
+	 *
+	 * @param $key
+	 * @param $value
+	 *
+	 * @return Entity[] Entities
+	 */
+	public function findBy($key, $value) {
+		$entities = [];
+
+		// @todo Find stuff in database
+
+		return $entities;
+	}
+
 	public function select($entityId) {
 		//
 	}

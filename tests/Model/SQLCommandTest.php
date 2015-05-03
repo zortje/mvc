@@ -15,24 +15,60 @@ use Zortje\MVC\Tests\Model\Fixture\CarTable;
  */
 class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 
+	/**
+	 * @var \PDO
+	 */
 	private $pdo;
+
+	/**
+	 * @var SQLCommand
+	 */
+	private $carsSqlCommand;
 
 	public function setUp() {
 		$this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=myapp_test", 'root', '');
+
+		/**
+		 * Table cars; SQLCommand
+		 */
+		$table = new CarTable($this->pdo);
+
+		$this->carsSqlCommand = new SQLCommand($table->getTableName(), CarEntity::getColumns());
 	}
 
 	/**
 	 * @covers ::insertInto
-	 * @covers ::__construct
 	 */
 	public function testInsertInto() {
-		$table = new CarTable($this->pdo);
-
-		$sqlCommand = new SQLCommand($table->getTableName(), CarEntity::getColumns());
-
 		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `hp`, `modified`, `created`) VALUES (NULL, :make, :model, :hp, :modified, :created);';
 
-		$this->assertSame($expected, $sqlCommand->insertInto());
+		$this->assertSame($expected, $this->carsSqlCommand->insertInto());
+	}
+
+	/**
+	 * @covers ::selectFrom
+	 */
+	public function testSelectFrom() {
+		$expected = 'SELECT `id`, `make`, `model`, `hp`, `modified`, `created` FROM `cars`;';
+
+		$this->assertSame($expected, $this->carsSqlCommand->selectFrom());
+	}
+
+	/**
+	 * @covers ::__construct
+	 */
+	public function testConstruct() {
+		$sqlCommand = new SQLCommand('cars', ['foo', 'bar']);
+
+		$reflector = new \ReflectionClass($sqlCommand);
+
+		$tableName = $reflector->getProperty('tableName');
+		$tableName->setAccessible(true);
+		$this->assertSame('cars', $tableName->getValue($sqlCommand));
+
+		$columns = $reflector->getProperty('columns');
+		$columns->setAccessible(true);
+		$this->assertSame(['foo', 'bar'], $columns->getValue($sqlCommand));
 	}
 
 }

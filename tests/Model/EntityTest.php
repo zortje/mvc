@@ -45,25 +45,40 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::toArray
 	 */
-	public function testToArray() {
+	public function testToArrayWithId() {
 		$car = new CarEntity('Ford', 'Model T', 20);
 
+		$now = new \DateTime();
+
 		$expected = [
-			'id'       => null,
-			'make'     => 'Ford',
-			'model'    => 'Model T',
-			'hp'       => 20,
-			'modified' => new \DateTime(),
-			'created'  => new \DateTime()
+			':id'       => null,
+			':make'     => 'Ford',
+			':model'    => 'Model T',
+			':hp'       => 20,
+			':modified' => $now->format('Y-m-d H:i:s'),
+			':created'  => $now->format('Y-m-d H:i:s')
 		];
 
-		$toArray = $car->toArray();
-
-		$this->assertEquals($expected, $toArray);
-
-		$this->assertEquals(null, $toArray['id']);
-		$this->assertEquals('Ford', $toArray['make']);
-		$this->assertEquals('Model T', $toArray['model']);
-		$this->assertEquals(20, $toArray['hp']);
+		$this->assertSame($expected, $car->toArray(true));
 	}
+
+	/**
+	 * @covers ::toArray
+	 */
+	public function testToArrayWithoutId() {
+		$car = new CarEntity('Ford', 'Model T', 20);
+
+		$now = new \DateTime();
+
+		$expected = [
+			':make'     => 'Ford',
+			':model'    => 'Model T',
+			':hp'       => 20,
+			':modified' => $now->format('Y-m-d H:i:s'),
+			':created'  => $now->format('Y-m-d H:i:s')
+		];
+
+		$this->assertSame($expected, $car->toArray(false));
+	}
+
 }

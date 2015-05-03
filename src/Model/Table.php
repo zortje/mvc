@@ -82,11 +82,12 @@ abstract class Table {
 		$now = new \DateTime();
 		$now = $now->format('Y-m-d H:i:s');
 
-		$array = array_merge($entity->toArray(), [
+		$array = array_merge($entity->toArray(false), [
 			'modified' => $now,
 			'created'  => $now
 		]);
 
+		/*
 		unset($array['id']);
 
 		foreach ($array as $key => $val) {
@@ -94,6 +95,7 @@ abstract class Table {
 
 			unset($array[$key]);
 		}
+		*/
 
 		$stmt->execute($array);
 

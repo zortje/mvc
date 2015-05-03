@@ -78,13 +78,28 @@ abstract class Entity {
 	 * Return table structur for saving
 	 * Example: `['table_field_name' => $this->fieldName]`
 	 *
+	 * @param bool $includeId Should the ID column be included
+	 *
 	 * @return array
 	 */
-	public function toArray() {
+	public function toArray($includeId) {
 		$array = [];
 
 		foreach (self::getColumns() as $column => $type) {
-			$array[$column] = $this->get($column);
+			if ($column === 'id' && !$includeId) {
+				continue;
+			}
+
+			$value = $this->get($column);
+
+			if ($type === 'DateTime') {
+				/**
+				 * @var \DateTime $value
+				 */
+				$value = $value->format('Y-m-d H:i:s');
+			}
+
+			$array[":$column"] = $value;
 		}
 
 		return $array;

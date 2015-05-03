@@ -90,6 +90,7 @@ abstract class Entity {
 				continue;
 			}
 
+			// @todo This part should really be done by the EntityProperty `$entityProperty->formatValueForDatabase($value)`
 			$value = $this->get($column);
 
 			if ($type === 'DateTime') {

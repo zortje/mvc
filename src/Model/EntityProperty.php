@@ -17,6 +17,8 @@ class EntityProperty {
 	/**
 	 * Format value according to entity property type
 	 *
+	 * @todo rename to `formatValueForEntity($value)`
+	 *
 	 * @param mixed $value Value
 	 *
 	 * @return mixed Value

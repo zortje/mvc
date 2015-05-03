@@ -15,7 +15,6 @@ use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	/**
-	 * @covers ::__construct
 	 * @covers ::createFromArray
 	 */
 	public function testCreateFromArray() {
@@ -40,6 +39,19 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame(20, $carEntity->get('hp'));
 		$this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('modified'));
 		$this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('created'));
+	}
+
+	/**
+	 * @covers ::__construct
+	 */
+	public function testConstruct() {
+		$entityFactory = new EntityFactory('Foo');
+
+		$reflector = new \ReflectionClass($entityFactory);
+
+		$entityClass = $reflector->getProperty('entityClass');
+		$entityClass->setAccessible(true);
+		$this->assertSame('Foo', $entityClass->getValue($entityFactory));
 	}
 
 }

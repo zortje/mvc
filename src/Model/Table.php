@@ -29,6 +29,11 @@ abstract class Table {
 	protected $entityClass;
 
 	/**
+	 * @var SQLCommand SQL Command
+	 */
+	protected $sqlCommand;
+
+	/**
 	 * Get table name
 	 *
 	 * @return string Table name
@@ -43,20 +48,10 @@ abstract class Table {
 	 * @return Entity[] Entities
 	 */
 	public function findAll() {
-		$entities = [];
-
-		$command = $this->createCommand();
-
-		$stmt = $this->pdo->prepare($command->selectFrom());
+		$stmt = $this->pdo->prepare($this->sqlCommand->selectFrom());
 		$stmt->execute();
 
-		$entityFactory = new EntityFactory($this->entityClass);
-
-		foreach ($stmt as $row) {
-			$entities[] = $entityFactory->createFromArray($row);
-		}
-
-		return $entities;
+		return $this->createEntitiesFromStatement($stmt);
 	}
 
 	/**
@@ -68,11 +63,10 @@ abstract class Table {
 	 * @return Entity[] Entities
 	 */
 	public function findBy($key, $value) {
-		$entities = [];
+		$stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere($key));
+		$stmt->execute([":$key" => $value]);
 
-		// @todo Find stuff in database
-
-		return $entities;
+		return $this->createEntitiesFromStatement($stmt);
 	}
 
 	public function select($entityId) {
@@ -83,16 +77,27 @@ abstract class Table {
 	 * @param Entity $entity
 	 */
 	public function insert(Entity $entity) {
-		$command = $this->createCommand();
+		$stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
 
-		$stmt = $this->pdo->prepare($command->insertInto());
+		$now = new \DateTime();
+		$now = $now->format('Y-m-d H:i:s');
 
-		$stmt->execute([
-			':modified' => date('Y-m-d H:i:s'),
-			':created'  => date('Y-m-d H:i:s')
+		$array = array_merge($entity->toArray(), [
+			'modified' => $now,
+			'created'  => $now
 		]);
 
-		// @todo should return the entity object with ID set (from insert_id)
+		unset($array['id']);
+
+		foreach ($array as $key => $val) {
+			$array[":$key"] = $val;
+
+			unset($array[$key]);
+		}
+
+		$stmt->execute($array);
+
+		return (int) $this->pdo->lastInsertId();
 	}
 
 	public function update(Entity $entity) {
@@ -101,6 +106,25 @@ abstract class Table {
 
 	public function delete(Entity $entity) {
 		//
+	}
+
+	/**
+	 * Creates an array of Entity objects from statement
+	 *
+	 * @param \PDOStatement $statement
+	 *
+	 * @return Entity[] Entities from statement
+	 */
+	protected function createEntitiesFromStatement(\PDOStatement $statement) {
+		$entities = [];
+
+		$entityFactory = new EntityFactory($this->entityClass);
+
+		foreach ($statement as $row) {
+			$entities[] = $entityFactory->createFromArray($row);
+		}
+
+		return $entities;
 	}
 
 	/**
@@ -137,6 +161,8 @@ abstract class Table {
 		}
 
 		$this->pdo = $pdo;
+
+		$this->sqlCommand = $this->createCommand();
 	}
 
 }

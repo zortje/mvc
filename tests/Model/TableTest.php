@@ -2,6 +2,7 @@
 
 namespace Zortje\MVC\Tests\Model;
 
+use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
 
 /**
@@ -54,6 +55,8 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		$entityClass = $reflector->getProperty('entityClass');
 		$entityClass->setAccessible(true);
 		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', $entityClass->getValue($carTable));
+
+		// @todo Test if SQL Command object is created correct
 	}
 
 	/**
@@ -130,7 +133,13 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 	 * @covers ::insert
 	 */
 	public function testInsert() {
+		$carTable = new CarTable($this->pdo);
 
+		$car = new CarEntity('Ford', 'Model B', 65);
+
+		$id = $carTable->insert($car);
+
+		$this->assertSame(3, $id);
 
 		/**
 		 * Assert data set
@@ -141,7 +150,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		$dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
 		$dataSet->addTable('cars', 'SELECT * FROM `cars`');
 
-		$this->assertDataSetsEqual($expectedDataSet, $dataSet);
+		$this->assertDataSetsEqual($expectedDataSet, $dataSet); // @todo This currently asserts FALSE, but only due to the incorect hardcoded modified/created date in the .csv file
 	}
 
 }

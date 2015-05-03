@@ -40,6 +40,23 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 	}
 
 	/**
+	 * @covers ::__construct
+	 */
+	public function testConstruct() {
+		$carTable = new CarTable($this->pdo);
+
+		$reflector = new \ReflectionClass($carTable);
+
+		$tableName = $reflector->getProperty('tableName');
+		$tableName->setAccessible(true);
+		$this->assertSame('cars', $tableName->getValue($carTable));
+
+		$entityClass = $reflector->getProperty('entityClass');
+		$entityClass->setAccessible(true);
+		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', $entityClass->getValue($carTable));
+	}
+
+	/**
 	 * @covers ::getTableName
 	 */
 	public function testGetTableName() {

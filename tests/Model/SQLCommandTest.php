@@ -40,7 +40,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::insertInto
 	 */
 	public function testInsertInto() {
-		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `hp`, `modified`, `created`) VALUES (NULL, :make, :model, :hp, :modified, :created);';
+		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `hp`, `released`, `modified`, `created`) VALUES (NULL, :make, :model, :hp, :released, :modified, :created);';
 
 		$this->assertSame($expected, $this->carsSqlCommand->insertInto());
 	}
@@ -49,7 +49,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::selectFrom
 	 */
 	public function testSelectFrom() {
-		$expected = 'SELECT `id`, `make`, `model`, `hp`, `modified`, `created` FROM `cars`;';
+		$expected = 'SELECT `id`, `make`, `model`, `hp`, `released`, `modified`, `created` FROM `cars`;';
 
 		$this->assertSame($expected, $this->carsSqlCommand->selectFrom());
 	}
@@ -58,7 +58,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::selectFromWhere
 	 */
 	public function testSelectFromWhereWithArray() {
-		$expected = 'SELECT `id`, `make`, `model`, `hp`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
+		$expected = 'SELECT `id`, `make`, `model`, `hp`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
 
 		$this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
 	}
@@ -67,7 +67,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::selectFromWhere
 	 */
 	public function testSelectFromWhereWithString() {
-		$expected = 'SELECT `id`, `make`, `model`, `hp`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
+		$expected = 'SELECT `id`, `make`, `model`, `hp`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
 
 		$this->assertSame($expected, $this->carsSqlCommand->selectFromWhere('make'));
 	}

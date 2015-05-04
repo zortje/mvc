@@ -88,6 +88,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		$this->assertSame('Ford', $car->get('make'));
 		$this->assertSame('Model T', $car->get('model'));
 		$this->assertSame(20, $car->get('hp'));
+		$this->assertEquals(new \DateTime('1908-10-01'), $car->get('released'));
 		$this->assertEquals(new \DateTime('2015-05-03 21:18:42'), $car->get('modified'));
 		$this->assertEquals(new \DateTime('2015-05-03 21:18:42'), $car->get('created'));
 
@@ -101,6 +102,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		$this->assertSame('Ford', $car->get('make'));
 		$this->assertSame('Model A', $car->get('model'));
 		$this->assertSame(40, $car->get('hp'));
+		$this->assertEquals(new \DateTime('1927-10-20'), $car->get('released'));
 		$this->assertEquals(new \DateTime('2015-05-03 21:18:42'), $car->get('modified'));
 		$this->assertEquals(new \DateTime('2015-05-03 21:18:42'), $car->get('created'));
 	}
@@ -125,6 +127,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		$this->assertSame('Ford', $car->get('make'));
 		$this->assertSame('Model T', $car->get('model'));
 		$this->assertSame(20, $car->get('hp'));
+		$this->assertEquals(new \DateTime('1908-10-01'), $car->get('released'));
 		$this->assertEquals(new \DateTime('2015-05-03 21:18:42'), $car->get('modified'));
 		$this->assertEquals(new \DateTime('2015-05-03 21:18:42'), $car->get('created'));
 	}
@@ -135,7 +138,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 	public function testInsert() {
 		$carTable = new CarTable($this->pdo);
 
-		$car = new CarEntity('Ford', 'Model B', 65);
+		$car = new CarEntity('Ford', 'Model B', 65, new \DateTime('1932-01-01'));
 
 		$id = $carTable->insert($car);
 

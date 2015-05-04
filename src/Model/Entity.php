@@ -115,21 +115,35 @@ abstract class Entity {
 		 * Allow NULL
 		 */
 		if (!is_null($value)) {
-			$type = gettype($value);
+			$valueType = gettype($value);
 
 			/**
 			 * Get class if object
 			 */
-			if ($type === 'object') {
-				$type = get_class($value);
+			if ($valueType === 'object') {
+				$valueType = get_class($value);
 			}
 
-			if ($type !== self::getColumns()[$key]) {
+			/**
+			 * Handle alias types
+			 */
+			$columnType = self::getColumns()[$key];
+
+			switch ($columnType) {
+				case 'Date':
+					$columnType = 'DateTime';
+					break;
+			}
+
+			/**
+			 * Validate type
+			 */
+			if ($valueType !== $columnType) {
 				throw new InvalidValueTypeForEntityPropertyException([
 					get_class($this),
 					$key,
-					self::getColumns()[$key],
-					$type
+					$valueType,
+					$columnType
 				]);
 			}
 		}

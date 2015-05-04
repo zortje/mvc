@@ -35,4 +35,10 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(new \DateTime('2015-05-03 01:15:42'), $property->formatValueForEntity('2015-05-03 01:15:42'));
 	}
 
+	public function testFormatValueStringToDate() {
+		$property = new EntityProperty('Date');
+
+		$this->assertEquals(new \DateTime('2015-05-04'), $property->formatValueForEntity('2015-05-04'));
+	}
+
 }

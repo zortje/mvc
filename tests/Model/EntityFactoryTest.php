@@ -28,6 +28,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 			'make'     => 'Ford',
 			'model'    => 'Model T',
 			'hp'       => '20',
+			'released' => '1908-10-01',
 			'modified' => '2015-05-03 00:53:42',
 			'created'  => '2015-05-03 00:53:42'
 		]);
@@ -37,6 +38,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame('Ford', $carEntity->get('make'));
 		$this->assertSame('Model T', $carEntity->get('model'));
 		$this->assertSame(20, $carEntity->get('hp'));
+		$this->assertEquals(new \DateTime('1908-10-01'), $carEntity->get('released'));
 		$this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('modified'));
 		$this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('created'));
 	}

@@ -17,13 +17,11 @@ class EntityProperty {
 	/**
 	 * Format value according to entity property type
 	 *
-	 * @todo rename to `formatValueForEntity($value)`
-	 *
 	 * @param mixed $value Value
 	 *
 	 * @return mixed Value
 	 */
-	public function formatValue($value) {
+	public function formatValueForEntity($value) {
 		switch ($this->type) {
 			case 'string':
 				$value = "$value";
@@ -37,9 +35,36 @@ class EntityProperty {
 				$value = (float) $value;
 				break;
 
-			case 'Date': // @todo Should be converted with format 'Y-m-d' when inserting into DB
-			case 'DateTime': // @todo Should be converted back to format 'Y-m-d H:i:s' when inserting into DB
+			case 'Date':
+			case 'DateTime':
 				$value = new \DateTime($value);
+				break;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Format value for insertion into the database
+	 *
+	 * @param mixed $value Value
+	 *
+	 * @return mixed Value
+	 */
+	public function formatValueForDatabase($value) {
+		switch ($this->type) {
+			case 'Date':
+				/**
+				 * @var \DateTime $value
+				 */
+				$value = $value->format('Y-m-d');
+				break;
+
+			case 'DateTime':
+				/**
+				 * @var \DateTime $value
+				 */
+				$value = $value->format('Y-m-d H:i:s');
 				break;
 		}
 

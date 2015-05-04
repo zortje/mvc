@@ -14,25 +14,25 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase {
 	public function testFormatValueStringToString() {
 		$property = new EntityProperty('string');
 
-		$this->assertSame('foo', $property->formatValue('foo'));
+		$this->assertSame('foo', $property->formatValueForEntity('foo'));
 	}
 
 	public function testFormatValueStringToInteger() {
 		$property = new EntityProperty('integer');
 
-		$this->assertSame(42, $property->formatValue('42'));
+		$this->assertSame(42, $property->formatValueForEntity('42'));
 	}
 
 	public function testFormatValueStringToFloat() {
 		$property = new EntityProperty('float');
 
-		$this->assertSame(3.14159265359, $property->formatValue('3.14159265359'));
+		$this->assertSame(3.14159265359, $property->formatValueForEntity('3.14159265359'));
 	}
 
 	public function testFormatValueStringToDateTime() {
 		$property = new EntityProperty('DateTime');
 
-		$this->assertEquals(new \DateTime('2015-05-03 01:15:42'), $property->formatValue('2015-05-03 01:15:42'));
+		$this->assertEquals(new \DateTime('2015-05-03 01:15:42'), $property->formatValueForEntity('2015-05-03 01:15:42'));
 	}
 
 }

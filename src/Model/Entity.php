@@ -90,15 +90,10 @@ abstract class Entity {
 				continue;
 			}
 
-			// @todo This part should really be done by the EntityProperty `$entityProperty->formatValueForDatabase($value)`
-			$value = $this->get($column);
+			$property = new EntityProperty($type);
 
-			if ($type === 'DateTime') {
-				/**
-				 * @var \DateTime $value
-				 */
-				$value = $value->format('Y-m-d H:i:s');
-			}
+			$value = $this->get($column);
+			$value = $property->formatValueForDatabase($value);
 
 			$array[":$column"] = $value;
 		}

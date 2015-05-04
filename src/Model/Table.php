@@ -69,12 +69,18 @@ abstract class Table {
 		return $this->createEntitiesFromStatement($stmt);
 	}
 
+	/*
 	public function select($entityId) {
 		//
 	}
+	*/
 
 	/**
-	 * @param Entity $entity
+	 * Insert entity into dabase
+	 *
+	 * @param Entity $entity Entity
+	 *
+	 * @return int Inserted entity ID
 	 */
 	public function insert(Entity $entity) {
 		$stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
@@ -87,28 +93,22 @@ abstract class Table {
 			'created'  => $now
 		]);
 
-		/*
-		unset($array['id']);
-
-		foreach ($array as $key => $val) {
-			$array[":$key"] = $val;
-
-			unset($array[$key]);
-		}
-		*/
-
 		$stmt->execute($array);
 
 		return (int) $this->pdo->lastInsertId();
 	}
 
+	/*
 	public function update(Entity $entity) {
 		//
 	}
+	*/
 
+	/*
 	public function delete(Entity $entity) {
 		//
 	}
+	*/
 
 	/**
 	 * Creates an array of Entity objects from statement

@@ -2,8 +2,6 @@
 
 namespace Zortje\MVC\Model;
 
-	// @todo Should this really be called `class SQLQuery`
-
 /**
  * Class SQLCommand
  *

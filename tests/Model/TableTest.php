@@ -147,10 +147,16 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		$expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
 		$expectedDataSet->addTable('cars', dirname(__FILE__) . "/Fixture/cars_after-insertion.csv");
 
+		$expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedDataSet);
+		$expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
+
 		$dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
 		$dataSet->addTable('cars', 'SELECT * FROM `cars`');
 
-		$this->assertDataSetsEqual($expectedDataSet, $dataSet); // @todo This currently asserts FALSE, but only due to the incorect hardcoded modified/created date in the .csv file
+		$dataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($dataSet);
+		$dataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
+
+		$this->assertDataSetsEqual($expectedDataSet, $dataSet);
 	}
 
 }

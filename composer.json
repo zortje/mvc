@@ -1,7 +1,7 @@
 {
   "name": "zortje/mvc",
   "description": "MVC",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "library",
   "keywords": ["framework", "mvc"],
   "license": "MIT",

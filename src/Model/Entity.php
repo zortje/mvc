@@ -108,9 +108,15 @@ abstract class Entity {
 	 * @param mixed  $value Entity property value
 	 *
 	 * @return mixed Value
+	 *
+	 * @throws InvalidEntityPropertyException If entity does not have that property
 	 * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
 	 */
 	protected function validatePropertyForValue($key, $value) {
+		if (!isset(self::getColumns()[$key])) {
+			throw new InvalidEntityPropertyException([get_class($this), $key]);
+		}
+
 		/**
 		 * Allow NULL
 		 */

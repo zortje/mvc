@@ -69,12 +69,6 @@ abstract class Table {
 		return $this->createEntitiesFromStatement($stmt);
 	}
 
-	/*
-	public function select($entityId) {
-		//
-	}
-	*/
-
 	/**
 	 * Insert entity into dabase
 	 *
@@ -98,17 +92,13 @@ abstract class Table {
 		return (int) $this->pdo->lastInsertId();
 	}
 
-	/*
 	public function update(Entity $entity) {
-		//
+		// @todo Implement
 	}
-	*/
 
-	/*
 	public function delete(Entity $entity) {
-		//
+		// @todo Implement
 	}
-	*/
 
 	/**
 	 * Creates an array of Entity objects from statement

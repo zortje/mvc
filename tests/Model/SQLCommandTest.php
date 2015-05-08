@@ -73,6 +73,69 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * @covers ::getColumnNames
+	 */
+	public function testGetColumnNames() {
+		$reflector = new \ReflectionClass($this->carsSqlCommand);
+
+		$method = $reflector->getMethod('getColumnNames');
+		$method->setAccessible(true);
+
+		$this->assertSame('`id`, `modified`, `created`', $method->invoke($this->carsSqlCommand, [
+			'id'       => 'integer',
+			'modified' => 'string',
+			'created'  => 'string'
+		]));
+	}
+
+	/**
+	 * @covers ::getColumnValues
+	 */
+	public function testGetColumnValues() {
+		$reflector = new \ReflectionClass($this->carsSqlCommand);
+
+		$method = $reflector->getMethod('getColumnValues');
+		$method->setAccessible(true);
+
+		$this->assertSame(':id, :modified, :created', $method->invoke($this->carsSqlCommand, [
+			'id'       => 'integer',
+			'modified' => 'string',
+			'created'  => 'string'
+		]));
+	}
+
+	/**
+	 * @covers ::getWhereConditionFromKeys
+	 */
+	public function testGetWhereConditionFromKeys() {
+		$reflector = new \ReflectionClass($this->carsSqlCommand);
+
+		$method = $reflector->getMethod('getWhereConditionFromKeys');
+		$method->setAccessible(true);
+
+		$this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, 'id'));
+		$this->assertSame('`id` = :id AND `active` = :active', $method->invoke($this->carsSqlCommand, [
+			'id',
+			'active'
+		]));
+	}
+
+	/**
+	 * @covers ::getWhereConditionFromKeys
+	 *
+	 * @expectedException \InvalidArgumentException
+	 * @expectedExceptionMessage Keys must be a string or an array of strings
+	 */
+	public function testGetWhereConditionFromKeysInvalidArgument() {
+		$reflector = new \ReflectionClass($this->carsSqlCommand);
+
+		$method = $reflector->getMethod('getWhereConditionFromKeys');
+		$method->setAccessible(true);
+
+		$method->invoke($this->carsSqlCommand, 42);
+	}
+
+	/**
 	 * @covers ::__construct
 	 */
 	public function testConstruct() {

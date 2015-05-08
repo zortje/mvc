@@ -43,8 +43,8 @@ abstract class Entity {
 	/**
 	 * Set entity property
 	 *
-	 * @param string $key   Entity property name
-	 * @param mixed  $value Entity property value
+	 * @param string                                          $key   Entity property name
+	 * @param object|integer|double|string|array|boolean|null $value Entity property value
 	 *
 	 * @throws InvalidEntityPropertyException If entity does not have that property
 	 * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
@@ -62,7 +62,7 @@ abstract class Entity {
 	 *
 	 * @param string $key Entity property
 	 *
-	 * @return mixed Entity property value for given key
+	 * @return object|integer|double|string|array|boolean|null Entity property value for given key
 	 *
 	 * @throws InvalidEntityPropertyException If entity does not have that property
 	 */
@@ -107,7 +107,7 @@ abstract class Entity {
 	 * @param string $key   Entity property name
 	 * @param mixed  $value Entity property value
 	 *
-	 * @return mixed Value
+	 * @return object|integer|double|string|array|boolean|null Value
 	 *
 	 * @throws InvalidEntityPropertyException If entity does not have that property
 	 * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type

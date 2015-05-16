@@ -5,6 +5,7 @@ namespace Zortje\MVC\Model;
 use Zortje\MVC\Model\Exception\TableNameNotDefinedException;
 use Zortje\MVC\Model\Exception\EntityClassNotDefinedException;
 use Zortje\MVC\Model\Exception\EntityClassNonexistentException;
+use Zortje\MVC\Model\Exception\InvalidEntityPropertyException;
 
 /**
  * Class Table
@@ -60,9 +61,25 @@ abstract class Table {
 	 * @param $key
 	 * @param $value
 	 *
+	 * @throws InvalidEntityPropertyException If entity does not have that property
+	 *
 	 * @return Entity[] Entities
 	 */
 	public function findBy($key, $value) {
+		/**
+		 * Check if entity have the property
+		 */
+		$reflector = new \ReflectionClass($this->entityClass);
+
+		$entity = $reflector->newInstanceWithoutConstructor();
+
+		if (!isset($entity::getColumns()[$key])) {
+			throw new InvalidEntityPropertyException([$this->entityClass, $key]);
+		}
+
+		/**
+		 * Execute with key-value condition
+		 */
 		$stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere($key));
 		$stmt->execute([":$key" => $value]);
 

@@ -133,6 +133,29 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 	}
 
 	/**
+	 * @covers ::findBy
+	 */
+	public function testFindByEmpty() {
+		$carTable = new CarTable($this->pdo);
+
+		$cars = $carTable->findBy('hp', 1337);
+
+		$this->assertSame(0, count($cars));
+	}
+
+	/**
+	 * @covers ::findBy
+	 *
+	 * @expectedException Zortje\MVC\Model\Exception\InvalidEntityPropertyException
+	 * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
+	 */
+	public function testFindByInvalid() {
+		$carTable = new CarTable($this->pdo);
+
+		$carTable->findBy('invalid-property', 20);
+	}
+
+	/**
 	 * @covers ::insert
 	 */
 	public function testInsert() {

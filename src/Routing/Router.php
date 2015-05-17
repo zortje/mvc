@@ -15,7 +15,7 @@ class Router {
 	/**
 	 * @var array Routes
 	 */
-	private $routes = [];
+	protected $routes = [];
 
 	/**
 	 * Connects a new route in the router

@@ -169,6 +169,8 @@ abstract class Table {
 			throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
 		}
 
+		// @todo should check if `$this->entityClass` is subclass of Entity class
+
 		$this->pdo = $pdo;
 
 		$this->sqlCommand = $this->createCommand();

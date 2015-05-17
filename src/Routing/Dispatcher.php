@@ -4,6 +4,7 @@ namespace Zortje\MVC\Routing;
 
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Network\Response;
+use Zortje\MVC\Controller\Controller;
 
 /**
  * Class Dispatcher
@@ -23,13 +24,37 @@ class Dispatcher {
 
 		list($controller, $action) = $this->router->route($request->getUrlPath());
 
-		// Check if controller exists
+		/**
+		 * Validate and initialize controller
+		 */
+		$controller = $this->initializeController($controller);
+
 
 		// Check if controller implements the action
 
 
-
 		return new Response();
+	}
+
+	/**
+	 * Initialize controller
+	 *
+	 * @param string $controller Controller class name
+	 *
+	 * @return Controller Controller object
+	 * @throws ControllerNonexistentException If controller class is nonexistent
+	 * @throws ControllerInvalidSuperclassException If controller class is not subclass of base controller
+	 */
+	protected function initializeController($controller) {
+		if (!class_exists($controller)) {
+			throw new ControllerNonexistentException($controller);
+		} else if (!is_subclass_of($controller, Controller::class)) {
+			throw new ControllerInvalidSuperclassException($controller);
+		}
+
+		$controller = new $controller;
+
+		return $controller;
 	}
 
 	/**

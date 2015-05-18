@@ -27,10 +27,54 @@ class Dispatcher {
 		/**
 		 * Validate and initialize controller
 		 */
-		$controller = $this->initializeController($controller);
+		try {
+
+			$controller = $this->initializeController($controller);
+
+		}
+		catch (\Exception $e) {
+			if ($e instanceof ControllerNonexistentException || $e instanceof ControllerInvalidSuperclassException) {
+				// @todo Log nonexistent controller
+
+				$controller = new NotFoundController();
+			}
+			else {
+				throw $e;
+			}
+		}
+
 
 
 		// Check if controller implements the action
+
+		// Check if user is properly authenticated for that action
+
+		try {
+
+			$controller->prepareAction($action, $user, $pdo);
+
+		} catch (\Exception $e) {
+			if ($e instanceof ControllerActionProtectedInsufficientAuthenticationException) {
+				// @todo Log unauthed protected controller action attempt
+
+				// redirect to login page & and save what action was requested to redirect after successful login
+			} elseif ($e instanceof ControllerActionPrivateInsufficientAuthenticationException) {
+				// @todo Log unauthed private controller action attempt
+
+				$controller = new NotFoundController();
+			} elseif ($e instanceof ControllerActionNonexistentException) {
+				// @todo Log nonexistent controller action
+
+				$controller = new NotFoundController();
+			} else {
+				throw $e;
+			}
+		}
+
+
+
+
+
 
 
 		return new Response();

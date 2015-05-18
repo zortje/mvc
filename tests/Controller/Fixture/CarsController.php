@@ -11,4 +11,10 @@ use Zortje\MVC\Controller\Controller;
  */
 class CarsController extends Controller {
 
+	protected $access = [
+		'list'        => Controller::ACTION_PUBLIC,
+		'hidden-list' => Controller::ACTION_PROTECTED,
+		'add'         => Controller::ACTION_PRIVATE
+	];
+
 }

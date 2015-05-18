@@ -9,11 +9,14 @@ namespace Zortje\MVC\Network;
  */
 class Response {
 
+	protected $headers = [];
+	protected $output;
+
 	public function output() {
 
-		// @todo
+		// @todo Best way to set headers in a testable way?
 
-		return '';
+		return $this->output;
 	}
 
 }

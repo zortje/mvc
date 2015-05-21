@@ -2,7 +2,7 @@
 
 namespace Zortje\MVC\Tests\Model\Fixture;
 
-use Zortje\MVC\Model\Table;
+use Zortje\MVC\Model\Table\Table;
 
 /**
  * Class CarTable

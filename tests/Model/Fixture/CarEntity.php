@@ -2,7 +2,7 @@
 
 namespace Zortje\MVC\Tests\Model\Fixture;
 
-use Zortje\MVC\Model\Entity;
+use Zortje\MVC\Model\Table\Entity\Entity;
 
 /**
  * Class CarEntity

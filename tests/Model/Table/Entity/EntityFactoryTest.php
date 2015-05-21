@@ -1,16 +1,16 @@
 <?php
 
-namespace Zortje\MVC\Tests\Model;
+namespace Zortje\MVC\Tests\Model\Table\Entity;
 
-use Zortje\MVC\Model\EntityFactory;
+use Zortje\MVC\Model\Table\Entity\EntityFactory;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 
 /**
  * Class EntityFactoryTest
  *
- * @package            Zortje\MVC\Tests\Model
+ * @package            Zortje\MVC\Tests\Model\Table\Entity
  *
- * @coversDefaultClass Zortje\MVC\Model\EntityFactory
+ * @coversDefaultClass Zortje\MVC\Model\Table\Entity\EntityFactory
  */
 class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 

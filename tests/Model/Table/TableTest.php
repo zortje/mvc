@@ -1,6 +1,6 @@
 <?php
 
-namespace Zortje\MVC\Tests\Model;
+namespace Zortje\MVC\Tests\Model\Table;
 
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
@@ -8,9 +8,9 @@ use Zortje\MVC\Tests\Model\Fixture\CarTable;
 /**
  * Class TableTest
  *
- * @package            Zortje\MVC\Tests\Model
+ * @package            Zortje\MVC\Tests\Model\Table
  *
- * @coversDefaultClass Zortje\MVC\Model\Table
+ * @coversDefaultClass Zortje\MVC\Model\Table\Table
  */
 class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 
@@ -35,7 +35,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 	protected function getDataSet() {
 		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
 
-		$dataSet->addTable('cars', dirname(__FILE__) . "/Fixture/cars.csv");
+		$dataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars.csv');
 
 		return $dataSet;
 	}
@@ -146,7 +146,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 	/**
 	 * @covers ::findBy
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\InvalidEntityPropertyException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
 	 * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
 	 */
 	public function testFindByInvalid() {
@@ -171,7 +171,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		 * Assert data set
 		 */
 		$expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
-		$expectedDataSet->addTable('cars', dirname(__FILE__) . "/Fixture/cars_after-insertion.csv");
+		$expectedDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-insertion.csv');
 
 		$expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedDataSet);
 		$expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);

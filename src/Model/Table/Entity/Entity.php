@@ -1,14 +1,14 @@
 <?php
 
-namespace Zortje\MVC\Model;
+namespace Zortje\MVC\Model\Table\Entity;
 
-use Zortje\MVC\Model\Exception\InvalidEntityPropertyException;
-use Zortje\MVC\Model\Exception\InvalidValueTypeForEntityPropertyException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
 
 /**
  * Class Entity
  *
- * @package Zortje\MVC\Model
+ * @package Zortje\MVC\Model\Table\Entity
  */
 abstract class Entity {
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace Zortje\MVC\Tests\Model;
+namespace Zortje\MVC\Tests\Model\Table\Entity;
 
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 
 /**
  * Class EntityTest
  *
- * @package            Zortje\MVC\Tests\Model
+ * @package            Zortje\MVC\Tests\Model\Table\Entity
  *
- * @coversDefaultClass Zortje\MVC\Model\Entity
+ * @coversDefaultClass Zortje\MVC\Model\Table\Entity\Entity
  */
 class EntityTest extends \PHPUnit_Framework_TestCase {
 
@@ -48,7 +48,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::set
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\InvalidEntityPropertyException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
 	 * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
 	 */
 	public function testSetInvalidProperty() {
@@ -60,7 +60,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::get
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\InvalidEntityPropertyException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
 	 * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
 	 */
 	public function testGetInvalidProperty() {
@@ -151,7 +151,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::validatePropertyForValue
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\InvalidEntityPropertyException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
 	 * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
 	 */
 	public function testValidatePropertyForValueInvaidProperty() {
@@ -168,7 +168,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::validatePropertyForValue
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\InvalidValueTypeForEntityPropertyException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException
 	 * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity property id is of type string and not integer
 	 */
 	public function testValidatePropertyForValueInvalidValue() {

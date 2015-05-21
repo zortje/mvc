@@ -1,22 +1,22 @@
 <?php
 
-namespace Zortje\MVC\Tests\Model\Exception;
+namespace Zortje\MVC\Tests\Model\Table\Exception;
 
-use Zortje\MVC\Model\Exception\TableNameNotDefinedException;
+use Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException;
 
 /**
  * Class TableNameNotDefinedExceptionTest
  *
- * @package            Zortje\MVC\Tests\Model\Exception
+ * @package            Zortje\MVC\Tests\Model\Table\Exception
  *
- * @coversDefaultClass Zortje\MVC\Model\Exception\TableNameNotDefinedException
+ * @coversDefaultClass Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException
  */
 class TableNameNotDefinedExceptionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @covers ::__construct
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\TableNameNotDefinedException
+	 * @expectedException Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException
 	 * @expectedExceptionMessage foo
 	 */
 	public function testMessage() {
@@ -26,7 +26,7 @@ class TableNameNotDefinedExceptionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::__construct
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\TableNameNotDefinedException
+	 * @expectedException Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException
 	 * @expectedExceptionMessage Subclass Foo does not have a table name defined
 	 */
 	public function testMessageArray() {

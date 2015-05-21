@@ -1,16 +1,19 @@
 <?php
 
-namespace Zortje\MVC\Model;
+namespace Zortje\MVC\Model\Table;
 
-use Zortje\MVC\Model\Exception\TableNameNotDefinedException;
-use Zortje\MVC\Model\Exception\EntityClassNotDefinedException;
-use Zortje\MVC\Model\Exception\EntityClassNonexistentException;
-use Zortje\MVC\Model\Exception\InvalidEntityPropertyException;
+use Zortje\MVC\Model\SQLCommand;
+use Zortje\MVC\Model\Table\Entity\Entity;
+use Zortje\MVC\Model\Table\Entity\EntityFactory;
+use Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
 
 /**
  * Class Table
  *
- * @package Zortje\MVC\Model
+ * @package Zortje\MVC\Model\Table
  */
 abstract class Table {
 

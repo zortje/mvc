@@ -1,15 +1,15 @@
 <?php
 
-namespace Zortje\MVC\Tests\Model;
+namespace Zortje\MVC\Tests\Model\Table\Entity;
 
-use Zortje\MVC\Model\EntityProperty;
+use Zortje\MVC\Model\Table\Entity\EntityProperty;
 
 /**
  * Class EntityPropertyTest
  *
- * @package            Zortje\MVC\Tests\Model
+ * @package            Zortje\MVC\Tests\Model\Table\Entity
  *
- * @coversDefaultClass Zortje\MVC\Model\EntityProperty
+ * @coversDefaultClass Zortje\MVC\Model\Table\Entity\EntityProperty
  */
 class EntityPropertyTest extends \PHPUnit_Framework_TestCase {
 

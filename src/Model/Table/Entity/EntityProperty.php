@@ -1,11 +1,11 @@
 <?php
 
-namespace Zortje\MVC\Model;
+namespace Zortje\MVC\Model\Table\Entity;
 
 /**
  * Class EntityProperty
  *
- * @package Zortje\MVC\Model
+ * @package Zortje\MVC\Model\Table\Entity
  */
 class EntityProperty {
 

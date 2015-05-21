@@ -1,13 +1,13 @@
 <?php
 
-namespace Zortje\MVC\Model\Exception;
+namespace Zortje\MVC\Model\Table\Entity\Exception;
 
 use Zortje\MVC\Common\Exception\Exception;
 
 /**
  * Class InvalidEntityPropertyException
  *
- * @package Zortje\MVC\Model\Exception
+ * @package Zortje\MVC\Model\Table\Entity\Exception
  */
 class InvalidEntityPropertyException extends Exception {
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace Zortje\MVC\Model\Exception;
+namespace Zortje\MVC\Model\Table\Exception;
 
 use Zortje\MVC\Common\Exception\Exception;
 
 /**
  * Class TableNameNotDefinedException
  *
- * @package Zortje\MVC\Model\Exception
+ * @package Zortje\MVC\Model\Table\Exception
  */
 class TableNameNotDefinedException extends Exception {
 

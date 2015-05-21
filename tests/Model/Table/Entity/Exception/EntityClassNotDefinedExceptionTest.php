@@ -1,22 +1,22 @@
 <?php
 
-namespace Zortje\MVC\Tests\Model\Exception;
+namespace Zortje\MVC\Tests\Model\Table\Entity\Exception;
 
-use Zortje\MVC\Model\Exception\EntityClassNotDefinedException;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException;
 
 /**
  * Class EntityClassNotDefinedExceptionTest
  *
- * @package            Zortje\MVC\Tests\Model\Exception
+ * @package            Zortje\MVC\Tests\Model\Table\Entity\Exception
  *
- * @coversDefaultClass Zortje\MVC\Model\Exception\EntityClassNotDefinedException
+ * @coversDefaultClass Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException
  */
 class EntityClassNotDefinedExceptionTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @covers ::__construct
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\EntityClassNotDefinedException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException
 	 * @expectedExceptionMessage foo
 	 */
 	public function testMessage() {
@@ -26,7 +26,7 @@ class EntityClassNotDefinedExceptionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @covers ::__construct
 	 *
-	 * @expectedException Zortje\MVC\Model\Exception\EntityClassNotDefinedException
+	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException
 	 * @expectedExceptionMessage Subclass Foo does not have a entity class defined
 	 */
 	public function testMessageArray() {

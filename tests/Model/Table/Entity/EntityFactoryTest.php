@@ -18,7 +18,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::createFromArray
 	 */
 	public function testCreateFromArray() {
-		$entityFactory = new EntityFactory('Zortje\MVC\Tests\Model\Fixture\CarEntity');
+		$entityFactory = new EntityFactory(CarEntity::class);
 
 		/**
 		 * @var CarEntity $carEntity
@@ -33,7 +33,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase {
 			'created'  => '2015-05-03 00:53:42'
 		]);
 
-		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', get_class($carEntity));
+		$this->assertSame(CarEntity::class, get_class($carEntity));
 		$this->assertSame(42, $carEntity->get('id'));
 		$this->assertSame('Ford', $carEntity->get('make'));
 		$this->assertSame('Model T', $carEntity->get('model'));

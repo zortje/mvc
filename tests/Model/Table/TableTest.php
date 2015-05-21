@@ -54,7 +54,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 
 		$entityClass = $reflector->getProperty('entityClass');
 		$entityClass->setAccessible(true);
-		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', $entityClass->getValue($carTable));
+		$this->assertSame(CarEntity::class, $entityClass->getValue($carTable));
 
 		// @todo Test if SQL Command object is created correct
 	}
@@ -83,7 +83,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		 */
 		$car = $cars[0];
 
-		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', get_class($car));
+		$this->assertSame(CarEntity::class, get_class($car));
 		$this->assertSame(1, $car->get('id'));
 		$this->assertSame('Ford', $car->get('make'));
 		$this->assertSame('Model T', $car->get('model'));
@@ -97,7 +97,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		 */
 		$car = $cars[1];
 
-		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', get_class($car));
+		$this->assertSame(CarEntity::class, get_class($car));
 		$this->assertSame(2, $car->get('id'));
 		$this->assertSame('Ford', $car->get('make'));
 		$this->assertSame('Model A', $car->get('model'));
@@ -122,7 +122,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase {
 		 */
 		$car = $cars[0];
 
-		$this->assertSame('Zortje\MVC\Tests\Model\Fixture\CarEntity', get_class($car));
+		$this->assertSame(CarEntity::class, get_class($car));
 		$this->assertSame(1, $car->get('id'));
 		$this->assertSame('Ford', $car->get('make'));
 		$this->assertSame('Model T', $car->get('model'));

@@ -9,8 +9,24 @@ namespace Zortje\MVC\Network;
  */
 class Request {
 
+	/**
+	 * @var string Full URL
+	 */
 	protected $url;
+
+	/**
+	 * @var array POST data
+	 */
 	protected $post;
+
+	/**
+	 * Get request URL path
+	 *
+	 * @return string URL path
+	 */
+	public function getPath() {
+		return parse_url($this->url, PHP_URL_PATH);
+	}
 
 	/**
 	 * @param string $url

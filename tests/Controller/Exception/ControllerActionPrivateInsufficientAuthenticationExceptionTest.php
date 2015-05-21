@@ -9,7 +9,7 @@ use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthentic
  *
  * @package            Zortje\MVC\Tests\Controller\Exception
  *
- * @coversDefaultClass Zortje\MVC\Controller\Exception\ControllerActionNonexistentException
+ * @coversDefaultClass Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException
  */
 class ControllerActionPrivateInsufficientAuthenticationExceptionTest extends \PHPUnit_Framework_TestCase {
 

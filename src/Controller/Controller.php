@@ -96,6 +96,56 @@ class Controller {
 		// application/javascript
 
 		// @todo throw exception is action is not set
+
+
+		/**
+		 * Before controller action hook
+		 */
+		$this->beforeAction();
+
+		/**
+		 * Call controller action
+		 */
+		$action = $this->action;
+
+		$this->$$action();
+
+		/**
+		 * After controller action hook
+		 */
+		$this->afterAction();
+
+
+		/* Render view
+
+		if ($this->render) {
+			$this->_render($action);
+		}
+		*/
+
+
+	}
+
+	/**
+	 * Before controller action hook
+	 *
+	 * Called right before controller action is called
+	 */
+	protected function beforeAction() {
+		/**
+		 * Set New Relic transaction name
+		 */
+		if (extension_loaded('newrelic')) {
+			newrelic_name_transaction(sprintf('%s/%s', get_class($this), $this->action));
+		}
+	}
+
+	/**
+	 * After controller action hook
+	 *
+	 * Called right after controller action is called, but before rendering of the view
+	 */
+	protected function afterAction() {
 	}
 
 	/**

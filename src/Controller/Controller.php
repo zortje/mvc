@@ -3,6 +3,9 @@
 namespace Zortje\MVC\Controller;
 
 use Zortje\MVC\Model\User;
+use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
+use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
+use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
 
 /**
  * Class Controller
@@ -29,6 +32,11 @@ class Controller {
 	const ACTION_PRIVATE = 2;
 
 	/**
+	 * @var array Controller action access rules
+	 */
+	protected $access = [];
+
+	/**
 	 * @var \PDO PDO
 	 */
 	protected $pdo;
@@ -39,14 +47,45 @@ class Controller {
 	protected $user;
 
 	/**
+	 * @var string Controller action
+	 */
+	protected $action;
+
+	/**
+	 * @var array View variables
+	 */
+	protected $variables;
+
+	/**
 	 * @param string $action Controller action
+	 *
+	 * @throws ControllerActionNonexistentException
+	 * @throws ControllerActionPrivateInsufficientAuthenticationException
+	 * @throws ControllerActionProtectedInsufficientAuthenticationException
 	 */
 	public function setAction($action) {
+		/**
+		 * Check if method exists and that access has been defined
+		 */
+		if (!method_exists($this, $action) || !isset($this->access[$action])) {
+			throw new ControllerActionNonexistentException([get_class($this), $action]);
+		}
 
-		// Check if controller implements the action
-		// Check if user is properly authenticated for that action
+		/**
+		 * Check controller action access level if user is not authenticated
+		 */
+		if (!$this->user) {
+			if ($this->access[$action] === self::ACTION_PRIVATE) {
+				throw new ControllerActionPrivateInsufficientAuthenticationException([get_class($this), $action]);
+			} elseif ($this->access[$action] === self::ACTION_PROTECTED) {
+				throw new ControllerActionProtectedInsufficientAuthenticationException([get_class($this), $action]);
+			}
+		}
 
-
+		/**
+		 * Set controller action
+		 */
+		$this->action = $action;
 	}
 
 	public function callAction() {
@@ -57,6 +96,16 @@ class Controller {
 		// application/javascript
 
 		// @todo throw exception is action is not set
+	}
+
+	/**
+	 * Set view variable
+	 *
+	 * @param string $variable
+	 * @param mixed  $value
+	 */
+	protected function set($variable, $value) {
+		$this->variables[$variable] = $value;
 	}
 
 	/**

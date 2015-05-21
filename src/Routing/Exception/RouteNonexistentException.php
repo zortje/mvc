@@ -5,11 +5,11 @@ namespace Zortje\MVC\Routing\Exception;
 use Zortje\MVC\Common\Exception\Exception;
 
 /**
- * Class MissingRouteException
+ * Class RouteNonexistentException
  *
  * @package Zortje\MVC\Routing\Exception
  */
-class MissingRouteException extends Exception {
+class RouteNonexistentException extends Exception {
 
 	/**
 	 * {@inheritdoc}

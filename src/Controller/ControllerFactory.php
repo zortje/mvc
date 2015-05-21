@@ -28,7 +28,7 @@ class ControllerFactory {
 	 *
 	 * @param string $controller Controller class name
 	 *
-	 * @return mixed
+	 * @return Controller Controller object
 	 *
 	 * @throws ControllerInvalidSuperclassException
 	 * @throws ControllerNonexistentException

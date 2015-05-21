@@ -2,9 +2,14 @@
 
 namespace Zortje\MVC\Routing;
 
+use Zortje\MVC\Controller\ControllerFactory;
+use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
+use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
+use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
+use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
+use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Network\Response;
-use Zortje\MVC\Controller\Controller;
 
 /**
  * Class Dispatcher
@@ -27,78 +32,58 @@ class Dispatcher {
 		/**
 		 * Validate and initialize controller
 		 */
+		$controllerFactory = new ControllerFactory($pdo, $user);
+
 		try {
+			$controllerFactory = new ControllerFactory();
 
-			$controller = $this->initializeController($controller);
-
-		}
-		catch (\Exception $e) {
+			$controller = $controllerFactory->create($controller);
+		} catch (\Exception $e) {
 			if ($e instanceof ControllerNonexistentException || $e instanceof ControllerInvalidSuperclassException) {
 				// @todo Log nonexistent controller
+				// @todo Log invalid superclass
 
-				$controller = new NotFoundController();
-			}
-			else {
-				throw $e;
-			}
-		}
-
-
-
-		// Check if controller implements the action
-
-		// Check if user is properly authenticated for that action
-
-		try {
-
-			$controller->prepareAction($action, $user, $pdo);
-
-		} catch (\Exception $e) {
-			if ($e instanceof ControllerActionProtectedInsufficientAuthenticationException) {
-				// @todo Log unauthed protected controller action attempt
-
-				// redirect to login page & and save what action was requested to redirect after successful login
-			} elseif ($e instanceof ControllerActionPrivateInsufficientAuthenticationException) {
-				// @todo Log unauthed private controller action attempt
-
-				$controller = new NotFoundController();
-			} elseif ($e instanceof ControllerActionNonexistentException) {
-				// @todo Log nonexistent controller action
-
-				$controller = new NotFoundController();
+				$controller = $controllerFactory->create('NotFound');
 			} else {
 				throw $e;
 			}
 		}
 
 
+		try {
 
+			// Check if controller implements the action
+			// Check if user is properly authenticated for that action
 
+			$controller->prepareAction($action);
 
+		} catch (ControllerActionProtectedInsufficientAuthenticationException $e) {
+			// @todo Log unauthed protected controller action attempt
 
+			// redirect to login page & and save what action was requested to redirect after successful login
+		} catch (ControllerActionPrivateInsufficientAuthenticationException $e) {
+			// @todo Log unauthed private controller action attempt
 
-		return new Response();
-	}
+			$controller = $controllerFactory->create('NotFound');
+		} catch (ControllerActionNonexistentException $e) {
+			// @todo Log nonexistent controller action
 
-	/**
-	 * Initialize controller
-	 *
-	 * @param string $controller Controller class name
-	 *
-	 * @return Controller Controller object
-	 * @throws ControllerNonexistentException If controller class is nonexistent
-	 * @throws ControllerInvalidSuperclassException If controller class is not subclass of base controller
-	 */
-	protected function initializeController($controller) {
-		if (!class_exists($controller)) {
-			throw new ControllerNonexistentException($controller);
-		} else if (!is_subclass_of($controller, Controller::class)) {
-			throw new ControllerInvalidSuperclassException($controller);
+			$controller = $controllerFactory->create('NotFound');
 		}
 
-		$controller = new $controller;
 
-		return $controller;
+		// The content type is decided by the controller and is sent along in the $headers array
+		// Request type could be:
+		//
+		// text/html
+		// application/javascript
+
+		list($headers, $output) = $controller->callAction();
+
+
+		$response = new Response($headers, $output);
+
+		return $response;
 	}
 
 	/**

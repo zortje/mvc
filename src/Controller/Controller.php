@@ -55,7 +55,7 @@ class Controller {
 	/**
 	 * @var array View variables
 	 */
-	protected $variables;
+	protected $variables = [];
 
 	/**
 	 * @var bool Should render view for controller action

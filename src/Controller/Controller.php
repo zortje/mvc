@@ -6,6 +6,7 @@ use Zortje\MVC\Model\User;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
+use Zortje\MVC\View\Render\HtmlRender;
 
 /**
  * Class Controller
@@ -57,6 +58,32 @@ class Controller {
 	protected $variables;
 
 	/**
+	 * @var bool Should render view for controller action
+	 */
+	protected $render = true;
+
+	/**
+	 * @var string File path for layout template file
+	 */
+	protected $layout;
+
+	/**
+	 * @var string File path for view template file
+	 */
+	protected $view;
+
+	/**
+	 * @var array Headers for output
+	 *
+	 * @todo JSON content type
+	 *
+	 * Content-Type: application/javascript; charset=utf-8
+	 */
+	protected $headers = [
+		'content-type' => 'Content-Type: text/html; charset=utf-8'
+	];
+
+	/**
 	 * @param string $action Controller action
 	 *
 	 * @throws ControllerActionNonexistentException
@@ -88,15 +115,17 @@ class Controller {
 		$this->action = $action;
 	}
 
+	/**
+	 * Call action
+	 *
+	 * @return array|bool Headers and output if render is enabled, otherwise FALSE
+	 *
+	 * @throws \LogicException If controller action is not set
+	 */
 	public function callAction() {
-		// The content type is decided by the controller and is sent along in the $headers array
-		// Request type could be:
-		//
-		// text/html
-		// application/javascript
-
-		// @todo throw exception is action is not set
-
+		if (!isset($this->action)) {
+			throw new \LogicException('Controller action must be set before being called');
+		}
 
 		/**
 		 * Before controller action hook
@@ -108,22 +137,28 @@ class Controller {
 		 */
 		$action = $this->action;
 
-		$this->$$action();
+		$this->$action();
 
 		/**
 		 * After controller action hook
 		 */
 		$this->afterAction();
 
-
-		/* Render view
-
+		/**
+		 * Render view
+		 */
 		if ($this->render) {
-			$this->_render($action);
+			$render = new HtmlRender($this->variables);
+
+			$output = $render->render(['_view' => $this->getViewTemplate(), '_layout' => $this->getLayoutTemplate()]);
+
+			return [
+				'headers' => $this->headers,
+				'output'  => $output
+			];
 		}
-		*/
 
-
+		return false;
 	}
 
 	/**
@@ -156,6 +191,32 @@ class Controller {
 	 */
 	protected function set($variable, $value) {
 		$this->variables[$variable] = $value;
+	}
+
+	protected function getLayoutTemplate() {
+		$layout = $this->layout;
+
+		if (empty($layout)) {
+			/**
+			 * @todo Implement
+			 */
+			throw new \Exception('Implementation for gueussing layout template file missing');
+		}
+
+		return __DIR__ . "/../../$layout.layout";
+	}
+
+	protected function getViewTemplate() {
+		$view = $this->view;
+
+		if (empty($view)) {
+			/**
+			 * @todo Implement
+			 */
+			throw new \Exception('Implementation for gueussing view template file missing');
+		}
+
+		return __DIR__ . "/../../$view.view";
 	}
 
 	/**

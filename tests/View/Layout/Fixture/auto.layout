@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * @var string $_view
+ */
+
+echo '<h1>Auto</h1>';
+
+echo $_view;

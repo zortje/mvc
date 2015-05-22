@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * @var \Zortje\MVC\Tests\Model\Fixture\CarEntity[] $cars
+ */
+
+foreach ($cars as $car) {
+	echo '<p>', $car->get('make'), ' ', $car->get('model'), '</p>';
+}

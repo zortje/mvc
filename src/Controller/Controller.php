@@ -203,7 +203,7 @@ class Controller {
 			throw new \Exception('Implementation for gueussing layout template file missing');
 		}
 
-		return __DIR__ . "/../../$layout.layout";
+		return ROOT . "$layout.layout";
 	}
 
 	protected function getViewTemplate() {
@@ -216,7 +216,7 @@ class Controller {
 			throw new \Exception('Implementation for gueussing view template file missing');
 		}
 
-		return __DIR__ . "/../../$view.view";
+		return ROOT . "$view.view";
 	}
 
 	/**

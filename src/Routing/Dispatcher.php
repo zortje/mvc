@@ -92,11 +92,9 @@ class Dispatcher {
 		/**
 		 * Create response from controller action headers and output
 		 */
-		list($headers, $output) = $controller->callAction();
+		list($headers, $output) = array_values($controller->callAction());
 
-		$response = new Response($headers, $output);
-
-		return $response;
+		return new Response($headers, $output);
 	}
 
 	/**

@@ -27,7 +27,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::setAction
 	 */
 	public function testSetAction() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$carsController = $controllerFactory->create(CarsController::class);
 		$carsController->setAction('index');
@@ -46,7 +46,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Controller Zortje\MVC\Tests\Controller\Fixture\CarsController action nonexistent is nonexistent
 	 */
 	public function testSetActionNonexistent() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$carsController = $controllerFactory->create(CarsController::class);
 		$carsController->setAction('nonexistent');
@@ -59,7 +59,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Controller Zortje\MVC\Tests\Controller\Fixture\CarsController protected action hidden requires authentication
 	 */
 	public function testSetActionUnauthenticatedProtected() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$carsController = $controllerFactory->create(CarsController::class);
 		$carsController->setAction('hidden');
@@ -72,10 +72,48 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Controller Zortje\MVC\Tests\Controller\Fixture\CarsController private action add requires authentication
 	 */
 	public function testSetActionUnauthenticatedPrivate() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$carsController = $controllerFactory->create(CarsController::class);
 		$carsController->setAction('add');
+	}
+
+	/**
+	 * @covers ::getViewTemplate
+	 */
+	public function testGetViewTemplate() {
+		$controllerFactory = new ControllerFactory($this->pdo, '', null);
+
+		$carsController = $controllerFactory->create(CarsController::class);
+		$carsController->setAction('index');
+
+		$reflector = new \ReflectionClass($carsController);
+
+		$action = $reflector->getProperty('view');
+		$action->setAccessible(true);
+		$action->setValue($carsController, '../tests/View/Cars/Fixture/index');
+
+		$method = $reflector->getMethod('getViewTemplate');
+		$method->setAccessible(true);
+
+		$this->assertSame('../tests/View/Cars/Fixture/index.view', $method->invoke($carsController));
+	}
+
+	/**
+	 * @covers ::getViewTemplate
+	 */
+	public function testGetViewTemplateViewNotSet() {
+		$controllerFactory = new ControllerFactory($this->pdo, '/src/', null);
+
+		$carsController = $controllerFactory->create(CarsController::class);
+		$carsController->setAction('index');
+
+		$reflector = new \ReflectionClass($carsController);
+
+		$method = $reflector->getMethod('getViewTemplate');
+		$method->setAccessible(true);
+
+		$this->assertSame('/src/View/Cars/index.view', $method->invoke($carsController));
 	}
 
 }

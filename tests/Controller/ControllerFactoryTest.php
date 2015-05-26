@@ -29,7 +29,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::create
 	 */
 	public function testCreate() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$controller = $controllerFactory->create(CarsController::class);
 
@@ -43,7 +43,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Controller NonexistentController is nonexistent
 	 */
 	public function testCreateNonexistent() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$controllerFactory->create('NonexistentController');
 	}
@@ -55,7 +55,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedExceptionMessage Controller Zortje\MVC\Tests\Model\Fixture\CarEntity is not a subclass of Controller
 	 */
 	public function testCreateInvalidSuperclass() {
-		$controllerFactory = new ControllerFactory($this->pdo, null);
+		$controllerFactory = new ControllerFactory($this->pdo, null, null);
 
 		$controllerFactory->create(CarEntity::class);
 	}
@@ -66,13 +66,17 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase {
 	public function testConstruct() {
 		$user = new User(null, new \DateTime(), new \DateTime());
 
-		$controllerFactory = new ControllerFactory($this->pdo, $user);
+		$controllerFactory = new ControllerFactory($this->pdo, '/var/www/html/', $user);
 
 		$reflector = new \ReflectionClass($controllerFactory);
 
 		$pdoProperty = $reflector->getProperty('pdo');
 		$pdoProperty->setAccessible(true);
 		$this->assertSame($this->pdo, $pdoProperty->getValue($controllerFactory));
+
+		$appPathProperty = $reflector->getProperty('appPath');
+		$appPathProperty->setAccessible(true);
+		$this->assertSame('/var/www/html/', $appPathProperty->getValue($controllerFactory));
 
 		$userProperty = $reflector->getProperty('user');
 		$userProperty->setAccessible(true);

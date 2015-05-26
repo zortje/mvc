@@ -32,6 +32,11 @@ class Dispatcher {
 	protected $pdo;
 
 	/**
+	 * @var string App file path
+	 */
+	protected $appPath;
+
+	/**
 	 * @var null|User User
 	 */
 	protected $user;
@@ -44,7 +49,7 @@ class Dispatcher {
 	 * @throws \Exception If unexpected exception is thrown
 	 */
 	public function dispatch(Request $request) {
-		$controllerFactory = new ControllerFactory($this->pdo, $this->user);
+		$controllerFactory = new ControllerFactory($this->pdo, $this->appPath, $this->user);
 
 		try {
 			list($controller, $action) = array_values($this->router->route($request->getPath()));
@@ -100,12 +105,14 @@ class Dispatcher {
 	/**
 	 * @param Router $router
 	 * @param \PDO   $pdo
+	 * @param string $appPath
 	 * @param User   $user
 	 */
-	public function __construct(Router $router, \PDO $pdo, User $user = null) {
-		$this->router = $router;
-		$this->pdo    = $pdo;
-		$this->user   = $user;
+	public function __construct(Router $router, \PDO $pdo, $appPath, User $user = null) {
+		$this->router  = $router;
+		$this->pdo     = $pdo;
+		$this->appPath = $appPath;
+		$this->user    = $user;
 	}
 
 }

@@ -43,6 +43,11 @@ class Controller {
 	protected $pdo;
 
 	/**
+	 * @var string App file path
+	 */
+	protected $appPath;
+
+	/**
 	 * @var null|User User
 	 */
 	protected $user;
@@ -203,29 +208,33 @@ class Controller {
 			throw new \Exception('Implementation for gueussing layout template file missing');
 		}
 
-		return ROOT . "$layout.layout";
+		return "{$this->appPath}$layout.layout";
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function getViewTemplate() {
 		$view = $this->view;
 
 		if (empty($view)) {
-			/**
-			 * @todo Implement
-			 */
-			throw new \Exception('Implementation for gueussing view template file missing');
+			$controller = str_replace('Controller', null, (new \ReflectionClass($this))->getShortName());
+
+			$view = sprintf('View/%s/%s', $controller, $this->action);
 		}
 
-		return ROOT . "$view.view";
+		return "{$this->appPath}$view.view";
 	}
 
 	/**
 	 * @param \PDO      $pdo
+	 * @param string    $appPath
 	 * @param null|User $user
 	 */
-	public function __construct(\PDO $pdo, User $user = null) {
-		$this->pdo  = $pdo;
-		$this->user = $user;
+	public function __construct(\PDO $pdo, $appPath, User $user = null) {
+		$this->pdo     = $pdo;
+		$this->appPath = $appPath;
+		$this->user    = $user;
 	}
 
 }

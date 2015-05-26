@@ -13,4 +13,8 @@ class NotFoundController extends Controller {
 		'index' => Controller::ACTION_PUBLIC
 	];
 
+	protected function index() {
+
+	}
+
 }

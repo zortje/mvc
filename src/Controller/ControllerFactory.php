@@ -19,6 +19,11 @@ class ControllerFactory {
 	protected $pdo;
 
 	/**
+	 * @var string App file path
+	 */
+	protected $appPath;
+
+	/**
 	 * @var null|User User
 	 */
 	protected $user;
@@ -43,18 +48,20 @@ class ControllerFactory {
 		/**
 		 * @var Controller $controller
 		 */
-		$controller = new $controller($this->pdo, $this->user);
+		$controller = new $controller($this->pdo, $this->appPath, $this->user);
 
 		return $controller;
 	}
 
 	/**
 	 * @param \PDO      $pdo
+	 * @param string    $appPath
 	 * @param null|User $user
 	 */
-	public function __construct(\PDO $pdo, User $user = null) {
-		$this->pdo  = $pdo;
-		$this->user = $user;
+	public function __construct(\PDO $pdo, $appPath, User $user = null) {
+		$this->pdo     = $pdo;
+		$this->appPath = $appPath;
+		$this->user    = $user;
 	}
 
 }

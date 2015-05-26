@@ -27,7 +27,7 @@ class Request {
 	public function getPath() {
 		$path = parse_url($this->url, PHP_URL_PATH);
 
-		if (!$path) {
+		if ($path === false) {
 			$path = '';
 		}
 

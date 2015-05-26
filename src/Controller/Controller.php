@@ -198,21 +198,25 @@ class Controller {
 		$this->variables[$variable] = $value;
 	}
 
+	/**
+	 * Get layout template
+	 *
+	 * @return string Layout template file path
+	 */
 	protected function getLayoutTemplate() {
 		$layout = $this->layout;
 
 		if (empty($layout)) {
-			/**
-			 * @todo Implement
-			 */
-			throw new \Exception('Implementation for gueussing layout template file missing');
+			$layout = 'View/Layout/default';
 		}
 
 		return "{$this->appPath}$layout.layout";
 	}
 
 	/**
-	 * @return string
+	 * Get view template
+	 *
+	 * @return string View template file path
 	 */
 	protected function getViewTemplate() {
 		$view = $this->view;

@@ -103,10 +103,10 @@ class Dispatcher {
 	}
 
 	/**
-	 * @param Router $router
-	 * @param \PDO   $pdo
-	 * @param string $appPath
-	 * @param User   $user
+	 * @param Router    $router
+	 * @param \PDO      $pdo
+	 * @param string    $appPath
+	 * @param null|User $user
 	 */
 	public function __construct(Router $router, \PDO $pdo, $appPath, User $user = null) {
 		$this->router  = $router;

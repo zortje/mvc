@@ -25,7 +25,13 @@ class Request {
 	 * @return string URL path
 	 */
 	public function getPath() {
-		return parse_url($this->url, PHP_URL_PATH);
+		$path = parse_url($this->url, PHP_URL_PATH);
+
+		if (!$path) {
+			$path = '';
+		}
+
+		return $path;
 	}
 
 	/**

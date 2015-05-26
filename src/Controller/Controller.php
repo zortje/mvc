@@ -123,7 +123,7 @@ class Controller {
 	/**
 	 * Call action
 	 *
-	 * @return array|bool Headers and output if render is enabled, otherwise FALSE
+	 * @return array<string,array|string>|false Headers and output if render is enabled, otherwise FALSE
 	 *
 	 * @throws \LogicException If controller action is not set
 	 */

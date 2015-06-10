@@ -19,11 +19,14 @@ class Response {
 	 */
 	protected $output;
 
+	/**
+	 * @return array
+	 */
 	public function output() {
-
-		// @todo Best way to set headers in a testable way?
-
-		return $this->output;
+		return [
+			'headers' => $this->headers,
+			'output'  => $this->output
+		];
 	}
 
 	/**

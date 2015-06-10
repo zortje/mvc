@@ -176,7 +176,7 @@ class Controller {
 		 * Set New Relic transaction name
 		 */
 		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(sprintf('%s/%s', get_class($this), $this->action));
+			newrelic_name_transaction(sprintf('%s/%s', $this->getShortName(), $this->action));
 		}
 	}
 
@@ -222,12 +222,17 @@ class Controller {
 		$view = $this->view;
 
 		if (empty($view)) {
-			$controller = str_replace('Controller', null, (new \ReflectionClass($this))->getShortName());
-
-			$view = sprintf('View/%s/%s', $controller, $this->action);
+			$view = sprintf('View/%s/%s', $this->getShortName(), $this->action);
 		}
 
 		return "{$this->appPath}$view.view";
+	}
+
+	/**
+	 * @return string Controller name without namespace
+	 */
+	protected function getShortName() {
+		return str_replace('Controller', null, (new \ReflectionClass($this))->getShortName());
 	}
 
 	/**

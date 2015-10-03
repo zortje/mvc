@@ -41,4 +41,21 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('', $request->getPath(), 'Empty path with slash');
 	}
 
+	/**
+	 * @covers ::__construct
+	 */
+	public function testConstruct() {
+		$request = new Request('https://www.example.com/', []);
+
+		$reflector = new \ReflectionClass($request);
+
+		$url = $reflector->getProperty('url');
+		$url->setAccessible(true);
+		$this->assertSame('https://www.example.com', $url->getValue($request));
+
+		$post = $reflector->getProperty('post');
+		$post->setAccessible(true);
+		$this->assertSame([], $post->getValue($request));
+	}
+
 }

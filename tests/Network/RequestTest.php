@@ -18,10 +18,16 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetPath() {
 		$request = new Request('https://www.example.com/cars', []);
-		$this->assertEquals('/cars', $request->getPath());
+		$this->assertEquals('/cars', $request->getPath(), 'Single component path without slash');
+
+		$request = new Request('https://www.example.com/cars/', []);
+		$this->assertEquals('/cars', $request->getPath(), 'Single component path with slash');
 
 		$request = new Request('https://www.example.com/cars/ford', []);
-		$this->assertEquals('/cars/ford', $request->getPath());
+		$this->assertEquals('/cars/ford', $request->getPath(), 'Two component path without slash');
+
+		$request = new Request('https://www.example.com/cars/ford/', []);
+		$this->assertEquals('/cars/ford', $request->getPath(), 'Two component path with slash');
 	}
 
 	/**
@@ -29,7 +35,10 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	 */
 	public function testGetPathEmptyPath() {
 		$request = new Request('https://www.example.com', []);
-		$this->assertEquals('', $request->getPath());
+		$this->assertEquals('', $request->getPath(), 'Empty path without slash');
+
+		$request = new Request('https://www.example.com/', []);
+		$this->assertEquals('', $request->getPath(), 'Empty path with slash');
 	}
 
 }

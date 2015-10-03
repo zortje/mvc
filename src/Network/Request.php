@@ -35,11 +35,11 @@ class Request {
 	}
 
 	/**
-	 * @param string $url
-	 * @param array  $post
+	 * @param string $url  URL of the request, trailing slash are removed automatically
+	 * @param array  $post URL post fields
 	 */
 	public function __construct($url, array $post) {
-		$this->url  = $url;
+		$this->url  = rtrim($url, '/');
 		$this->post = $post;
 	}
 

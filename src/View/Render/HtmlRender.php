@@ -44,7 +44,7 @@ class HtmlRender {
 	 */
 	protected function renderFile($file) {
 		if (!is_readable($file)) {
-			throw new \InvalidArgumentException(sprintf('File "%s" is nonexistent (Working directory: %s)', realpath($file), getcwd()));
+			throw new \InvalidArgumentException(sprintf('File "%s" is nonexistent (Working directory: %s)', $file, getcwd()));
 		}
 
 		/**

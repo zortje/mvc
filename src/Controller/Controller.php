@@ -236,6 +236,45 @@ class Controller {
 	}
 
 	/**
+	 * Set response code
+	 *
+	 * Supports 200 OK, 403 Forbidden, 404 Not Found & 500 Internal Server Error
+	 *
+	 * @param int $code HTTP response code
+	 *
+	 * @throws \InvalidArgumentException If unsupported code is provided
+	 */
+	protected function setResponseCode($code) {
+		switch ($code) {
+			case 200:
+				$text = 'OK';
+				break;
+
+			case 403:
+				$text = 'Forbidden';
+				break;
+
+			case 404:
+				$text = 'Not Found';
+				break;
+
+			case 500:
+				$text = 'Internal Server Error';
+				break;
+
+			default:
+				throw new \InvalidArgumentException("HTTP status '$code' is not implemented");
+				break;
+		}
+
+		/**
+		 * Set header
+		 */
+		// @todo test that running response code multiple times only results in one response code header
+		$this->headers['response_code'] = "HTTP/1.1 $code $text";
+	}
+
+	/**
 	 * @param \PDO      $pdo
 	 * @param string    $appPath
 	 * @param null|User $user

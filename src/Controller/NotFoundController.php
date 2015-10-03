@@ -14,7 +14,7 @@ class NotFoundController extends Controller {
 	];
 
 	protected function index() {
-
+		$this->setResponseCode(404);
 	}
 
 }

@@ -17,9 +17,14 @@ class ResponseTest extends \PHPUnit_Framework_TestCase {
 	 * @covers ::output
 	 */
 	public function testOutput() {
-		$response = new Response([], 'Lorem ipsum');
+		$response = new Response(['foo', 'bar'], 'Lorem ipsum');
 
-		$this->assertSame('Lorem ipsum', $response->output());
+		$expected = [
+			'headers' => ['foo', 'bar'],
+			'output'  => 'Lorem ipsum'
+		];
+
+		$this->assertSame($expected, $response->output());
 	}
 
 	/**

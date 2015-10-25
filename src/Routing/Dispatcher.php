@@ -132,7 +132,7 @@ class Dispatcher {
 					'action'     => $action
 				]);
 			}
-			
+
 			// @todo redirect to login page & and save what action was requested to redirect after successful login
 
 		} catch (ControllerActionPrivateInsufficientAuthenticationException $e) {
@@ -153,7 +153,6 @@ class Dispatcher {
 			 * Log nonexistent controller action
 			 */
 			if ($this->logger) {
-				;
 				$this->logger->addCritical('Controller action is nonexistent', [
 					'path'       => $request->getPath(),
 					'controller' => $controller->getShortName(),
@@ -168,6 +167,15 @@ class Dispatcher {
 		 * Create response from controller action headers and output
 		 */
 		list($headers, $output) = array_values($controller->callAction());
+
+		/**
+		 * Performance logging
+		 */
+		if ($this->logger) {
+			$this->logger->addDebug(vsprintf('Dispatched request in %s ms', number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)), [
+				'path'       => $request->getPath()
+			]);
+		}
 
 		return new Response($headers, $output);
 	}

@@ -80,14 +80,14 @@ class Dispatcher {
 					 * Log invalid superclass
 					 */
 					if ($this->logger && $e instanceof ControllerInvalidSuperclassException) {
-						$this->logger->addRecord(Logger::WARNING, "Dispath unable to serve controller named '$controllerName' as it is not a correct subclass");
+						$this->logger->addRecord(Logger::CRITICAL, "Dispath unable to serve controller named '$controllerName' as it is not a correct subclass");
 					}
 
 					/**
 					 * Log nonexistent
 					 */
 					if ($this->logger && $e instanceof ControllerNonexistentException) {
-						$this->logger->addRecord(Logger::WARNING, "Dispath unable to serve controller named '$controllerName' as it is nonexistent");
+						$this->logger->addRecord(Logger::CRITICAL, "Dispath unable to serve controller named '$controllerName' as it is nonexistent");
 					}
 
 					$controller = $controllerFactory->create(NotFoundController::class);
@@ -97,6 +97,13 @@ class Dispatcher {
 				}
 			}
 		} catch (RouteNonexistentException $e) {
+			/**
+			 * Log nonexistent route (404)
+			 */
+			if ($this->logger && $e instanceof ControllerInvalidSuperclassException) {
+				$this->logger->addRecord(Logger::WARNING, vsprintf('Path \'%s\' is not connected', $request->getPath()));
+			}
+
 			$controller = $controllerFactory->create(NotFoundController::class);
 			$action     = 'index';
 		}

@@ -100,7 +100,7 @@ class Dispatcher {
 			/**
 			 * Log nonexistent route (404)
 			 */
-			if ($this->logger && $e instanceof ControllerInvalidSuperclassException) {
+			if ($this->logger) {
 				$this->logger->addWarning(Logger::WARNING, vsprintf('Path \'%s\' is not connected', $request->getPath()));
 			}
 

@@ -2,6 +2,7 @@
 
 namespace Zortje\MVC\Routing;
 
+use Monolog\Logger;
 use Zortje\MVC\Controller\ControllerFactory;
 use Zortje\MVC\Controller\NotFoundController;
 use Zortje\MVC\Model\User;
@@ -42,6 +43,11 @@ class Dispatcher {
 	protected $user;
 
 	/**
+	 * @var Logger
+	 */
+	protected $logger;
+
+	/**
 	 * @param Request $request Request object
 	 *
 	 * @return Response Reponse object
@@ -52,17 +58,28 @@ class Dispatcher {
 		$controllerFactory = new ControllerFactory($this->pdo, $this->appPath, $this->user);
 
 		try {
-			list($controller, $action) = array_values($this->router->route($request->getPath()));
+			list($controllerName, $action) = array_values($this->router->route($request->getPath()));
 
 			/**
 			 * Validate and initialize controller
 			 */
 			try {
-				$controller = $controllerFactory->create($controller);
+				$controller = $controllerFactory->create($controllerName);
 			} catch (\Exception $e) {
 				if ($e instanceof ControllerNonexistentException || $e instanceof ControllerInvalidSuperclassException) {
-					// @todo Log nonexistent controller
-					// @todo Log invalid superclass
+					/**
+					 * Log invalid superclass
+					 */
+					if ($this->logger && $e instanceof ControllerInvalidSuperclassException) {
+						$this->logger->addRecord(Logger::WARNING, "Dispath unable to serve controller named '$controllerName' as it is not a correct subclass");
+					}
+
+					/**
+					 * Log nonexistent
+					 */
+					if ($this->logger && $e instanceof ControllerNonexistentException) {
+						$this->logger->addRecord(Logger::WARNING, "Dispath unable to serve controller named '$controllerName' as it is nonexistent");
+					}
 
 					$controller = $controllerFactory->create(NotFoundController::class);
 					$action     = 'index';

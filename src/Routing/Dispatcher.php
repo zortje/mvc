@@ -48,6 +48,15 @@ class Dispatcher {
 	protected $logger;
 
 	/**
+	 * Set logger to be used for any logging that could occure in the dispatching process
+	 *
+	 * @param Logger $logger
+	 */
+	public function setLogger(Logger $logger) {
+		$this->logger = $logger;
+	}
+
+	/**
 	 * @param Request $request Request object
 	 *
 	 * @return Response Reponse object

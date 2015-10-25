@@ -80,14 +80,20 @@ class Dispatcher {
 					 * Log invalid superclass
 					 */
 					if ($this->logger && $e instanceof ControllerInvalidSuperclassException) {
-						$this->logger->addCritical("Dispath unable to serve controller named '$controllerName' as it is not a correct subclass");
+						$this->logger->addCritical('Controller must be an subclass of Zortje\MVC\Controller', [
+							'path'       => $request->getPath(),
+							'controller' => $controllerName
+						]);
 					}
 
 					/**
 					 * Log nonexistent
 					 */
 					if ($this->logger && $e instanceof ControllerNonexistentException) {
-						$this->logger->addCritical("Dispath unable to serve controller named '$controllerName' as it is nonexistent");
+						$this->logger->addCritical('Controller is nonexistent', [
+							'path'       => $request->getPath(),
+							'controller' => $controllerName
+						]);
 					}
 
 					$controller = $controllerFactory->create(NotFoundController::class);
@@ -101,7 +107,9 @@ class Dispatcher {
 			 * Log nonexistent route (404)
 			 */
 			if ($this->logger) {
-				$this->logger->addWarning(vsprintf('Path \'%s\' is not connected', $request->getPath()));
+				$this->logger->addWarning('Route not connected', [
+					'path' => $request->getPath()
+				]);
 			}
 
 			$controller = $controllerFactory->create(NotFoundController::class);
@@ -114,15 +122,44 @@ class Dispatcher {
 		try {
 			$controller->setAction($action);
 		} catch (ControllerActionProtectedInsufficientAuthenticationException $e) {
+			/**
+			 * Log unauthed protected controller action (403)
+			 */
+			if ($this->logger) {
+				$this->logger->addWarning('Unauthenticated attempt to access protected action', [
+					'path'       => $request->getPath(),
+					'controller' => $controller->getShortName(),
+					'action'     => $action
+				]);
+			}
+			
 			// @todo redirect to login page & and save what action was requested to redirect after successful login
 
-			// @todo Log unauthed protected controller action attempt
 		} catch (ControllerActionPrivateInsufficientAuthenticationException $e) {
-			// @todo Log unauthed private controller action attempt
+			/**
+			 * Log unauthed private controller action (403)
+			 */
+			if ($this->logger) {
+				$this->logger->addWarning('Unauthenticated attempt to access private action', [
+					'path'       => $request->getPath(),
+					'controller' => $controller->getShortName(),
+					'action'     => $action
+				]);
+			}
 
 			$controller = $controllerFactory->create(NotFoundController::class);
 		} catch (ControllerActionNonexistentException $e) {
-			// @todo Log nonexistent controller action
+			/**
+			 * Log nonexistent controller action
+			 */
+			if ($this->logger) {
+				;
+				$this->logger->addCritical('Controller action is nonexistent', [
+					'path'       => $request->getPath(),
+					'controller' => $controller->getShortName(),
+					'action'     => $action
+				]);
+			}
 
 			$controller = $controllerFactory->create(NotFoundController::class);
 		}

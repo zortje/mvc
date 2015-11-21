@@ -2,8 +2,8 @@
 
 namespace Zortje\MVC\Controller;
 
-use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
+use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
 use Zortje\MVC\Model\User;
 
 /**

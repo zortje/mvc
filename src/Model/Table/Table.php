@@ -5,10 +5,10 @@ namespace Zortje\MVC\Model\Table;
 use Zortje\MVC\Model\SQLCommand;
 use Zortje\MVC\Model\Table\Entity\Entity;
 use Zortje\MVC\Model\Table\Entity\EntityFactory;
-use Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException;
-use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException;
 use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
+use Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException;
 
 /**
  * Class Table

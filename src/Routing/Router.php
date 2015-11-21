@@ -2,8 +2,8 @@
 
 namespace Zortje\MVC\Routing;
 
-use Zortje\MVC\Routing\Exception\RouteNonexistentException;
 use Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException;
+use Zortje\MVC\Routing\Exception\RouteNonexistentException;
 
 /**
  * Class Router

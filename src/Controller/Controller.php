@@ -2,10 +2,10 @@
 
 namespace Zortje\MVC\Controller;
 
-use Zortje\MVC\Model\User;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
+use Zortje\MVC\Model\User;
 use Zortje\MVC\View\Render\HtmlRender;
 
 /**

@@ -55,7 +55,7 @@ class HtmlRender {
 		/**
 		 * Prepare set variables for the view
 		 *
-		 * @todo Helpers, `$this->_loadHelpers();`
+		 * @todo Helpers, `$this->loadHelpers();`
 		 */
 		foreach ($this->variables as $variable => $value) {
 			$$variable = $value;

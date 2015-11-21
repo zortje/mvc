@@ -4,15 +4,15 @@ namespace Zortje\MVC\Routing;
 
 use Monolog\Logger;
 use Zortje\MVC\Controller\ControllerFactory;
+use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
+use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
+use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
+use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
+use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
 use Zortje\MVC\Controller\NotFoundController;
 use Zortje\MVC\Model\User;
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Network\Response;
-use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
-use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
-use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
-use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
-use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Routing\Exception\RouteNonexistentException;
 
 /**

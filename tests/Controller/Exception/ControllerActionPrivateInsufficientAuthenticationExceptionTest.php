@@ -11,26 +11,28 @@ use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthentic
  *
  * @coversDefaultClass Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException
  */
-class ControllerActionPrivateInsufficientAuthenticationExceptionTest extends \PHPUnit_Framework_TestCase {
+class ControllerActionPrivateInsufficientAuthenticationExceptionTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException
-	 * @expectedExceptionMessage foo
-	 */
-	public function testMessage() {
-		throw new ControllerActionPrivateInsufficientAuthenticationException('foo');
-	}
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException
+     * @expectedExceptionMessage foo
+     */
+    public function testMessage()
+    {
+        throw new ControllerActionPrivateInsufficientAuthenticationException('foo');
+    }
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException
-	 * @expectedExceptionMessage Controller Foo private action bar requires authentication
-	 */
-	public function testMessageArray() {
-		throw new ControllerActionPrivateInsufficientAuthenticationException(['Foo', 'bar']);
-	}
-
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException
+     * @expectedExceptionMessage Controller Foo private action bar requires authentication
+     */
+    public function testMessageArray()
+    {
+        throw new ControllerActionPrivateInsufficientAuthenticationException(['Foo', 'bar']);
+    }
 }

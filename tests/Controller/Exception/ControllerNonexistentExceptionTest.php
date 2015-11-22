@@ -11,26 +11,28 @@ use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
  *
  * @coversDefaultClass Zortje\MVC\Controller\Exception\ControllerNonexistentException
  */
-class ControllerNonexistentExceptionTest extends \PHPUnit_Framework_TestCase {
+class ControllerNonexistentExceptionTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
-	 * @expectedExceptionMessage foo
-	 */
-	public function testMessage() {
-		throw new ControllerNonexistentException('foo');
-	}
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
+     * @expectedExceptionMessage foo
+     */
+    public function testMessage()
+    {
+        throw new ControllerNonexistentException('foo');
+    }
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
-	 * @expectedExceptionMessage Controller Foo is nonexistent
-	 */
-	public function testMessageArray() {
-		throw new ControllerNonexistentException(['Foo']);
-	}
-
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
+     * @expectedExceptionMessage Controller Foo is nonexistent
+     */
+    public function testMessageArray()
+    {
+        throw new ControllerNonexistentException(['Foo']);
+    }
 }

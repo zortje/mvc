@@ -175,10 +175,13 @@ class Dispatcher
          * Performance logging
          */
         if ($this->logger) {
-            $this->logger->addDebug(vsprintf('Dispatched request in %s ms',
-                number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)), [
-                'path' => $request->getPath()
-            ]);
+            $this->logger->addDebug(
+                vsprintf(
+                    'Dispatched request in %s ms',
+                    number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)
+                ),
+                ['path' => $request->getPath()]
+            );
         }
 
         return new Response($headers, $output);
@@ -197,5 +200,4 @@ class Dispatcher
         $this->appPath = $appPath;
         $this->user    = $user;
     }
-
 }

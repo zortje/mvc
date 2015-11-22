@@ -11,37 +11,39 @@ use Zortje\MVC\Network\Response;
  *
  * @coversDefaultClass Zortje\MVC\Network\Response
  */
-class ResponseTest extends \PHPUnit_Framework_TestCase {
+class ResponseTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::output
-	 */
-	public function testOutput() {
-		$response = new Response(['foo', 'bar'], 'Lorem ipsum');
+    /**
+     * @covers ::output
+     */
+    public function testOutput()
+    {
+        $response = new Response(['foo', 'bar'], 'Lorem ipsum');
 
-		$expected = [
-			'headers' => ['foo', 'bar'],
-			'output'  => 'Lorem ipsum'
-		];
+        $expected = [
+            'headers' => ['foo', 'bar'],
+            'output'  => 'Lorem ipsum'
+        ];
 
-		$this->assertSame($expected, $response->output());
-	}
+        $this->assertSame($expected, $response->output());
+    }
 
-	/**
-	 * @covers ::__construct
-	 */
-	public function testConstruct() {
-		$response = new Response(['foo', 'bar'], 'Lorem ipsum');
+    /**
+     * @covers ::__construct
+     */
+    public function testConstruct()
+    {
+        $response = new Response(['foo', 'bar'], 'Lorem ipsum');
 
-		$reflector = new \ReflectionClass($response);
+        $reflector = new \ReflectionClass($response);
 
-		$headers = $reflector->getProperty('headers');
-		$headers->setAccessible(true);
-		$this->assertSame(['foo', 'bar'], $headers->getValue($response));
+        $headers = $reflector->getProperty('headers');
+        $headers->setAccessible(true);
+        $this->assertSame(['foo', 'bar'], $headers->getValue($response));
 
-		$output = $reflector->getProperty('output');
-		$output->setAccessible(true);
-		$this->assertSame('Lorem ipsum', $output->getValue($response));
-	}
-
+        $output = $reflector->getProperty('output');
+        $output->setAccessible(true);
+        $this->assertSame('Lorem ipsum', $output->getValue($response));
+    }
 }

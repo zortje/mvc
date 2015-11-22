@@ -11,82 +11,92 @@ use Zortje\MVC\Model\Table\Entity\EntityProperty;
  *
  * @coversDefaultClass Zortje\MVC\Model\Table\Entity\EntityProperty
  */
-class EntityPropertyTest extends \PHPUnit_Framework_TestCase {
+class EntityPropertyTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::formatValueForEntity
-	 */
-	public function testFormatValueStringToString() {
-		$property = new EntityProperty('string');
+    /**
+     * @covers ::formatValueForEntity
+     */
+    public function testFormatValueStringToString()
+    {
+        $property = new EntityProperty('string');
 
-		$this->assertSame('foo', $property->formatValueForEntity('foo'));
-	}
+        $this->assertSame('foo', $property->formatValueForEntity('foo'));
+    }
 
-	/**
-	 * @covers ::formatValueForEntity
-	 */
-	public function testFormatValueStringToInteger() {
-		$property = new EntityProperty('integer');
+    /**
+     * @covers ::formatValueForEntity
+     */
+    public function testFormatValueStringToInteger()
+    {
+        $property = new EntityProperty('integer');
 
-		$this->assertSame(42, $property->formatValueForEntity('42'));
-	}
+        $this->assertSame(42, $property->formatValueForEntity('42'));
+    }
 
-	/**
-	 * @covers ::formatValueForEntity
-	 */
-	public function testFormatValueStringToFloat() {
-		$property = new EntityProperty('float');
+    /**
+     * @covers ::formatValueForEntity
+     */
+    public function testFormatValueStringToFloat()
+    {
+        $property = new EntityProperty('float');
 
-		$this->assertSame(3.14159265359, $property->formatValueForEntity('3.14159265359'));
-	}
+        $this->assertSame(3.14159265359, $property->formatValueForEntity('3.14159265359'));
+    }
 
-	/**
-	 * @covers ::formatValueForEntity
-	 */
-	public function testFormatValueStringToDateTime() {
-		$property = new EntityProperty('DateTime');
+    /**
+     * @covers ::formatValueForEntity
+     */
+    public function testFormatValueStringToDateTime()
+    {
+        $property = new EntityProperty('DateTime');
 
-		$this->assertEquals(new \DateTime('2015-05-03 01:15:42'), $property->formatValueForEntity('2015-05-03 01:15:42'));
-	}
+        $this->assertEquals(new \DateTime('2015-05-03 01:15:42'),
+            $property->formatValueForEntity('2015-05-03 01:15:42'));
+    }
 
-	/**
-	 * @covers ::formatValueForEntity
-	 */
-	public function testFormatValueStringToDate() {
-		$property = new EntityProperty('Date');
+    /**
+     * @covers ::formatValueForEntity
+     */
+    public function testFormatValueStringToDate()
+    {
+        $property = new EntityProperty('Date');
 
-		$this->assertEquals(new \DateTime('2015-05-04'), $property->formatValueForEntity('2015-05-04'));
-	}
+        $this->assertEquals(new \DateTime('2015-05-04'), $property->formatValueForEntity('2015-05-04'));
+    }
 
-	/**
-	 * @covers ::formatValueForDatabase
-	 */
-	public function testFormatValueForDatabaseDateTime() {
-		$property = new EntityProperty('DateTime');
+    /**
+     * @covers ::formatValueForDatabase
+     */
+    public function testFormatValueForDatabaseDateTime()
+    {
+        $property = new EntityProperty('DateTime');
 
-		$this->assertEquals('2015-05-08 22:42:42', $property->formatValueForDatabase(new \DateTime('2015-05-08 22:42:42')));
-	}
+        $this->assertEquals('2015-05-08 22:42:42',
+            $property->formatValueForDatabase(new \DateTime('2015-05-08 22:42:42')));
+    }
 
-	/**
-	 * @covers ::formatValueForDatabase
-	 */
-	public function testFormatValueForDatabaseDate() {
-		$property = new EntityProperty('Date');
+    /**
+     * @covers ::formatValueForDatabase
+     */
+    public function testFormatValueForDatabaseDate()
+    {
+        $property = new EntityProperty('Date');
 
-		$this->assertEquals('2015-05-08', $property->formatValueForDatabase(new \DateTime('2015-05-08')));
-	}
+        $this->assertEquals('2015-05-08', $property->formatValueForDatabase(new \DateTime('2015-05-08')));
+    }
 
-	/**
-	 * @covers ::__construct
-	 */
-	public function testConstruct() {
-		$property = new EntityProperty('foo');
+    /**
+     * @covers ::__construct
+     */
+    public function testConstruct()
+    {
+        $property = new EntityProperty('foo');
 
-		$reflector = new \ReflectionClass($property);
+        $reflector = new \ReflectionClass($property);
 
-		$tableName = $reflector->getProperty('type');
-		$tableName->setAccessible(true);
-		$this->assertSame('foo', $tableName->getValue($property));
-	}
-
+        $tableName = $reflector->getProperty('type');
+        $tableName->setAccessible(true);
+        $this->assertSame('foo', $tableName->getValue($property));
+    }
 }

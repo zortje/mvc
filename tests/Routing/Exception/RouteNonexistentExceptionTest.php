@@ -11,26 +11,28 @@ use Zortje\MVC\Routing\Exception\RouteNonexistentException;
  *
  * @coversDefaultClass Zortje\MVC\Routing\Exception\RouteNonexistentException
  */
-class RouteNonexistentExceptionTest extends \PHPUnit_Framework_TestCase {
+class RouteNonexistentExceptionTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Routing\Exception\RouteNonexistentException
-	 * @expectedExceptionMessage foo
-	 */
-	public function testMessage() {
-		throw new RouteNonexistentException('foo');
-	}
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Routing\Exception\RouteNonexistentException
+     * @expectedExceptionMessage foo
+     */
+    public function testMessage()
+    {
+        throw new RouteNonexistentException('foo');
+    }
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Routing\Exception\RouteNonexistentException
-	 * @expectedExceptionMessage Route /foo is not connected
-	 */
-	public function testMessageArray() {
-		throw new RouteNonexistentException(['/foo']);
-	}
-
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Routing\Exception\RouteNonexistentException
+     * @expectedExceptionMessage Route /foo is not connected
+     */
+    public function testMessageArray()
+    {
+        throw new RouteNonexistentException(['/foo']);
+    }
 }

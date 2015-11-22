@@ -9,10 +9,10 @@ use Zortje\MVC\Model\Table\Table;
  *
  * @package Zortje\MVC\Tests\Model\Fixture
  */
-class CarTable extends Table {
+class CarTable extends Table
+{
 
-	protected $tableName = 'cars';
+    protected $tableName = 'cars';
 
-	protected $entityClass = CarEntity::class;
-
+    protected $entityClass = CarEntity::class;
 }

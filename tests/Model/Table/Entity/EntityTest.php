@@ -20,13 +20,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetColumns()
     {
         $expected = [
-            'id'       => 'integer',
-            'make'     => 'string',
-            'model'    => 'string',
-            'hp'       => 'integer',
-            'released' => 'Date',
-            'modified' => 'DateTime',
-            'created'  => 'DateTime'
+            'id'         => 'integer',
+            'make'       => 'string',
+            'model'      => 'string',
+            'horsepower' => 'integer',
+            'released'   => 'Date',
+            'modified'   => 'DateTime',
+            'created'    => 'DateTime'
         ];
 
         $this->assertSame($expected, CarEntity::getColumns());
@@ -40,11 +40,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     {
         $car = new CarEntity('Ford', 'Model T', 20, new \DateTime('1908-10-01'));
         $car->set('model', 'Model A');
-        $car->set('hp', 65);
+        $car->set('horsepower', 65);
         $car->set('released', new \DateTime('1927-10-20'));
 
         $this->assertSame('Model A', $car->get('model'));
-        $this->assertSame(65, $car->get('hp'));
+        $this->assertSame(65, $car->get('horsepower'));
         $this->assertEquals(new \DateTime('1927-10-20'), $car->get('released'));
     }
 
@@ -85,13 +85,13 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $released = new \DateTime('1908-10-01');
 
         $expected = [
-            ':id'       => null,
-            ':make'     => 'Ford',
-            ':model'    => 'Model T',
-            ':hp'       => 20,
-            ':released' => $released->format('Y-m-d'),
-            ':modified' => $now->format('Y-m-d H:i:s'),
-            ':created'  => $now->format('Y-m-d H:i:s')
+            ':id'         => null,
+            ':make'       => 'Ford',
+            ':model'      => 'Model T',
+            ':horsepower' => 20,
+            ':released'   => $released->format('Y-m-d'),
+            ':modified'   => $now->format('Y-m-d H:i:s'),
+            ':created'    => $now->format('Y-m-d H:i:s')
         ];
 
         $this->assertSame($expected, $car->toArray(true));
@@ -108,12 +108,12 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $released = new \DateTime('1908-10-01');
 
         $expected = [
-            ':make'     => 'Ford',
-            ':model'    => 'Model T',
-            ':hp'       => 20,
-            ':released' => $released->format('Y-m-d'),
-            ':modified' => $now->format('Y-m-d H:i:s'),
-            ':created'  => $now->format('Y-m-d H:i:s')
+            ':make'       => 'Ford',
+            ':model'      => 'Model T',
+            ':horsepower' => 20,
+            ':released'   => $released->format('Y-m-d'),
+            ':modified'   => $now->format('Y-m-d H:i:s'),
+            ':created'    => $now->format('Y-m-d H:i:s')
         ];
 
         $this->assertSame($expected, $car->toArray(false));
@@ -149,8 +149,8 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(null, $method->invoke($car, 'model', null), 'Model property');
         $this->assertSame('Model A', $method->invoke($car, 'model', 'Model A'), 'Model property');
 
-        $this->assertSame(null, $method->invoke($car, 'hp', null), 'HP property');
-        $this->assertSame(65, $method->invoke($car, 'hp', 65), 'HP property');
+        $this->assertSame(null, $method->invoke($car, 'horsepower', null), 'Horsepower property');
+        $this->assertSame(65, $method->invoke($car, 'horsepower', 65), 'Horsepower property');
 
         $this->assertEquals(null, $method->invoke($car, 'released', null), 'Released  property');
         $this->assertEquals(new \DateTime('1927-10-20'), $method->invoke($car, 'released', new \DateTime('1927-10-20')),

@@ -11,26 +11,28 @@ use Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException;
  *
  * @coversDefaultClass Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
  */
-class RouteAlreadyConnectedExceptionTest extends \PHPUnit_Framework_TestCase {
+class RouteAlreadyConnectedExceptionTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
-	 * @expectedExceptionMessage foo
-	 */
-	public function testMessage() {
-		throw new RouteAlreadyConnectedException('foo');
-	}
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
+     * @expectedExceptionMessage foo
+     */
+    public function testMessage()
+    {
+        throw new RouteAlreadyConnectedException('foo');
+    }
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
-	 * @expectedExceptionMessage Route /foo is already connected
-	 */
-	public function testMessageArray() {
-		throw new RouteAlreadyConnectedException(['/foo']);
-	}
-
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
+     * @expectedExceptionMessage Route /foo is already connected
+     */
+    public function testMessageArray()
+    {
+        throw new RouteAlreadyConnectedException(['/foo']);
+    }
 }

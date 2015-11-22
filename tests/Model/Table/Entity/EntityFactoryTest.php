@@ -26,20 +26,20 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
          * @var CarEntity $carEntity
          */
         $carEntity = $entityFactory->createFromArray([
-            'id'       => '42',
-            'make'     => 'Ford',
-            'model'    => 'Model T',
-            'hp'       => '20',
-            'released' => '1908-10-01',
-            'modified' => '2015-05-03 00:53:42',
-            'created'  => '2015-05-03 00:53:42'
+            'id'         => '42',
+            'make'       => 'Ford',
+            'model'      => 'Model T',
+            'horsepower' => '20',
+            'released'   => '1908-10-01',
+            'modified'   => '2015-05-03 00:53:42',
+            'created'    => '2015-05-03 00:53:42'
         ]);
 
         $this->assertSame(CarEntity::class, get_class($carEntity));
         $this->assertSame(42, $carEntity->get('id'));
         $this->assertSame('Ford', $carEntity->get('make'));
         $this->assertSame('Model T', $carEntity->get('model'));
-        $this->assertSame(20, $carEntity->get('hp'));
+        $this->assertSame(20, $carEntity->get('horsepower'));
         $this->assertEquals(new \DateTime('1908-10-01'), $carEntity->get('released'));
         $this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('modified'));
         $this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('created'));

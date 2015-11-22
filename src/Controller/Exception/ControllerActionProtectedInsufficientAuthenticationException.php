@@ -9,18 +9,20 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Controller\Exception
  */
-class ControllerActionProtectedInsufficientAuthenticationException extends Exception {
+class ControllerActionProtectedInsufficientAuthenticationException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Controller %s protected action %s requires authentication';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Controller %s protected action %s requires authentication';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 
 }

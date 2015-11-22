@@ -9,18 +9,20 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Controller\Exception
  */
-class ControllerInvalidSuperclassException extends Exception {
+class ControllerInvalidSuperclassException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Controller %s is not a subclass of Controller';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Controller %s is not a subclass of Controller';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 
 }

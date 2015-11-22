@@ -9,18 +9,20 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Controller\Exception
  */
-class ControllerNonexistentException extends Exception {
+class ControllerNonexistentException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Controller %s is nonexistent';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Controller %s is nonexistent';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 
 }

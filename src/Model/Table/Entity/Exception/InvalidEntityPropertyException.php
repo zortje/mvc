@@ -9,18 +9,19 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Model\Table\Entity\Exception
  */
-class InvalidEntityPropertyException extends Exception {
+class InvalidEntityPropertyException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Entity %s does not have a property named %s';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Entity %s does not have a property named %s';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 }

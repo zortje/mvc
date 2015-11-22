@@ -7,50 +7,52 @@ namespace Zortje\MVC\Model\Table\Entity;
  *
  * @package Zortje\MVC\Model\Table\Entity
  */
-class EntityFactory {
+class EntityFactory
+{
 
-	/**
-	 * @var String Entity class
-	 */
-	protected $entityClass;
+    /**
+     * @var String Entity class
+     */
+    protected $entityClass;
 
-	/**
-	 * @param array $array
-	 *
-	 * @return object
-	 */
-	public function createFromArray(array $array) {
-		/**
-		 * @var Entity $entity
-		 */
-		$reflector = new \ReflectionClass($this->entityClass);
+    /**
+     * @param array $array
+     *
+     * @return object
+     */
+    public function createFromArray(array $array)
+    {
+        /**
+         * @var Entity $entity
+         */
+        $reflector = new \ReflectionClass($this->entityClass);
 
-		$entity = $reflector->newInstanceWithoutConstructor();
+        $entity = $reflector->newInstanceWithoutConstructor();
 
-		$columns = $entity::getColumns();
-		unset($columns['id'], $columns['modified'], $columns['created']);
+        $columns = $entity::getColumns();
+        unset($columns['id'], $columns['modified'], $columns['created']);
 
-		$arguments = [];
+        $arguments = [];
 
-		foreach ($columns as $column => $type) {
-			$property = new EntityProperty($type);
+        foreach ($columns as $column => $type) {
+            $property = new EntityProperty($type);
 
-			$arguments[$column] = $property->formatValueForEntity($array[$column]);
-		}
+            $arguments[$column] = $property->formatValueForEntity($array[$column]);
+        }
 
-		$entity = $reflector->newInstanceArgs($arguments);
-		$entity->set('id', (int) $array['id']);
-		$entity->set('modified', new \DateTime($array['modified']));
-		$entity->set('created', new \DateTime($array['created']));
+        $entity = $reflector->newInstanceArgs($arguments);
+        $entity->set('id', (int) $array['id']);
+        $entity->set('modified', new \DateTime($array['modified']));
+        $entity->set('created', new \DateTime($array['created']));
 
-		return $entity;
-	}
+        return $entity;
+    }
 
-	/**
-	 * @param string $entityClass
-	 */
-	public function __construct($entityClass) {
-		$this->entityClass = $entityClass;
-	}
-
+    /**
+     * @param string $entityClass
+     */
+    public function __construct($entityClass)
+    {
+        $this->entityClass = $entityClass;
+    }
 }

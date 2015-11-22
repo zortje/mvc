@@ -9,18 +9,19 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Model\Table\Entity\Exception
  */
-class EntityClassNonexistentException extends Exception {
+class EntityClassNonexistentException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Subclass %s defined entity class %s is nonexistent';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Subclass %s defined entity class %s is nonexistent';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 }

@@ -9,18 +9,19 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Model\Table\Entity\Exception
  */
-class InvalidValueTypeForEntityPropertyException extends Exception {
+class InvalidValueTypeForEntityPropertyException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Entity %s property %s is of type %s and not %s';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Entity %s property %s is of type %s and not %s';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 }

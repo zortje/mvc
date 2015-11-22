@@ -9,18 +9,19 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Model\Table\Entity\Exception
  */
-class EntityClassNotDefinedException extends Exception {
+class EntityClassNotDefinedException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Subclass %s does not have a entity class defined';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Subclass %s does not have a entity class defined';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 }

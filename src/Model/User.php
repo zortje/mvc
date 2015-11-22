@@ -9,6 +9,7 @@ use Zortje\MVC\Model\Table\Entity\Entity;
  *
  * @package Zortje\MVC\Model
  */
-class User extends Entity {
+class User extends Entity
+{
 
 }

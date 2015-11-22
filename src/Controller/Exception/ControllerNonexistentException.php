@@ -24,5 +24,4 @@ class ControllerNonexistentException extends Exception
     {
         parent::__construct($message);
     }
-
 }

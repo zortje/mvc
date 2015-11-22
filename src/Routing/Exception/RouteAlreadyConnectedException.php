@@ -9,18 +9,19 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Routing\Exception
  */
-class RouteAlreadyConnectedException extends Exception {
+class RouteAlreadyConnectedException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Route %s is already connected';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Route %s is already connected';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 }

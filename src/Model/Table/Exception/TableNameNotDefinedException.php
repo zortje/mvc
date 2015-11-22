@@ -9,18 +9,19 @@ use Zortje\MVC\Common\Exception\Exception;
  *
  * @package Zortje\MVC\Model\Table\Exception
  */
-class TableNameNotDefinedException extends Exception {
+class TableNameNotDefinedException extends Exception
+{
 
-	/**
-	 * {@inheritdoc}
-	 */
-	protected $template = 'Subclass %s does not have a table name defined';
+    /**
+     * {@inheritdoc}
+     */
+    protected $template = 'Subclass %s does not have a table name defined';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function __construct($message) {
-		parent::__construct($message);
-	}
-
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct($message)
+    {
+        parent::__construct($message);
+    }
 }

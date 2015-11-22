@@ -24,5 +24,4 @@ class ControllerActionProtectedInsufficientAuthenticationException extends Excep
     {
         parent::__construct($message);
     }
-
 }

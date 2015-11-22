@@ -5,5 +5,5 @@
  */
 
 foreach ($cars as $car) {
-	echo '<p>', $car->get('make'), ' ', $car->get('model'), '</p>';
+    echo '<p>', $car->get('make'), ' ', $car->get('model'), '</p>';
 }

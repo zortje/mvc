@@ -172,11 +172,11 @@ abstract class Table
      */
     public function __construct(\PDO $pdo)
     {
-        if (is_null($this->tableName)) {
+        if ($this->tableName === null) {
             throw new TableNameNotDefinedException([get_class($this)]);
         }
 
-        if (is_null($this->entityClass)) {
+        if ($this->entityClass === null) {
             throw new EntityClassNotDefinedException([get_class($this)]);
         } elseif (!class_exists($this->entityClass)) {
             throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);

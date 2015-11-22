@@ -126,7 +126,7 @@ abstract class Entity
         /**
          * Allow NULL
          */
-        if (!is_null($value)) {
+        if ($value !== null) {
             $valueType = gettype($value);
 
             /**

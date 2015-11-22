@@ -13,276 +13,286 @@ use Zortje\MVC\View\Render\HtmlRender;
  *
  * @package Zortje\MVC\Controller
  */
-class Controller {
+class Controller
+{
 
-	/**
-	 * Controller action is publicly accessible
-	 */
-	const ACTION_PUBLIC = 0;
+    /**
+     * Controller action is publicly accessible
+     */
+    const ACTION_PUBLIC = 0;
 
-	/**
-	 * Controller action requires authentication
-	 * Will redirect to login page if not authenticated
-	 */
-	const ACTION_PROTECTED = 1;
+    /**
+     * Controller action requires authentication
+     * Will redirect to login page if not authenticated
+     */
+    const ACTION_PROTECTED = 1;
 
-	/**
-	 * Controller action requires authentication
-	 * Will result in an 404 if not authenticated
-	 */
-	const ACTION_PRIVATE = 2;
+    /**
+     * Controller action requires authentication
+     * Will result in an 404 if not authenticated
+     */
+    const ACTION_PRIVATE = 2;
 
-	/**
-	 * @var array Controller action access rules
-	 */
-	protected $access = [];
+    /**
+     * @var array Controller action access rules
+     */
+    protected $access = [];
 
-	/**
-	 * @var \PDO PDO
-	 */
-	protected $pdo;
+    /**
+     * @var \PDO PDO
+     */
+    protected $pdo;
 
-	/**
-	 * @var string App file path
-	 */
-	protected $appPath;
+    /**
+     * @var string App file path
+     */
+    protected $appPath;
 
-	/**
-	 * @var null|User User
-	 */
-	protected $user;
+    /**
+     * @var null|User User
+     */
+    protected $user;
 
-	/**
-	 * @var string Controller action
-	 */
-	protected $action;
+    /**
+     * @var string Controller action
+     */
+    protected $action;
 
-	/**
-	 * @var array View variables
-	 */
-	protected $variables = [];
+    /**
+     * @var array View variables
+     */
+    protected $variables = [];
 
-	/**
-	 * @var bool Should render view for controller action
-	 */
-	protected $render = true;
+    /**
+     * @var bool Should render view for controller action
+     */
+    protected $render = true;
 
-	/**
-	 * @var string File path for layout template file
-	 */
-	protected $layout;
+    /**
+     * @var string File path for layout template file
+     */
+    protected $layout;
 
-	/**
-	 * @var string File path for view template file
-	 */
-	protected $view;
+    /**
+     * @var string File path for view template file
+     */
+    protected $view;
 
-	/**
-	 * @var array Headers for output
-	 *
-	 * @todo JSON content type
-	 *
-	 * Content-Type: application/javascript; charset=utf-8
-	 */
-	protected $headers = [
-		'content-type' => 'Content-Type: text/html; charset=utf-8'
-	];
+    /**
+     * @var array Headers for output
+     *
+     * @todo JSON content type
+     *
+     * Content-Type: application/javascript; charset=utf-8
+     */
+    protected $headers = [
+        'content-type' => 'Content-Type: text/html; charset=utf-8'
+    ];
 
-	/**
-	 * @return string Controller name without namespace
-	 */
-	public function getShortName() {
-		return str_replace('Controller', null, (new \ReflectionClass($this))->getShortName());
-	}
+    /**
+     * @return string Controller name without namespace
+     */
+    public function getShortName()
+    {
+        return str_replace('Controller', null, (new \ReflectionClass($this))->getShortName());
+    }
 
-	/**
-	 * @param string $action Controller action
-	 *
-	 * @throws ControllerActionNonexistentException
-	 * @throws ControllerActionPrivateInsufficientAuthenticationException
-	 * @throws ControllerActionProtectedInsufficientAuthenticationException
-	 */
-	public function setAction($action) {
-		/**
-		 * Check if method exists and that access has been defined
-		 */
-		if (!method_exists($this, $action) || !isset($this->access[$action])) {
-			throw new ControllerActionNonexistentException([get_class($this), $action]);
-		}
+    /**
+     * @param string $action Controller action
+     *
+     * @throws ControllerActionNonexistentException
+     * @throws ControllerActionPrivateInsufficientAuthenticationException
+     * @throws ControllerActionProtectedInsufficientAuthenticationException
+     */
+    public function setAction($action)
+    {
+        /**
+         * Check if method exists and that access has been defined
+         */
+        if (!method_exists($this, $action) || !isset($this->access[$action])) {
+            throw new ControllerActionNonexistentException([get_class($this), $action]);
+        }
 
-		/**
-		 * Check controller action access level if user is not authenticated
-		 */
-		if (!$this->user) {
-			if ($this->access[$action] === self::ACTION_PRIVATE) {
-				throw new ControllerActionPrivateInsufficientAuthenticationException([get_class($this), $action]);
-			} elseif ($this->access[$action] === self::ACTION_PROTECTED) {
-				throw new ControllerActionProtectedInsufficientAuthenticationException([get_class($this), $action]);
-			}
-		}
+        /**
+         * Check controller action access level if user is not authenticated
+         */
+        if (!$this->user) {
+            if ($this->access[$action] === self::ACTION_PRIVATE) {
+                throw new ControllerActionPrivateInsufficientAuthenticationException([get_class($this), $action]);
+            } elseif ($this->access[$action] === self::ACTION_PROTECTED) {
+                throw new ControllerActionProtectedInsufficientAuthenticationException([get_class($this), $action]);
+            }
+        }
 
-		/**
-		 * Set controller action
-		 */
-		$this->action = $action;
-	}
+        /**
+         * Set controller action
+         */
+        $this->action = $action;
+    }
 
-	/**
-	 * Call action
-	 *
-	 * @return array<string,array|string>|false Headers and output if render is enabled, otherwise FALSE
-	 *
-	 * @throws \LogicException If controller action is not set
-	 */
-	public function callAction() {
-		if (!isset($this->action)) {
-			throw new \LogicException('Controller action must be set before being called');
-		}
+    /**
+     * Call action
+     *
+     * @return array<string,array|string>|false Headers and output if render is enabled, otherwise FALSE
+     *
+     * @throws \LogicException If controller action is not set
+     */
+    public function callAction()
+    {
+        if (!isset($this->action)) {
+            throw new \LogicException('Controller action must be set before being called');
+        }
 
-		/**
-		 * Before controller action hook
-		 */
-		$this->beforeAction();
+        /**
+         * Before controller action hook
+         */
+        $this->beforeAction();
 
-		/**
-		 * Call controller action
-		 */
-		$action = $this->action;
+        /**
+         * Call controller action
+         */
+        $action = $this->action;
 
-		$this->$action();
+        $this->$action();
 
-		/**
-		 * After controller action hook
-		 */
-		$this->afterAction();
+        /**
+         * After controller action hook
+         */
+        $this->afterAction();
 
-		/**
-		 * Render view
-		 */
-		if ($this->render) {
-			$render = new HtmlRender($this->variables);
+        /**
+         * Render view
+         */
+        if ($this->render) {
+            $render = new HtmlRender($this->variables);
 
-			$output = $render->render(['_view' => $this->getViewTemplate(), '_layout' => $this->getLayoutTemplate()]);
+            $output = $render->render(['_view' => $this->getViewTemplate(), '_layout' => $this->getLayoutTemplate()]);
 
-			return [
-				'headers' => $this->headers,
-				'output'  => $output
-			];
-		}
+            return [
+                'headers' => $this->headers,
+                'output'  => $output
+            ];
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Before controller action hook
-	 *
-	 * Called right before controller action is called
-	 */
-	protected function beforeAction() {
-		/**
-		 * Set New Relic transaction name
-		 */
-		if (extension_loaded('newrelic')) {
-			newrelic_name_transaction(sprintf('%s/%s', $this->getShortName(), $this->action));
-		}
-	}
+    /**
+     * Before controller action hook
+     *
+     * Called right before controller action is called
+     */
+    protected function beforeAction()
+    {
+        /**
+         * Set New Relic transaction name
+         */
+        if (extension_loaded('newrelic')) {
+            newrelic_name_transaction(sprintf('%s/%s', $this->getShortName(), $this->action));
+        }
+    }
 
-	/**
-	 * After controller action hook
-	 *
-	 * Called right after controller action is called, but before rendering of the view
-	 */
-	protected function afterAction() {
-	}
+    /**
+     * After controller action hook
+     *
+     * Called right after controller action is called, but before rendering of the view
+     */
+    protected function afterAction()
+    {
+    }
 
-	/**
-	 * Set view variable
-	 *
-	 * @param string $variable
-	 * @param mixed  $value
-	 */
-	protected function set($variable, $value) {
-		$this->variables[$variable] = $value;
-	}
+    /**
+     * Set view variable
+     *
+     * @param string $variable
+     * @param mixed  $value
+     */
+    protected function set($variable, $value)
+    {
+        $this->variables[$variable] = $value;
+    }
 
-	/**
-	 * Get layout template
-	 *
-	 * @return string Layout template file path
-	 */
-	protected function getLayoutTemplate() {
-		$layout = $this->layout;
+    /**
+     * Get layout template
+     *
+     * @return string Layout template file path
+     */
+    protected function getLayoutTemplate()
+    {
+        $layout = $this->layout;
 
-		if (empty($layout)) {
-			$layout = 'View/Layout/default';
-		}
+        if (empty($layout)) {
+            $layout = 'View/Layout/default';
+        }
 
-		return "{$this->appPath}$layout.layout";
-	}
+        return "{$this->appPath}$layout.layout";
+    }
 
-	/**
-	 * Get view template
-	 *
-	 * @return string View template file path
-	 */
-	protected function getViewTemplate() {
-		$view = $this->view;
+    /**
+     * Get view template
+     *
+     * @return string View template file path
+     */
+    protected function getViewTemplate()
+    {
+        $view = $this->view;
 
-		if (empty($view)) {
-			$view = sprintf('View/%s/%s', $this->getShortName(), $this->action);
-		}
+        if (empty($view)) {
+            $view = sprintf('View/%s/%s', $this->getShortName(), $this->action);
+        }
 
-		return "{$this->appPath}$view.view";
-	}
+        return "{$this->appPath}$view.view";
+    }
 
-	/**
-	 * Set response code
-	 *
-	 * Supports 200 OK, 403 Forbidden, 404 Not Found & 500 Internal Server Error
-	 *
-	 * @param int $code HTTP response code
-	 *
-	 * @throws \InvalidArgumentException If unsupported code is provided
-	 */
-	protected function setResponseCode($code) {
-		switch ($code) {
-			case 200:
-				$text = 'OK';
-				break;
+    /**
+     * Set response code
+     *
+     * Supports 200 OK, 403 Forbidden, 404 Not Found & 500 Internal Server Error
+     *
+     * @param int $code HTTP response code
+     *
+     * @throws \InvalidArgumentException If unsupported code is provided
+     */
+    protected function setResponseCode($code)
+    {
+        switch ($code) {
+            case 200:
+                $text = 'OK';
+                break;
 
-			case 403:
-				$text = 'Forbidden';
-				break;
+            case 403:
+                $text = 'Forbidden';
+                break;
 
-			case 404:
-				$text = 'Not Found';
-				break;
+            case 404:
+                $text = 'Not Found';
+                break;
 
-			case 500:
-				$text = 'Internal Server Error';
-				break;
+            case 500:
+                $text = 'Internal Server Error';
+                break;
 
-			default:
-				throw new \InvalidArgumentException("HTTP status '$code' is not implemented");
-				break;
-		}
+            default:
+                throw new \InvalidArgumentException("HTTP status '$code' is not implemented");
+                break;
+        }
 
-		/**
-		 * Set header
-		 */
-		// @todo test that running response code multiple times only results in one response code header
-		$this->headers['response_code'] = "HTTP/1.1 $code $text";
-	}
+        /**
+         * Set header
+         */
+        // @todo test that running response code multiple times only results in one response code header
+        $this->headers['response_code'] = "HTTP/1.1 $code $text";
+    }
 
-	/**
-	 * @param \PDO      $pdo
-	 * @param string    $appPath
-	 * @param null|User $user
-	 */
-	public function __construct(\PDO $pdo, $appPath, User $user = null) {
-		$this->pdo     = $pdo;
-		$this->appPath = $appPath;
-		$this->user    = $user;
-	}
-
+    /**
+     * @param \PDO      $pdo
+     * @param string    $appPath
+     * @param null|User $user
+     */
+    public function __construct(\PDO $pdo, $appPath, User $user = null)
+    {
+        $this->pdo     = $pdo;
+        $this->appPath = $appPath;
+        $this->user    = $user;
+    }
 }

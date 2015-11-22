@@ -15,168 +15,177 @@ use Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException;
  *
  * @package Zortje\MVC\Model\Table
  */
-abstract class Table {
+abstract class Table
+{
 
-	/**
-	 * @var \PDO Connection
-	 */
-	protected $pdo;
+    /**
+     * @var \PDO Connection
+     */
+    protected $pdo;
 
-	/**
-	 * @var string Table name
-	 */
-	protected $tableName;
+    /**
+     * @var string Table name
+     */
+    protected $tableName;
 
-	/**
-	 * @var String Entity class
-	 */
-	protected $entityClass;
+    /**
+     * @var String Entity class
+     */
+    protected $entityClass;
 
-	/**
-	 * @var SQLCommand SQL Command
-	 */
-	protected $sqlCommand;
+    /**
+     * @var SQLCommand SQL Command
+     */
+    protected $sqlCommand;
 
-	/**
-	 * Get table name
-	 *
-	 * @return string Table name
-	 */
-	public function getTableName() {
-		return $this->tableName;
-	}
+    /**
+     * Get table name
+     *
+     * @return string Table name
+     */
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
 
-	/**
-	 * Find all entities
-	 *
-	 * @return Entity[] Entities
-	 */
-	public function findAll() {
-		$stmt = $this->pdo->prepare($this->sqlCommand->selectFrom());
-		$stmt->execute();
+    /**
+     * Find all entities
+     *
+     * @return Entity[] Entities
+     */
+    public function findAll()
+    {
+        $stmt = $this->pdo->prepare($this->sqlCommand->selectFrom());
+        $stmt->execute();
 
-		return $this->createEntitiesFromStatement($stmt);
-	}
+        return $this->createEntitiesFromStatement($stmt);
+    }
 
-	/**
-	 * Find all entities where key is equal to the given value
-	 *
-	 * @param $key
-	 * @param $value
-	 *
-	 * @throws InvalidEntityPropertyException If entity does not have that property
-	 *
-	 * @return Entity[] Entities
-	 */
-	public function findBy($key, $value) {
-		/**
-		 * Check if entity have the property
-		 */
-		$reflector = new \ReflectionClass($this->entityClass);
+    /**
+     * Find all entities where key is equal to the given value
+     *
+     * @param $key
+     * @param $value
+     *
+     * @throws InvalidEntityPropertyException If entity does not have that property
+     *
+     * @return Entity[] Entities
+     */
+    public function findBy($key, $value)
+    {
+        /**
+         * Check if entity have the property
+         */
+        $reflector = new \ReflectionClass($this->entityClass);
 
-		$entity = $reflector->newInstanceWithoutConstructor();
+        $entity = $reflector->newInstanceWithoutConstructor();
 
-		if (!isset($entity::getColumns()[$key])) {
-			throw new InvalidEntityPropertyException([$this->entityClass, $key]);
-		}
+        if (!isset($entity::getColumns()[$key])) {
+            throw new InvalidEntityPropertyException([$this->entityClass, $key]);
+        }
 
-		/**
-		 * Execute with key-value condition
-		 */
-		$stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere($key));
-		$stmt->execute([":$key" => $value]);
+        /**
+         * Execute with key-value condition
+         */
+        $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere($key));
+        $stmt->execute([":$key" => $value]);
 
-		return $this->createEntitiesFromStatement($stmt);
-	}
+        return $this->createEntitiesFromStatement($stmt);
+    }
 
-	/**
-	 * Insert entity into dabase
-	 *
-	 * @param Entity $entity Entity
-	 *
-	 * @return int Inserted entity ID
-	 */
-	public function insert(Entity $entity) {
-		$stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
+    /**
+     * Insert entity into dabase
+     *
+     * @param Entity $entity Entity
+     *
+     * @return int Inserted entity ID
+     */
+    public function insert(Entity $entity)
+    {
+        $stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
 
-		$now = new \DateTime();
-		$now = $now->format('Y-m-d H:i:s');
+        $now = new \DateTime();
+        $now = $now->format('Y-m-d H:i:s');
 
-		$array = array_merge($entity->toArray(false), [
-			'modified' => $now,
-			'created'  => $now
-		]);
+        $array = array_merge($entity->toArray(false), [
+            'modified' => $now,
+            'created'  => $now
+        ]);
 
-		$stmt->execute($array);
+        $stmt->execute($array);
 
-		return (int) $this->pdo->lastInsertId();
-	}
+        return (int) $this->pdo->lastInsertId();
+    }
 
-	public function update(Entity $entity) {
-		// @todo Implement
-	}
+    public function update(Entity $entity)
+    {
+        // @todo Implement
+    }
 
-	public function delete(Entity $entity) {
-		// @todo Implement
-	}
+    public function delete(Entity $entity)
+    {
+        // @todo Implement
+    }
 
-	/**
-	 * Creates an array of Entity objects from statement
-	 *
-	 * @param \PDOStatement $statement
-	 *
-	 * @return Entity[] Entities from statement
-	 */
-	protected function createEntitiesFromStatement(\PDOStatement $statement) {
-		$entities = [];
+    /**
+     * Creates an array of Entity objects from statement
+     *
+     * @param \PDOStatement $statement
+     *
+     * @return Entity[] Entities from statement
+     */
+    protected function createEntitiesFromStatement(\PDOStatement $statement)
+    {
+        $entities = [];
 
-		$entityFactory = new EntityFactory($this->entityClass);
+        $entityFactory = new EntityFactory($this->entityClass);
 
-		foreach ($statement as $row) {
-			$entities[] = $entityFactory->createFromArray($row);
-		}
+        foreach ($statement as $row) {
+            $entities[] = $entityFactory->createFromArray($row);
+        }
 
-		return $entities;
-	}
+        return $entities;
+    }
 
-	/**
-	 * Create SQLCommand for this Table with provided Entity
-	 *
-	 * @return SQLCommand
-	 */
-	protected function createCommand() {
-		$reflector = new \ReflectionClass($this->entityClass);
+    /**
+     * Create SQLCommand for this Table with provided Entity
+     *
+     * @return SQLCommand
+     */
+    protected function createCommand()
+    {
+        $reflector = new \ReflectionClass($this->entityClass);
 
-		$entity = $reflector->newInstanceWithoutConstructor();
+        $entity = $reflector->newInstanceWithoutConstructor();
 
-		$columns = $entity::getColumns();
+        $columns = $entity::getColumns();
 
-		return new SQLCommand($this->tableName, $columns);
-	}
+        return new SQLCommand($this->tableName, $columns);
+    }
 
-	/**
-	 * @param \PDO $pdo
-	 *
-	 * @throws TableNameNotDefinedException If table name is not defined in subclass
-	 * @throws EntityClassNotDefinedException If entity class is not defined in subclass
-	 * @throws EntityClassNonexistentException If entity class is nonexistent
-	 */
-	public function __construct(\PDO $pdo) {
-		if (is_null($this->tableName)) {
-			throw new TableNameNotDefinedException([get_class($this)]);
-		}
+    /**
+     * @param \PDO $pdo
+     *
+     * @throws TableNameNotDefinedException If table name is not defined in subclass
+     * @throws EntityClassNotDefinedException If entity class is not defined in subclass
+     * @throws EntityClassNonexistentException If entity class is nonexistent
+     */
+    public function __construct(\PDO $pdo)
+    {
+        if (is_null($this->tableName)) {
+            throw new TableNameNotDefinedException([get_class($this)]);
+        }
 
-		if (is_null($this->entityClass)) {
-			throw new EntityClassNotDefinedException([get_class($this)]);
-		} else if (!class_exists($this->entityClass)) {
-			throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
-		}
+        if (is_null($this->entityClass)) {
+            throw new EntityClassNotDefinedException([get_class($this)]);
+        } elseif (!class_exists($this->entityClass)) {
+            throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
+        }
 
-		// @todo should check if `$this->entityClass` is subclass of Entity class
+        // @todo should check if `$this->entityClass` is subclass of Entity class
 
-		$this->pdo = $pdo;
+        $this->pdo = $pdo;
 
-		$this->sqlCommand = $this->createCommand();
-	}
-
+        $this->sqlCommand = $this->createCommand();
+    }
 }

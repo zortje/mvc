@@ -7,14 +7,15 @@ namespace Zortje\MVC\Controller;
  *
  * @package Zortje\MVC\Controller
  */
-class NotFoundController extends Controller {
+class NotFoundController extends Controller
+{
 
-	protected $access = [
-		'index' => Controller::ACTION_PUBLIC
-	];
+    protected $access = [
+        'index' => Controller::ACTION_PUBLIC
+    ];
 
-	protected function index() {
-		$this->setResponseCode(404);
-	}
-
+    protected function index()
+    {
+        $this->setResponseCode(404);
+    }
 }

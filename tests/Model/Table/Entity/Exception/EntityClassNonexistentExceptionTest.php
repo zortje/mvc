@@ -11,26 +11,28 @@ use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException;
  *
  * @coversDefaultClass Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
  */
-class EntityClassNonexistentExceptionTest extends \PHPUnit_Framework_TestCase {
+class EntityClassNonexistentExceptionTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
-	 * @expectedExceptionMessage foo
-	 */
-	public function testMessage() {
-		throw new EntityClassNonexistentException('foo');
-	}
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
+     * @expectedExceptionMessage foo
+     */
+    public function testMessage()
+    {
+        throw new EntityClassNonexistentException('foo');
+    }
 
-	/**
-	 * @covers ::__construct
-	 *
-	 * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
-	 * @expectedExceptionMessage Subclass Foo defined entity class Bar is nonexistent
-	 */
-	public function testMessageArray() {
-		throw new EntityClassNonexistentException(['Foo', 'Bar']);
-	}
-
+    /**
+     * @covers ::__construct
+     *
+     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
+     * @expectedExceptionMessage Subclass Foo defined entity class Bar is nonexistent
+     */
+    public function testMessageArray()
+    {
+        throw new EntityClassNonexistentException(['Foo', 'Bar']);
+    }
 }

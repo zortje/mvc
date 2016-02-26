@@ -19,7 +19,7 @@
         "issues": "https://github.com/zortje/mvc/issues"
     },
     "require": {
-        "php": ">=5.5",
+        "php": ">=7.0",
         "monolog/monolog": "~1.0"
     },
     "require-dev": {

@@ -24,7 +24,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', 'root');
+        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', '');
     }
 
     /**

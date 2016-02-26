@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Controller;
 
@@ -81,9 +82,7 @@ class Controller
     /**
      * @var array Headers for output
      *
-     * @todo JSON content type
-     *
-     * Content-Type: application/javascript; charset=utf-8
+     * @todo JSON content type: `Content-Type: application/javascript; charset=utf-8`
      */
     protected $headers = [
         'content-type' => 'Content-Type: text/html; charset=utf-8'
@@ -92,7 +91,7 @@ class Controller
     /**
      * @return string Controller name without namespace
      */
-    public function getShortName()
+    public function getShortName(): string
     {
         return str_replace('Controller', null, (new \ReflectionClass($this))->getShortName());
     }
@@ -104,7 +103,7 @@ class Controller
      * @throws ControllerActionPrivateInsufficientAuthenticationException
      * @throws ControllerActionProtectedInsufficientAuthenticationException
      */
-    public function setAction($action)
+    public function setAction(string $action)
     {
         /**
          * Check if method exists and that access has been defined
@@ -133,11 +132,11 @@ class Controller
     /**
      * Call action
      *
-     * @return array<string,array|string>|false Headers and output if render is enabled, otherwise FALSE
+     * @return array<string,array|string> Headers and output if render is enabled, otherwise FALSE
      *
      * @throws \LogicException If controller action is not set
      */
-    public function callAction()
+    public function callAction(): array
     {
         if (!isset($this->action)) {
             throw new \LogicException('Controller action must be set before being called');
@@ -174,7 +173,7 @@ class Controller
             ];
         }
 
-        return false;
+        return [];
     }
 
     /**
@@ -207,7 +206,7 @@ class Controller
      * @param string $variable
      * @param mixed  $value
      */
-    protected function set($variable, $value)
+    protected function set(string $variable, $value)
     {
         $this->variables[$variable] = $value;
     }
@@ -217,7 +216,7 @@ class Controller
      *
      * @return string Layout template file path
      */
-    protected function getLayoutTemplate()
+    protected function getLayoutTemplate(): string
     {
         $layout = $this->layout;
 
@@ -233,7 +232,7 @@ class Controller
      *
      * @return string View template file path
      */
-    protected function getViewTemplate()
+    protected function getViewTemplate(): string
     {
         $view = $this->view;
 
@@ -253,7 +252,7 @@ class Controller
      *
      * @throws \InvalidArgumentException If unsupported code is provided
      */
-    protected function setResponseCode($code)
+    protected function setResponseCode(int $code)
     {
         switch ($code) {
             case 200:
@@ -289,7 +288,7 @@ class Controller
      * @param string    $appPath
      * @param null|User $user
      */
-    public function __construct(\PDO $pdo, $appPath, User $user = null)
+    public function __construct(\PDO $pdo, string $appPath, User $user = null)
     {
         $this->pdo     = $pdo;
         $this->appPath = $appPath;

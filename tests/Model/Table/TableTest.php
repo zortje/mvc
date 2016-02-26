@@ -24,7 +24,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     protected function getConnection()
     {
-        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=myapp_test", 'root', '');
+        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', 'root');
 
         return $this->createDefaultDBConnection($this->pdo, 'test');
     }

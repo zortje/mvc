@@ -24,7 +24,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=myapp_test", 'root', '');
+        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', 'root');
     }
 
     /**
@@ -32,7 +32,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreate()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $controller = $controllerFactory->create(CarsController::class);
 
@@ -47,7 +47,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateNonexistent()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $controllerFactory->create('NonexistentController');
     }
@@ -60,7 +60,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreateInvalidSuperclass()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $controllerFactory->create(CarEntity::class);
     }

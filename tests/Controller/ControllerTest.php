@@ -22,7 +22,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=myapp_test", 'root', '');
+        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', 'root');
     }
 
     /**
@@ -30,7 +30,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetAction()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('index');
@@ -50,7 +50,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetActionNonexistent()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('nonexistent');
@@ -64,7 +64,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetActionUnauthenticatedProtected()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('hidden');
@@ -78,7 +78,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetActionUnauthenticatedPrivate()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, null, null);
+        $controllerFactory = new ControllerFactory($this->pdo, '', null);
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('add');

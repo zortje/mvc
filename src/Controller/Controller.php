@@ -285,7 +285,6 @@ class Controller
 
             default:
                 throw new \InvalidArgumentException("HTTP status '$code' is not implemented");
-                break;
         }
 
         /**

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Network;
 
@@ -21,23 +22,23 @@ class Response
     protected $output;
 
     /**
+     * @param array  $headers
+     * @param string $output
+     */
+    public function __construct(array $headers, string $output)
+    {
+        $this->headers = $headers;
+        $this->output  = $output;
+    }
+
+    /**
      * @return array
      */
-    public function output()
+    public function output(): array
     {
         return [
             'headers' => $this->headers,
             'output'  => $this->output
         ];
-    }
-
-    /**
-     * @param array  $headers
-     * @param string $output
-     */
-    public function __construct($headers, $output)
-    {
-        $this->headers = $headers;
-        $this->output  = $output;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Model\Table\Entity;
 
@@ -14,6 +15,14 @@ class EntityProperty
      * @var string Entity property type
      */
     protected $type;
+
+    /**
+     * @param string $type
+     */
+    public function __construct(string $type)
+    {
+        $this->type = $type;
+    }
 
     /**
      * Format value according to entity property type
@@ -72,13 +81,5 @@ class EntityProperty
         }
 
         return $value;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function __construct($type)
-    {
-        $this->type = $type;
     }
 }

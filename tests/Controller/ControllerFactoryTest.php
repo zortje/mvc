@@ -3,7 +3,7 @@
 namespace Zortje\MVC\Tests\Controller;
 
 use Zortje\MVC\Controller\ControllerFactory;
-use Zortje\MVC\Model\User;
+use Zortje\MVC\User\User;
 use Zortje\MVC\Tests\Controller\Fixture\CarsController;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 
@@ -70,7 +70,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $user = new User(null, new \DateTime(), new \DateTime());
+        $user = new User('', '');
 
         $controllerFactory = new ControllerFactory($this->pdo, '/var/www/html/', $user);
 

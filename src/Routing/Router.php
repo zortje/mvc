@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Routing;
 
@@ -27,7 +28,7 @@ class Router
      *
      * @throws RouteAlreadyConnectedException When route is already connected
      */
-    public function connect($route, $controller, $action)
+    public function connect(string $route, string $controller, string $action)
     {
         if (isset($this->routes[$route]) === true) {
             throw new RouteAlreadyConnectedException([$route]);
@@ -48,7 +49,7 @@ class Router
      *
      * @throws RouteNonexistentException When route is not connected
      */
-    public function route($route)
+    public function route(string $route): array
     {
         if (isset($this->routes[$route]) === false) {
             throw new RouteNonexistentException([$route]);

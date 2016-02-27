@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Model\Table\Entity;
 
@@ -24,11 +25,23 @@ abstract class Entity
     protected $properties = [];
 
     /**
+     * @param int       $id
+     * @param \DateTime $modified
+     * @param \DateTime $created
+     */
+    public function __construct($id, \DateTime $modified, \DateTime $created)
+    {
+        $this->set('id', $id);
+        $this->set('modified', $modified);
+        $this->set('created', $created);
+    }
+
+    /**
      * Get entity columns
      *
      * @return array Entity columns
      */
-    public static function getColumns()
+    public static function getColumns(): array
     {
         $columns = array_merge([
             'id' => 'integer'
@@ -51,7 +64,7 @@ abstract class Entity
      * @throws InvalidEntityPropertyException If entity does not have that property
      * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
      */
-    public function set($key, $value)
+    public function set(string $key, $value)
     {
         if (!isset(self::getColumns()[$key])) {
             throw new InvalidEntityPropertyException([get_class($this), $key]);
@@ -69,7 +82,7 @@ abstract class Entity
      *
      * @throws InvalidEntityPropertyException If entity does not have that property
      */
-    public function get($key)
+    public function get(string $key)
     {
         if (!isset(self::getColumns()[$key])) {
             throw new InvalidEntityPropertyException([get_class($this), $key]);
@@ -86,7 +99,7 @@ abstract class Entity
      *
      * @return array
      */
-    public function toArray($includeId)
+    public function toArray(bool $includeId): array
     {
         $array = [];
 
@@ -117,7 +130,7 @@ abstract class Entity
      * @throws InvalidEntityPropertyException If entity does not have that property
      * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
      */
-    protected function validatePropertyForValue($key, $value)
+    protected function validatePropertyForValue(string $key, $value)
     {
         if (!isset(self::getColumns()[$key])) {
             throw new InvalidEntityPropertyException([get_class($this), $key]);
@@ -161,17 +174,5 @@ abstract class Entity
         }
 
         return $value;
-    }
-
-    /**
-     * @param int       $id
-     * @param \DateTime $modified
-     * @param \DateTime $created
-     */
-    public function __construct($id, \DateTime $modified, \DateTime $created)
-    {
-        $this->set('id', $id);
-        $this->set('modified', $modified);
-        $this->set('created', $created);
     }
 }

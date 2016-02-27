@@ -47,6 +47,6 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
      */
     public function testCode()
     {
-        throw new Exception(null, 42);
+        throw new Exception('', 42);
     }
 }

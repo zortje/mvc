@@ -1,10 +1,11 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Controller;
 
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
-use Zortje\MVC\Model\User;
+use Zortje\MVC\User\User;
 
 /**
  * Class ControllerFactory
@@ -30,6 +31,18 @@ class ControllerFactory
     protected $user;
 
     /**
+     * @param \PDO      $pdo
+     * @param string    $appPath
+     * @param null|User $user
+     */
+    public function __construct(\PDO $pdo, string $appPath, User $user = null)
+    {
+        $this->pdo     = $pdo;
+        $this->appPath = $appPath;
+        $this->user    = $user;
+    }
+
+    /**
      * Initialize controller
      *
      * @param string $controller Controller class name
@@ -39,7 +52,7 @@ class ControllerFactory
      * @throws ControllerInvalidSuperclassException
      * @throws ControllerNonexistentException
      */
-    public function create($controller)
+    public function create(string $controller): Controller
     {
         if (!class_exists($controller)) {
             throw new ControllerNonexistentException([$controller]);
@@ -53,17 +66,5 @@ class ControllerFactory
         $controller = new $controller($this->pdo, $this->appPath, $this->user);
 
         return $controller;
-    }
-
-    /**
-     * @param \PDO      $pdo
-     * @param string    $appPath
-     * @param null|User $user
-     */
-    public function __construct(\PDO $pdo, $appPath, User $user = null)
-    {
-        $this->pdo     = $pdo;
-        $this->appPath = $appPath;
-        $this->user    = $user;
     }
 }

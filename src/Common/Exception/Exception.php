@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Common\Exception;
 
@@ -16,11 +17,11 @@ class Exception extends \Exception
     protected $template = '';
 
     /**
-     * @param string          $message
-     * @param int             $code
-     * @param null|\Exception $previous
+     * @param string|array|null $message Exception message
+     * @param int               $code    Exception Code
+     * @param null|\Exception   $previous
      */
-    public function __construct($message, $code = 0, \Exception $previous = null)
+    public function __construct($message, int $code = 0, \Exception $previous = null)
     {
         if (is_array($message)) {
             $message = vsprintf($this->template, $message);

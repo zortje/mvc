@@ -6,7 +6,7 @@ namespace Zortje\MVC\Controller;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
-use Zortje\MVC\Model\User;
+use Zortje\MVC\User\User;
 use Zortje\MVC\View\Render\HtmlRender;
 
 /**
@@ -24,7 +24,7 @@ class Controller
 
     /**
      * Controller action requires authentication
-     * Will redirect to login page if not authenticated
+     * Will redirect to sign in page if not authenticated
      */
     const ACTION_PROTECTED = 1;
 
@@ -87,6 +87,18 @@ class Controller
     protected $headers = [
         'content-type' => 'Content-Type: text/html; charset=utf-8'
     ];
+
+    /**
+     * @param \PDO      $pdo
+     * @param string    $appPath
+     * @param null|User $user
+     */
+    public function __construct(\PDO $pdo, string $appPath, User $user = null)
+    {
+        $this->pdo     = $pdo;
+        $this->appPath = $appPath;
+        $this->user    = $user;
+    }
 
     /**
      * @return string Controller name without namespace
@@ -281,17 +293,5 @@ class Controller
          */
         // @todo test that running response code multiple times only results in one response code header
         $this->headers['response_code'] = "HTTP/1.1 $code $text";
-    }
-
-    /**
-     * @param \PDO      $pdo
-     * @param string    $appPath
-     * @param null|User $user
-     */
-    public function __construct(\PDO $pdo, string $appPath, User $user = null)
-    {
-        $this->pdo     = $pdo;
-        $this->appPath = $appPath;
-        $this->user    = $user;
     }
 }

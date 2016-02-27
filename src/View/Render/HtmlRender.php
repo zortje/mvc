@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\View\Render;
 
@@ -16,6 +17,14 @@ class HtmlRender
     protected $variables;
 
     /**
+     * @param array $variables
+     */
+    public function __construct(array $variables)
+    {
+        $this->variables = $variables;
+    }
+
+    /**
      * Render files
      *
      * First file in array is rendered first and key is set in variables array for use by following files
@@ -24,7 +33,7 @@ class HtmlRender
      *
      * @return string Output
      */
-    public function render($files)
+    public function render(array $files): string
     {
         $output = '';
 
@@ -44,7 +53,7 @@ class HtmlRender
      *
      * @return string Output
      */
-    protected function renderFile($file)
+    protected function renderFile(string $file): string
     {
         if (!is_readable($file)) {
             throw new \InvalidArgumentException(sprintf('File "%s" is nonexistent (Working directory: %s)', $file, getcwd()));
@@ -72,13 +81,5 @@ class HtmlRender
         $output = ob_get_clean();
 
         return $output;
-    }
-
-    /**
-     * @param array $variables
-     */
-    public function __construct($variables)
-    {
-        $this->variables = $variables;
     }
 }

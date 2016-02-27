@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Model;
 
@@ -21,11 +22,21 @@ class SQLCommand
     private $columns;
 
     /**
+     * @param string   $tableName
+     * @param string[] $columns
+     */
+    public function __construct(string $tableName, array $columns)
+    {
+        $this->tableName = $tableName;
+        $this->columns   = $columns;
+    }
+
+    /**
      * Create INSERT INTO command
      *
      * @return string INSERT INTO query
      */
-    public function insertInto()
+    public function insertInto(): string
     {
         $tableColumnNames = $this->getColumnNames($this->columns);
 
@@ -42,7 +53,7 @@ class SQLCommand
      *
      * @return string SELECT FROM query
      */
-    public function selectFrom()
+    public function selectFrom(): string
     {
         $tableColumnNames = $this->getColumnNames($this->columns);
 
@@ -56,7 +67,7 @@ class SQLCommand
      *
      * @return string SELECT FROM query
      */
-    public function selectFromWhere($keys)
+    public function selectFromWhere($keys): string
     {
         $tableColumnNames = $this->getColumnNames($this->columns);
 
@@ -72,7 +83,7 @@ class SQLCommand
      *
      * @return string Column names for column list
      */
-    protected function getColumnNames($columns)
+    protected function getColumnNames(array $columns): string
     {
         $tableColumnNames = implode('`, `', array_keys($columns));
 
@@ -86,7 +97,7 @@ class SQLCommand
      *
      * @return string Column names for column values
      */
-    protected function getColumnValues($columns)
+    protected function getColumnValues(array $columns): string
     {
         $tableColumnValues = implode(', :', array_keys($columns));
 
@@ -100,7 +111,7 @@ class SQLCommand
      *
      * @return string
      */
-    protected function getWhereConditionFromKeys($keys)
+    protected function getWhereConditionFromKeys($keys): string
     {
         $where = [];
 
@@ -115,15 +126,5 @@ class SQLCommand
         }
 
         return implode(' AND ', $where);
-    }
-
-    /**
-     * @param String   $tableName
-     * @param String[] $columns
-     */
-    public function __construct($tableName, $columns)
-    {
-        $this->tableName = $tableName;
-        $this->columns   = $columns;
     }
 }

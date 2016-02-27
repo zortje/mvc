@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Model\Table\Entity;
 
@@ -16,11 +17,19 @@ class EntityFactory
     protected $entityClass;
 
     /**
+     * @param string $entityClass
+     */
+    public function __construct(string $entityClass)
+    {
+        $this->entityClass = $entityClass;
+    }
+
+    /**
      * @param array $array
      *
-     * @return object
+     * @return Entity
      */
-    public function createFromArray(array $array)
+    public function createFromArray(array $array): Entity
     {
         /**
          * @var Entity $entity
@@ -41,18 +50,10 @@ class EntityFactory
         }
 
         $entity = $reflector->newInstanceArgs($arguments);
-        $entity->set('id', (int) $array['id']);
+        $entity->set('id', (int)$array['id']);
         $entity->set('modified', new \DateTime($array['modified']));
         $entity->set('created', new \DateTime($array['created']));
 
         return $entity;
-    }
-
-    /**
-     * @param string $entityClass
-     */
-    public function __construct($entityClass)
-    {
-        $this->entityClass = $entityClass;
     }
 }

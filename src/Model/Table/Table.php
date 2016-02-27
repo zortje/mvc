@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Model\Table;
 
@@ -39,11 +40,37 @@ abstract class Table
     protected $sqlCommand;
 
     /**
+     * @param \PDO $pdo
+     *
+     * @throws TableNameNotDefinedException If table name is not defined in subclass
+     * @throws EntityClassNotDefinedException If entity class is not defined in subclass
+     * @throws EntityClassNonexistentException If entity class is nonexistent
+     */
+    public function __construct(\PDO $pdo)
+    {
+        if ($this->tableName === null) {
+            throw new TableNameNotDefinedException([get_class($this)]);
+        }
+
+        if ($this->entityClass === null) {
+            throw new EntityClassNotDefinedException([get_class($this)]);
+        } elseif (!class_exists($this->entityClass)) {
+            throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
+        }
+
+        // @todo should check if `$this->entityClass` is subclass of Entity class
+
+        $this->pdo = $pdo;
+
+        $this->sqlCommand = $this->createCommand();
+    }
+
+    /**
      * Get table name
      *
      * @return string Table name
      */
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->tableName;
     }
@@ -53,7 +80,7 @@ abstract class Table
      *
      * @return Entity[] Entities
      */
-    public function findAll()
+    public function findAll(): array
     {
         $stmt = $this->pdo->prepare($this->sqlCommand->selectFrom());
         $stmt->execute();
@@ -64,14 +91,14 @@ abstract class Table
     /**
      * Find all entities where key is equal to the given value
      *
-     * @param $key
-     * @param $value
+     * @param string $key   Entity key
+     * @param string $value Value to search for
      *
      * @throws InvalidEntityPropertyException If entity does not have that property
      *
      * @return Entity[] Entities
      */
-    public function findBy($key, $value)
+    public function findBy(string $key, string $value): array
     {
         /**
          * Check if entity have the property
@@ -100,7 +127,7 @@ abstract class Table
      *
      * @return int Inserted entity ID
      */
-    public function insert(Entity $entity)
+    public function insert(Entity $entity): int
     {
         $stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
 
@@ -114,7 +141,7 @@ abstract class Table
 
         $stmt->execute($array);
 
-        return (int) $this->pdo->lastInsertId();
+        return (int)$this->pdo->lastInsertId();
     }
 
     public function update(Entity $entity)
@@ -134,7 +161,7 @@ abstract class Table
      *
      * @return Entity[] Entities from statement
      */
-    protected function createEntitiesFromStatement(\PDOStatement $statement)
+    protected function createEntitiesFromStatement(\PDOStatement $statement): array
     {
         $entities = [];
 
@@ -152,7 +179,7 @@ abstract class Table
      *
      * @return SQLCommand
      */
-    protected function createCommand()
+    protected function createCommand(): SQLCommand
     {
         $reflector = new \ReflectionClass($this->entityClass);
 
@@ -161,31 +188,5 @@ abstract class Table
         $columns = $entity::getColumns();
 
         return new SQLCommand($this->tableName, $columns);
-    }
-
-    /**
-     * @param \PDO $pdo
-     *
-     * @throws TableNameNotDefinedException If table name is not defined in subclass
-     * @throws EntityClassNotDefinedException If entity class is not defined in subclass
-     * @throws EntityClassNonexistentException If entity class is nonexistent
-     */
-    public function __construct(\PDO $pdo)
-    {
-        if ($this->tableName === null) {
-            throw new TableNameNotDefinedException([get_class($this)]);
-        }
-
-        if ($this->entityClass === null) {
-            throw new EntityClassNotDefinedException([get_class($this)]);
-        } elseif (!class_exists($this->entityClass)) {
-            throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
-        }
-
-        // @todo should check if `$this->entityClass` is subclass of Entity class
-
-        $this->pdo = $pdo;
-
-        $this->sqlCommand = $this->createCommand();
     }
 }

@@ -15,6 +15,20 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @covers ::__construct
+     */
+    public function testConstruct()
+    {
+        $property = new EntityProperty('foo');
+
+        $reflector = new \ReflectionClass($property);
+
+        $tableName = $reflector->getProperty('type');
+        $tableName->setAccessible(true);
+        $this->assertSame('foo', $tableName->getValue($property));
+    }
+
+    /**
      * @covers ::formatValueForEntity
      */
     public function testFormatValueStringToString()
@@ -49,7 +63,7 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function testFormatValueStringToDateTime()
     {
-        $property = new EntityProperty('DateTime');
+        $property = new EntityProperty('datetime');
 
         $this->assertEquals(new \DateTime('2015-05-03 01:15:42'),
             $property->formatValueForEntity('2015-05-03 01:15:42'));
@@ -60,7 +74,7 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function testFormatValueStringToDate()
     {
-        $property = new EntityProperty('Date');
+        $property = new EntityProperty('date');
 
         $this->assertEquals(new \DateTime('2015-05-04'), $property->formatValueForEntity('2015-05-04'));
     }
@@ -70,7 +84,7 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function testFormatValueForDatabaseDateTime()
     {
-        $property = new EntityProperty('DateTime');
+        $property = new EntityProperty('datetime');
 
         $this->assertEquals('2015-05-08 22:42:42',
             $property->formatValueForDatabase(new \DateTime('2015-05-08 22:42:42')));
@@ -81,22 +95,8 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function testFormatValueForDatabaseDate()
     {
-        $property = new EntityProperty('Date');
+        $property = new EntityProperty('date');
 
         $this->assertEquals('2015-05-08', $property->formatValueForDatabase(new \DateTime('2015-05-08')));
-    }
-
-    /**
-     * @covers ::__construct
-     */
-    public function testConstruct()
-    {
-        $property = new EntityProperty('foo');
-
-        $reflector = new \ReflectionClass($property);
-
-        $tableName = $reflector->getProperty('type');
-        $tableName->setAccessible(true);
-        $this->assertSame('foo', $tableName->getValue($property));
     }
 }

@@ -54,6 +54,11 @@ class EntityFactory
         $entity->set('modified', new \DateTime($array['modified']));
         $entity->set('created', new \DateTime($array['created']));
 
+        /**
+         * Mark entity as unaltered
+         */
+        $entity->setUnaltered();
+
         return $entity;
     }
 }

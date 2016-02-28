@@ -82,7 +82,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $cars = $carTable->findAll();
 
-        $this->assertSame(2, count($cars));
+        $this->assertCount(2, $cars);
 
         /**
          * First entity
@@ -122,7 +122,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $cars = $carTable->findBy('horsepower', 20);
 
-        $this->assertSame(1, count($cars));
+        $this->assertCount(1, $cars);
 
         /**
          * First entity
@@ -148,7 +148,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $cars = $carTable->findBy('horsepower', 1337);
 
-        $this->assertSame(0, count($cars));
+        $this->assertCount(0, $cars);
     }
 
     /**
@@ -182,6 +182,62 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
          */
         $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
         $expectedDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-insertion.csv');
+
+        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedDataSet);
+        $expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
+
+        $dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
+        $dataSet->addTable('cars', 'SELECT * FROM `cars`');
+
+        $dataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($dataSet);
+        $dataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
+
+        $this->assertDataSetsEqual($expectedDataSet, $dataSet);
+    }
+
+    /**
+     * @covers ::update
+     */
+    public function testUpdate()
+    {
+
+        $carTable = new CarTable($this->pdo);
+
+        $cars = $carTable->findAll();
+
+        $this->assertCount(2, $cars);
+
+        /**
+         * Alter first car
+         */
+        $firstCar = $cars[0];
+
+        $this->assertFalse($firstCar->isAltered());
+
+        $firstCar->set('horsepower', 21);
+
+        $this->assertTrue($firstCar->isAltered());
+
+        $carTable->update($firstCar);
+
+        /**
+         * Alter second car
+         */
+        $secondCar = $cars[1];
+
+        $this->assertFalse($secondCar->isAltered());
+
+        $secondCar->set('horsepower', 41);
+
+        $this->assertTrue($secondCar->isAltered());
+
+        $carTable->update($secondCar);
+
+        /**
+         * Assert data set
+         */
+        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
+        $expectedDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-update.csv');
 
         $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedDataSet);
         $expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);

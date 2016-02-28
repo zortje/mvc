@@ -114,16 +114,16 @@ abstract class Table
         /**
          * Execute with key-value condition
          */
-        $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere($key));
+        $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere([$key]));
         $stmt->execute([":$key" => $value]);
 
         return $this->createEntitiesFromStatement($stmt);
     }
 
     /**
-     * Insert entity into dabase
+     * Insert entity into database
      *
-     * @param Entity $entity Entity
+     * @param Entity $entity Entity object
      *
      * @return int Inserted entity ID
      */
@@ -131,8 +131,7 @@ abstract class Table
     {
         $stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
 
-        $now = new \DateTime();
-        $now = $now->format('Y-m-d H:i:s');
+        $now = (new \DateTime())->format('Y-m-d H:i:s');
 
         $array = array_merge($entity->toArray(false), [
             'modified' => $now,
@@ -144,9 +143,37 @@ abstract class Table
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function update(Entity $entity)
+    /**
+     * Update entity in the database
+     *
+     * @param Entity $entity Entity object
+     *
+     * @return bool True if row was affected, otherwise false
+     */
+    public function update(Entity $entity): bool
     {
-        // @todo Implement
+        if ($entity->isAltered()) {
+            /**
+             * Set modified to now
+             */
+            $entity->set('modified', new \DateTime());
+
+            /**
+             * Get altered columns for SQL command
+             */
+            $alteredColumns = array_keys($entity->getAlteredColumns());
+
+            $stmt = $this->pdo->prepare($this->sqlCommand->updateSetWhere($alteredColumns));
+
+            /**
+             * Execute with altered array
+             */
+            $stmt->execute($entity->alteredToArray(true));
+
+            // @todo return true if row is altered
+        }
+
+        return false;
     }
 
     public function delete(Entity $entity)

@@ -39,6 +39,24 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function testConstruct()
+    {
+        $sqlCommand = new SQLCommand('cars', ['foo', 'bar']);
+
+        $reflector = new \ReflectionClass($sqlCommand);
+
+        $tableName = $reflector->getProperty('tableName');
+        $tableName->setAccessible(true);
+        $this->assertSame('cars', $tableName->getValue($sqlCommand));
+
+        $columns = $reflector->getProperty('columns');
+        $columns->setAccessible(true);
+        $this->assertSame(['foo', 'bar'], $columns->getValue($sqlCommand));
+    }
+
+    /**
      * @covers ::insertInto
      */
     public function testInsertInto()
@@ -46,6 +64,26 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         $expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `horsepower`, `released`, `modified`, `created`) VALUES (NULL, :make, :model, :horsepower, :released, :modified, :created);';
 
         $this->assertSame($expected, $this->carsSqlCommand->insertInto());
+    }
+
+    /**
+     * @covers ::updateSetWhere
+     */
+    public function testUpdateSetWhere()
+    {
+        /**
+         * Single column update
+         */
+        $expected = 'UPDATE `cars` SET `model` = :model WHERE `id` = :id;';
+
+        $this->assertSame($expected, $this->carsSqlCommand->updateSetWhere(['model']));
+
+        /**
+         * Multi column update
+         */
+        $expected = 'UPDATE `cars` SET `model` = :model, `horsepower` = :horsepower WHERE `id` = :id;';
+
+        $this->assertSame($expected, $this->carsSqlCommand->updateSetWhere(['model', 'horsepower']));
     }
 
     /**
@@ -63,19 +101,19 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testSelectFromWhereWithArray()
     {
+        /**
+         * Single column
+         */
         $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
-    }
 
-    /**
-     * @covers ::selectFromWhere
-     */
-    public function testSelectFromWhereWithString()
-    {
+        /**
+         * Multiple columns
+         */
         $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
 
-        $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere('make'));
+        $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make']));
     }
 
     /**
@@ -113,53 +151,31 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::getWhereConditionFromKeys
+     * @covers ::getEqualFromColumns
      */
-    public function testGetWhereConditionFromKeys()
+    public function testGetEqualFromColumns()
     {
         $reflector = new \ReflectionClass($this->carsSqlCommand);
 
-        $method = $reflector->getMethod('getWhereConditionFromKeys');
+        $method = $reflector->getMethod('getEqualFromColumns');
         $method->setAccessible(true);
 
-        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, 'id'));
-        $this->assertSame('`id` = :id AND `active` = :active', $method->invoke($this->carsSqlCommand, [
-            'id',
-            'active'
+        /**
+         * Single column with different glues
+         */
+        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, ', ', ['id']));
+        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, ' AND ', ['id']));
+
+        /**
+         * Multiple columns with different glues
+         */
+        $this->assertSame('`make` = :make, `model` = :model', $method->invoke($this->carsSqlCommand, ', ', [
+            'make',
+            'model'
         ]));
-    }
-
-    /**
-     * @covers ::getWhereConditionFromKeys
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Keys must be a string or an array of strings
-     */
-    public function testGetWhereConditionFromKeysInvalidArgument()
-    {
-        $reflector = new \ReflectionClass($this->carsSqlCommand);
-
-        $method = $reflector->getMethod('getWhereConditionFromKeys');
-        $method->setAccessible(true);
-
-        $method->invoke($this->carsSqlCommand, 42);
-    }
-
-    /**
-     * @covers ::__construct
-     */
-    public function testConstruct()
-    {
-        $sqlCommand = new SQLCommand('cars', ['foo', 'bar']);
-
-        $reflector = new \ReflectionClass($sqlCommand);
-
-        $tableName = $reflector->getProperty('tableName');
-        $tableName->setAccessible(true);
-        $this->assertSame('cars', $tableName->getValue($sqlCommand));
-
-        $columns = $reflector->getProperty('columns');
-        $columns->setAccessible(true);
-        $this->assertSame(['foo', 'bar'], $columns->getValue($sqlCommand));
+        $this->assertSame('`id` = :id AND `make` = :make', $method->invoke($this->carsSqlCommand, ' AND ', [
+            'id',
+            'make'
+        ]));
     }
 }

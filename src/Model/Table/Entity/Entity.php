@@ -25,9 +25,14 @@ abstract class Entity
     protected $properties = [];
 
     /**
-     * @param int       $id
-     * @param \DateTime $modified
-     * @param \DateTime $created
+     * @var array Internal altered columns
+     */
+    protected $alteredColumns = [];
+
+    /**
+     * @param int|null  $id       Entity ID
+     * @param \DateTime $modified Datetime of last modification
+     * @param \DateTime $created  Datetime of creation
      */
     public function __construct($id, \DateTime $modified, \DateTime $created)
     {
@@ -48,8 +53,8 @@ abstract class Entity
         ], static::$columns);
 
         $columns = array_merge($columns, [
-            'modified' => 'DateTime',
-            'created'  => 'DateTime'
+            'modified' => 'datetime',
+            'created'  => 'datetime'
         ]);
 
         return $columns;
@@ -70,7 +75,19 @@ abstract class Entity
             throw new InvalidEntityPropertyException([get_class($this), $key]);
         }
 
-        $this->properties[$key] = $this->validatePropertyForValue($key, $value);
+        $newValue = $this->validatePropertyForValue($key, $value);
+
+        if (!isset($this->properties[$key]) || $this->properties[$key] !== $newValue) {
+            /**
+             * Set internal property
+             */
+            $this->properties[$key] = $newValue;
+
+            /**
+             * Set altered column
+             */
+            $this->alteredColumns[$key] = true;
+        }
     }
 
     /**
@@ -92,8 +109,36 @@ abstract class Entity
     }
 
     /**
+     * Check if entity has been altered
+     *
+     * @return bool True if altered, otherwise false
+     */
+    public function isAltered(): bool
+    {
+        return count($this->alteredColumns) > 0;
+    }
+
+    /**
+     * Marks the entity as unaltered
+     */
+    public function setUnaltered()
+    {
+        $this->alteredColumns = [];
+    }
+
+    /**
+     * Get altered columns
+     *
+     * @return array
+     */
+    public function getAlteredColumns(): array
+    {
+        return $this->alteredColumns;
+    }
+
+    /**
      * Return table structur for saving
-     * Example: `['table_field_name' => $this->fieldName]`
+     * Example: `[':{table_field_name}' => $this->fieldName]`
      *
      * @param bool $includeId Should the ID column be included
      *
@@ -101,13 +146,31 @@ abstract class Entity
      */
     public function toArray(bool $includeId): array
     {
+        $columns = self::getColumns();
+
+        if (!$includeId) {
+            unset($columns['id']);
+        }
+
+        return $this->toArrayFromColumns($columns);
+    }
+
+    public function alteredToArray(bool $includeId): array
+    {
+        $alteredColumns = $this->alteredColumns;
+
+        if ($includeId) {
+            $alteredColumns['id'] = true;
+        }
+
+        return $this->toArrayFromColumns(array_intersect_key(self::getColumns(), $alteredColumns));
+    }
+
+    protected function toArrayFromColumns(array $columns): array
+    {
         $array = [];
 
-        foreach (self::getColumns() as $column => $type) {
-            if ($column === 'id' && !$includeId) {
-                continue;
-            }
-
+        foreach ($columns as $column => $type) {
             $property = new EntityProperty($type);
 
             $value = $this->get($column);
@@ -140,13 +203,13 @@ abstract class Entity
          * Allow NULL
          */
         if ($value !== null) {
-            $valueType = gettype($value);
+            $valueType = strtolower(gettype($value));
 
             /**
              * Get class if object
              */
             if ($valueType === 'object') {
-                $valueType = get_class($value);
+                $valueType = strtolower(get_class($value));
             }
 
             /**
@@ -155,8 +218,8 @@ abstract class Entity
             $columnType = self::getColumns()[$key];
 
             switch ($columnType) {
-                case 'Date':
-                    $columnType = 'DateTime';
+                case 'date':
+                    $columnType = 'datetime';
                     break;
             }
 

@@ -46,8 +46,8 @@ class EntityProperty
                 $value = (float) $value;
                 break;
 
-            case 'Date':
-            case 'DateTime':
+            case 'date':
+            case 'datetime':
                 $value = new \DateTime($value);
                 break;
         }
@@ -65,14 +65,14 @@ class EntityProperty
     public function formatValueForDatabase($value)
     {
         switch ($this->type) {
-            case 'Date':
+            case 'date':
                 /**
                  * @var \DateTime $value
                  */
                 $value = $value->format('Y-m-d');
                 break;
 
-            case 'DateTime':
+            case 'datetime':
                 /**
                  * @var \DateTime $value
                  */

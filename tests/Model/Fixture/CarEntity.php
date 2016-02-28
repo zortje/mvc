@@ -16,7 +16,7 @@ class CarEntity extends Entity
         'make'       => 'string',
         'model'      => 'string',
         'horsepower' => 'integer',
-        'released'   => 'Date'
+        'released'   => 'date'
     ];
 
     /**
@@ -25,7 +25,7 @@ class CarEntity extends Entity
      * @param integer   $horsePower
      * @param \DateTime $released
      */
-    public function __construct($make, $model, $horsePower, \DateTime $released)
+    public function __construct(string $make, string $model, int $horsePower, \DateTime $released)
     {
         parent::__construct(null, new \DateTime(), new \DateTime());
 

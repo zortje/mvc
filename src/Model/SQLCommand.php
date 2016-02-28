@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Model;
 
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
+
 /**
  * Class SQLCommand
  *
@@ -38,14 +40,29 @@ class SQLCommand
      */
     public function insertInto(): string
     {
-        $tableColumnNames = $this->getColumnNames($this->columns);
+        $columnNames = $this->getColumnNames($this->columns);
 
         $columns = $this->columns;
         unset($columns['id']);
 
-        $tableColumnValues = $this->getColumnValues($columns);
+        $columnValues = $this->getColumnValues($columns);
 
-        return "INSERT INTO `$this->tableName` ($tableColumnNames) VALUES (NULL, $tableColumnValues);";
+        return "INSERT INTO `$this->tableName` ($columnNames) VALUES (NULL, $columnValues);";
+    }
+
+    /**
+     * Create UPDATE SET command with WHERE for updating a single row with ID
+     *
+     * @param array $columns Columns to use in SET condition
+     *
+     * @return string
+     */
+    public function updateSetWhere(array $columns): string
+    {
+        $set   = $this->getEqualFromColumns(', ', $columns);
+        $where = $this->getEqualFromColumns(' AND ', ['id']);
+
+        return "UPDATE `$this->tableName` SET $set WHERE $where;";
     }
 
     /**
@@ -63,15 +80,15 @@ class SQLCommand
     /**
      * Create SELECT FROM command with WHERE
      *
-     * @param string|string[] $keys WHERE keys
+     * @param string[] $columns Columns to use in WHERE condition
      *
      * @return string SELECT FROM query
      */
-    public function selectFromWhere($keys): string
+    public function selectFromWhere($columns): string
     {
         $tableColumnNames = $this->getColumnNames($this->columns);
 
-        $where = $this->getWhereConditionFromKeys($keys);
+        $where = $this->getEqualFromColumns(' AND ', $columns);
 
         return "SELECT $tableColumnNames FROM `$this->tableName` WHERE $where;";
     }
@@ -105,26 +122,27 @@ class SQLCommand
     }
 
     /**
-     * Get WHERE condition for SQL command
+     * Get equal string for columns with glue
      *
-     * @param string|string[] $keys
+     * @param string $glue    String glue between columns
+     * @param array  $columns Columns to use
      *
      * @return string
+     *
+     * @throws InvalidEntityPropertyException If provided with columns which the entity dosnt have
      */
-    protected function getWhereConditionFromKeys($keys): string
+    protected function getEqualFromColumns(string $glue, array $columns): string
     {
-        $where = [];
+        $equal = [];
 
-        if (is_string($keys)) {
-            $keys = [$keys];
-        } elseif (!is_array($keys)) {
-            throw new \InvalidArgumentException('Keys must be a string or an array of strings');
+        foreach ($columns as $column) {
+            if (!isset($this->columns[$column])) {
+                throw new InvalidEntityPropertyException([get_class($this), $column]);
+            }
+
+            $equal[] = "`$column` = :$column";
         }
 
-        foreach ($keys as $key) {
-            $where[] = "`$key` = :$key";
-        }
-
-        return implode(' AND ', $where);
+        return implode($glue, $equal);
     }
 }

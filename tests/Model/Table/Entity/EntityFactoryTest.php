@@ -16,6 +16,20 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @covers ::__construct
+     */
+    public function testConstruct()
+    {
+        $entityFactory = new EntityFactory('Foo');
+
+        $reflector = new \ReflectionClass($entityFactory);
+
+        $entityClass = $reflector->getProperty('entityClass');
+        $entityClass->setAccessible(true);
+        $this->assertSame('Foo', $entityClass->getValue($entityFactory));
+    }
+
+    /**
      * @covers ::createFromArray
      */
     public function testCreateFromArray()
@@ -35,6 +49,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
             'created'    => '2015-05-03 00:53:42'
         ]);
 
+        $this->assertFalse($carEntity->isAltered());
         $this->assertSame(CarEntity::class, get_class($carEntity));
         $this->assertSame(42, $carEntity->get('id'));
         $this->assertSame('Ford', $carEntity->get('make'));
@@ -43,19 +58,5 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new \DateTime('1908-10-01'), $carEntity->get('released'));
         $this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('modified'));
         $this->assertEquals(new \DateTime('2015-05-03 00:53:42'), $carEntity->get('created'));
-    }
-
-    /**
-     * @covers ::__construct
-     */
-    public function testConstruct()
-    {
-        $entityFactory = new EntityFactory('Foo');
-
-        $reflector = new \ReflectionClass($entityFactory);
-
-        $entityClass = $reflector->getProperty('entityClass');
-        $entityClass->setAccessible(true);
-        $this->assertSame('Foo', $entityClass->getValue($entityFactory));
     }
 }

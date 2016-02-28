@@ -24,9 +24,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
             'make'       => 'string',
             'model'      => 'string',
             'horsepower' => 'integer',
-            'released'   => 'Date',
-            'modified'   => 'DateTime',
-            'created'    => 'DateTime'
+            'released'   => 'date',
+            'modified'   => 'datetime',
+            'created'    => 'datetime'
         ];
 
         $this->assertSame($expected, CarEntity::getColumns());
@@ -56,7 +56,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetInvalidProperty()
     {
-        $car = new CarEntity(null, null, null, new \DateTime());
+        $car = new CarEntity('', '', 0, new \DateTime());
 
         $car->set('invalid-property', 'value');
     }
@@ -69,9 +69,64 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetInvalidProperty()
     {
-        $car = new CarEntity(null, null, null, new \DateTime());
+        $car = new CarEntity('', '', 0, new \DateTime());
 
         $car->get('invalid-property');
+    }
+
+    /**
+     * @covers ::isAltered
+     * @covers ::setUnaltered
+     */
+    public function testIsAlteredFromConstructor()
+    {
+        $car = new CarEntity('', '', 0, new \DateTime());
+
+        $this->assertTrue($car->isAltered());
+
+        $expected = [
+            'id'         => true,
+            'modified'   => true,
+            'created'    => true,
+            'make'       => true,
+            'model'      => true,
+            'horsepower' => true,
+            'released'   => true
+        ];
+
+        $this->assertSame($expected, $car->getAlteredColumns());
+
+        $car->setUnaltered();
+
+        $this->assertFalse($car->isAltered());
+    }
+
+    /**
+     * @covers ::isAltered
+     * @covers ::getAlteredColumns
+     */
+    public function testIsAltered()
+    {
+        $car = new CarEntity('Ford', '', 20, new \DateTime());
+
+        $car->setUnaltered();
+
+        $car->set('horsepower', 21);
+
+        $expected = [
+            'horsepower' => true
+        ];
+
+        $this->assertSame($expected, $car->getAlteredColumns());
+
+        $car->set('model', 'Volkswagen');
+
+        $expected = [
+            'horsepower' => true,
+            'model'      => true
+        ];
+
+        $this->assertSame($expected, $car->getAlteredColumns());
     }
 
     /**
@@ -120,11 +175,48 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::alteredToArray
+     */
+    public function testAlteredToArrayWithId()
+    {
+        $car = new CarEntity('Ford', 'Model T', 20, new \DateTime('1908-10-01'));
+        $car->setUnaltered();
+
+        $car->set('horsepower', 21);
+
+        $expected = [
+            ':id' => null,
+            ':horsepower' => 21
+        ];
+
+        $this->assertSame($expected, $car->alteredToArray(true));
+    }
+
+    /**
+     * @covers ::alteredToArray
+     */
+    public function testAlteredToArrayWithoutId()
+    {
+        $car = new CarEntity('Ford', 'Model T', 20, new \DateTime('1908-10-01'));
+        $car->setUnaltered();
+
+        $car->set('horsepower', 21);
+
+        $expected = [
+            ':horsepower' => 21
+        ];
+
+        $this->assertSame($expected, $car->alteredToArray(false));
+    }
+
+    // @todo ::getAlteredColumns
+
+    /**
      * @covers ::validatePropertyForValue
      */
     public function testValidatePropertyForValue()
     {
-        $car = new CarEntity(null, null, null, new \DateTime());
+        $car = new CarEntity('', '', 0, new \DateTime());
 
         $reflector = new \ReflectionClass($car);
 
@@ -165,7 +257,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidatePropertyForValueInvaidProperty()
     {
-        $car = new CarEntity(null, null, null, new \DateTime());
+        $car = new CarEntity('', '', 0, new \DateTime());
 
         $reflector = new \ReflectionClass($car);
 
@@ -183,7 +275,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidatePropertyForValueInvalidValue()
     {
-        $car = new CarEntity(null, null, null, new \DateTime());
+        $car = new CarEntity('', '', 0, new \DateTime());
 
         $reflector = new \ReflectionClass($car);
 

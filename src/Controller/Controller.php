@@ -195,12 +195,6 @@ class Controller
      */
     protected function beforeAction()
     {
-        /**
-         * Set New Relic transaction name
-         */
-        if (extension_loaded('newrelic')) {
-            newrelic_name_transaction(sprintf('%s/%s', $this->getShortName(), $this->action));
-        }
     }
 
     /**

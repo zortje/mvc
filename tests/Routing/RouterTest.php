@@ -3,6 +3,7 @@
 namespace Zortje\MVC\Tests\Routing;
 
 use Zortje\MVC\Routing\Router;
+use Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException;
 
 /**
  * Class RouterTest
@@ -30,12 +31,12 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::connect
-     *
-     * @expectedException Zortje\MVC\Routing\Exception\RouteAlreadyConnectedException
-     * @expectedExceptionMessage Route /signin is already connected
      */
     public function testAlreadyConnectedException()
     {
+        $this->expectException(RouteAlreadyConnectedException::class);
+        $this->expectExceptionMessage('Route /signin is already connected');
+
         $router = new Router();
         $router->connect('/signin', 'signins', 'signin');
         $router->connect('/signin', 'signins', 'signin');

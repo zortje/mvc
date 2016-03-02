@@ -5,6 +5,7 @@ namespace Zortje\MVC\Controller;
 
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
+use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\User\User;
 
 /**
@@ -21,25 +22,41 @@ class ControllerFactory
     protected $pdo;
 
     /**
+     * @var array Post
+     */
+    protected $post;
+
+    /**
+     * @var Cookie Cookie
+     */
+    protected $cookie;
+
+    /**
+     * @var User|null User
+     */
+    protected $user;
+
+    /**
      * @var string App file path
      */
     protected $appPath;
 
     /**
-     * @var null|User User
-     */
-    protected $user;
-
-    /**
+     * ControllerFactory constructor.
+     *
      * @param \PDO      $pdo
+     * @param array     $post
+     * @param Cookie    $cookie
      * @param string    $appPath
-     * @param null|User $user
+     * @param User|null $user
      */
-    public function __construct(\PDO $pdo, string $appPath, User $user = null)
+    public function __construct(\PDO $pdo, array $post, Cookie $cookie, string $appPath, User $user = null)
     {
         $this->pdo     = $pdo;
-        $this->appPath = $appPath;
+        $this->post    = $post;
+        $this->cookie  = $cookie;
         $this->user    = $user;
+        $this->appPath = $appPath;
     }
 
     /**
@@ -63,7 +80,7 @@ class ControllerFactory
         /**
          * @var Controller $controller
          */
-        $controller = new $controller($this->pdo, $this->appPath, $this->user);
+        $controller = new $controller($this->pdo, $this->post, $this->cookie, $this->appPath, $this->user);
 
         return $controller;
     }

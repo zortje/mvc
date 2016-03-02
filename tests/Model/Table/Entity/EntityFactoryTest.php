@@ -24,9 +24,9 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
 
         $reflector = new \ReflectionClass($entityFactory);
 
-        $entityClass = $reflector->getProperty('entityClass');
-        $entityClass->setAccessible(true);
-        $this->assertSame('Foo', $entityClass->getValue($entityFactory));
+        $property = $reflector->getProperty('entityClass');
+        $property->setAccessible(true);
+        $this->assertSame('Foo', $property->getValue($entityFactory));
     }
 
     /**

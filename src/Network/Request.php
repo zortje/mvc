@@ -46,4 +46,14 @@ class Request
 
         return $path;
     }
+
+    /**
+     * Get request POST data
+     *
+     * @return array POST data
+     */
+    public function getPost(): array
+    {
+        return $this->post;
+    }
 }

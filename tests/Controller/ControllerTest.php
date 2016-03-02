@@ -6,6 +6,7 @@ use Zortje\MVC\Controller\ControllerFactory;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
+use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\Tests\Controller\Fixture\CarsController;
 use Zortje\MVC\User\User;
 
@@ -36,7 +37,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     {
         $user = new User('', '');
 
-        $controllerFactory = new ControllerFactory($this->pdo, '/var/www/html/', $user);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '/var/www/html/', $user);
 
         $controller = $controllerFactory->create(CarsController::class);
 
@@ -60,7 +61,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetShortName()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $controller = $controllerFactory->create(CarsController::class);
 
@@ -72,7 +73,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetAction()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('index');
@@ -92,7 +93,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $this->expectException(ControllerActionNonexistentException::class);
         $this->expectExceptionMessage('Controller Zortje\MVC\Tests\Controller\Fixture\CarsController action nonexistent is nonexistent');
 
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('nonexistent');
@@ -106,7 +107,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $this->expectException(ControllerActionProtectedInsufficientAuthenticationException::class);
         $this->expectExceptionMessage('Controller Zortje\MVC\Tests\Controller\Fixture\CarsController protected action hidden requires authentication');
 
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('hidden');
@@ -120,7 +121,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $this->expectException(ControllerActionPrivateInsufficientAuthenticationException::class);
         $this->expectExceptionMessage('Controller Zortje\MVC\Tests\Controller\Fixture\CarsController private action add requires authentication');
 
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('add');
@@ -139,7 +140,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetLayoutTemplate()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '/var/www/html/', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '/var/www/html/');
 
         $carsController = $controllerFactory->create(CarsController::class);
 
@@ -156,7 +157,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetViewTemplate()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('index');
@@ -178,7 +179,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetViewTemplateViewNotSet()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '/src/', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '/src/');
 
         $carsController = $controllerFactory->create(CarsController::class);
         $carsController->setAction('index');
@@ -201,7 +202,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetResponseCode(int $code, string $responseCode)
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
 
@@ -255,7 +256,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('HTTP status \'42\' is not implemented');
 
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $carsController = $controllerFactory->create(CarsController::class);
 

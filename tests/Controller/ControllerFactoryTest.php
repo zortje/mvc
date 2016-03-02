@@ -3,9 +3,12 @@
 namespace Zortje\MVC\Tests\Controller;
 
 use Zortje\MVC\Controller\ControllerFactory;
+use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\User\User;
 use Zortje\MVC\Tests\Controller\Fixture\CarsController;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
+use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
+use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 
 /**
  * Class ControllerFactoryTest
@@ -32,7 +35,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreate()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $controller = $controllerFactory->create(CarsController::class);
 
@@ -41,26 +44,26 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::create
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
-     * @expectedExceptionMessage Controller NonexistentController is nonexistent
      */
     public function testCreateNonexistent()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $this->expectException(ControllerNonexistentException::class);
+        $this->expectExceptionMessage('Controller NonexistentController is nonexistent');
+
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $controllerFactory->create('NonexistentController');
     }
 
     /**
      * @covers ::create
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException
-     * @expectedExceptionMessage Controller Zortje\MVC\Tests\Model\Fixture\CarEntity is not a subclass of Controller
      */
     public function testCreateInvalidSuperclass()
     {
-        $controllerFactory = new ControllerFactory($this->pdo, '', null);
+        $this->expectException(ControllerInvalidSuperclassException::class);
+        $this->expectExceptionMessage('Controller Zortje\MVC\Tests\Model\Fixture\CarEntity is not a subclass of Controller');
+
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '');
 
         $controllerFactory->create(CarEntity::class);
     }
@@ -72,7 +75,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $user = new User('', '');
 
-        $controllerFactory = new ControllerFactory($this->pdo, '/var/www/html/', $user);
+        $controllerFactory = new ControllerFactory($this->pdo, [], new Cookie(), '/var/www/html/', $user);
 
         $reflector = new \ReflectionClass($controllerFactory);
 

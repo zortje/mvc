@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Routing;
 
@@ -9,11 +10,14 @@ use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthentic
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
+use Zortje\MVC\Controller\SignInsController;
 use Zortje\MVC\Controller\NotFoundController;
-use Zortje\MVC\Model\User;
+use Zortje\MVC\Storage\Cookie\Cookie;
+use Zortje\MVC\User\User;
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Network\Response;
 use Zortje\MVC\Routing\Exception\RouteNonexistentException;
+use Zortje\MVC\User\UserAuthenticator;
 
 /**
  * Class Dispatcher
@@ -24,14 +28,24 @@ class Dispatcher
 {
 
     /**
-     * @var Router
-     */
-    protected $router;
-
-    /**
      * @var \PDO PDO
      */
     protected $pdo;
+
+    /**
+     * @var Cookie Cookie
+     */
+    protected $cookie;
+
+    /**
+     * @var User|null User
+     */
+    protected $user;
+
+    /**
+     * @var Router
+     */
+    protected $router;
 
     /**
      * @var string App file path
@@ -39,14 +53,32 @@ class Dispatcher
     protected $appPath;
 
     /**
-     * @var null|User User
-     */
-    protected $user;
-
-    /**
      * @var Logger
      */
     protected $logger;
+
+    /**
+     * Dispatcher constructor.
+     *
+     * @param \PDO   $pdo
+     * @param array  $cookie
+     * @param Router $router
+     * @param string $appPath
+     */
+    public function __construct(\PDO $pdo, array $cookie, Router $router, string $appPath)
+    {
+        $this->pdo     = $pdo;
+        $this->cookie  = new Cookie($cookie);
+        $this->router  = $router;
+        $this->appPath = $appPath;
+
+        /**
+         * Authenticate user from cookie
+         */
+        $userAuthenticator = new UserAuthenticator($this->pdo);
+
+        $this->user = $userAuthenticator->userFromCookie($this->cookie);
+    }
 
     /**
      * Set logger to be used for any logging that could occure in the dispatching process
@@ -65,9 +97,9 @@ class Dispatcher
      *
      * @throws \Exception If unexpected exception is thrown
      */
-    public function dispatch(Request $request)
+    public function dispatch(Request $request): Response
     {
-        $controllerFactory = new ControllerFactory($this->pdo, $this->appPath, $this->user);
+        $controllerFactory = new ControllerFactory($this->pdo, $request->getPost(), $this->cookie, $this->appPath, $this->user);
 
         try {
             list($controllerName, $action) = array_values($this->router->route($request->getPath()));
@@ -136,8 +168,14 @@ class Dispatcher
                 ]);
             }
 
-            // @todo redirect to login page & and save what action was requested to redirect after successful login
+            /**
+             * Save what controller and action was requested and then redirect to sign in form
+             */
+            $this->cookie->set('SignIn.onSuccess.controller', $controller->getShortName());
+            $this->cookie->set('SignIn.onSuccess.action', $action);
 
+            $controller = $controllerFactory->create(SignInsController::class);
+            $controller->setAction('form');
         } catch (ControllerActionPrivateInsufficientAuthenticationException $e) {
             /**
              * Log unauthed private controller action (403)
@@ -151,6 +189,7 @@ class Dispatcher
             }
 
             $controller = $controllerFactory->create(NotFoundController::class);
+            $controller->setAction('index');
         } catch (ControllerActionNonexistentException $e) {
             /**
              * Log nonexistent controller action
@@ -164,6 +203,7 @@ class Dispatcher
             }
 
             $controller = $controllerFactory->create(NotFoundController::class);
+            $controller->setAction('index');
         }
 
         /**
@@ -175,29 +215,9 @@ class Dispatcher
          * Performance logging
          */
         if ($this->logger) {
-            $this->logger->addDebug(
-                vsprintf(
-                    'Dispatched request in %s ms',
-                    number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)
-                ),
-                ['path' => $request->getPath()]
-            );
+            $this->logger->addDebug(vsprintf('Dispatched request in %s ms', number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)), ['path' => $request->getPath()]);
         }
 
         return new Response($headers, $output);
-    }
-
-    /**
-     * @param Router    $router
-     * @param \PDO      $pdo
-     * @param string    $appPath
-     * @param null|User $user
-     */
-    public function __construct(Router $router, \PDO $pdo, $appPath, User $user = null)
-    {
-        $this->router  = $router;
-        $this->pdo     = $pdo;
-        $this->appPath = $appPath;
-        $this->user    = $user;
     }
 }

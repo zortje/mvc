@@ -63,7 +63,7 @@ class SignInsController extends Controller
          */
         $userAuthenticator = new UserAuthenticator($this->pdo);
 
-        if ($userAuthenticator->signIn($user, $this->post['User.Password']) == false) {
+        if ($userAuthenticator->signIn($user, $this->post['User.Password']) === false) {
             // @todo Set flash message: Incorrect email or password (Incorrect password)
 
             $this->redirect('/form');

@@ -63,19 +63,19 @@ abstract class Entity
     /**
      * Set entity property
      *
-     * @param string                                          $key   Entity property name
-     * @param object|integer|double|string|array|boolean|null $value Entity property value
+     * @param string                                      $key   Entity property name
+     * @param object|int|double|string|array|boolean|null $value Entity property value
      *
      * @throws InvalidEntityPropertyException If entity does not have that property
      * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
      */
     public function set(string $key, $value)
     {
-        if (!isset(self::getColumns()[$key])) {
+        if (isset(self::getColumns()[$key]) === false) {
             throw new InvalidEntityPropertyException([get_class($this), $key]);
         }
 
-        $newValue = $this->validatePropertyForValue($key, $value);
+        $newValue = $this->validatePropertyValueType($key, $value);
 
         if (!isset($this->properties[$key]) || $this->properties[$key] !== $newValue) {
             /**
@@ -95,7 +95,7 @@ abstract class Entity
      *
      * @param string $key Entity property
      *
-     * @return object|integer|double|string|array|boolean|null Entity property value for given key
+     * @return object|int|double|string|array|boolean|null Entity property value for given key
      *
      * @throws InvalidEntityPropertyException If entity does not have that property
      */
@@ -106,6 +106,63 @@ abstract class Entity
         }
 
         return $this->properties[$key];
+    }
+
+    /**
+     * Validate type for given property value
+     *
+     * @param string $key   Entity property name
+     * @param mixed  $value Entity property value
+     *
+     * @return object|int|double|string|array|boolean|null Value
+     *
+     * @throws InvalidEntityPropertyException If entity does not have that property
+     * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
+     */
+    public function validatePropertyValueType(string $key, $value)
+    {
+        if (!isset(self::getColumns()[$key])) {
+            throw new InvalidEntityPropertyException([get_class($this), $key]);
+        }
+
+        /**
+         * Allow NULL
+         */
+        if ($value !== null) {
+            $valueType = strtolower(gettype($value));
+
+            /**
+             * Get class if object
+             */
+            if ($valueType === 'object') {
+                $valueType = strtolower(get_class($value));
+            }
+
+            /**
+             * Handle alias types
+             */
+            $columnType = self::getColumns()[$key];
+
+            switch ($columnType) {
+                case 'date':
+                    $columnType = 'datetime';
+                    break;
+            }
+
+            /**
+             * Validate type
+             */
+            if ($valueType !== $columnType) {
+                throw new InvalidValueTypeForEntityPropertyException([
+                    get_class($this),
+                    $key,
+                    $columnType,
+                    $valueType
+                ]);
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -180,62 +237,5 @@ abstract class Entity
         }
 
         return $array;
-    }
-
-    /**
-     * Validate property for given value
-     *
-     * @param string $key   Entity property name
-     * @param mixed  $value Entity property value
-     *
-     * @return object|integer|double|string|array|boolean|null Value
-     *
-     * @throws InvalidEntityPropertyException If entity does not have that property
-     * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
-     */
-    protected function validatePropertyForValue(string $key, $value)
-    {
-        if (!isset(self::getColumns()[$key])) {
-            throw new InvalidEntityPropertyException([get_class($this), $key]);
-        }
-
-        /**
-         * Allow NULL
-         */
-        if ($value !== null) {
-            $valueType = strtolower(gettype($value));
-
-            /**
-             * Get class if object
-             */
-            if ($valueType === 'object') {
-                $valueType = strtolower(get_class($value));
-            }
-
-            /**
-             * Handle alias types
-             */
-            $columnType = self::getColumns()[$key];
-
-            switch ($columnType) {
-                case 'date':
-                    $columnType = 'datetime';
-                    break;
-            }
-
-            /**
-             * Validate type
-             */
-            if ($valueType !== $columnType) {
-                throw new InvalidValueTypeForEntityPropertyException([
-                    get_class($this),
-                    $key,
-                    $valueType,
-                    $columnType
-                ]);
-            }
-        }
-
-        return $value;
     }
 }

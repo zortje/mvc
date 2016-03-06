@@ -1,7 +1,10 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Model\Table\Entity;
 
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 
 /**
@@ -72,6 +75,84 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $car = new CarEntity('', '', 0, new \DateTime());
 
         $car->get('invalid-property');
+    }
+
+    /**
+     * @covers ::validatePropertyValueType
+     */
+    public function testValidatePropertyValueType()
+    {
+        $car = new CarEntity('', '', 0, new \DateTime());
+
+        $reflector = new \ReflectionClass($car);
+
+        $method = $reflector->getMethod('validatePropertyValueType');
+        $method->setAccessible(true);
+
+        /**
+         * Entity
+         */
+        $this->assertSame(null, $method->invoke($car, 'id', null), 'ID property');
+        $this->assertSame(42, $method->invoke($car, 'id', 42), 'ID property');
+
+        $this->assertEquals(new \DateTime(), $method->invoke($car, 'modified', new \DateTime()), 'Modified property');
+        $this->assertEquals(new \DateTime(), $method->invoke($car, 'created', new \DateTime()), 'Created property');
+
+        /**
+         * CarEntity
+         */
+        $this->assertSame(null, $method->invoke($car, 'make', null), 'Make property');
+        $this->assertSame('Ford', $method->invoke($car, 'make', 'Ford'), 'Make property');
+
+        $this->assertSame(null, $method->invoke($car, 'model', null), 'Model property');
+        $this->assertSame('Model A', $method->invoke($car, 'model', 'Model A'), 'Model property');
+
+        $this->assertSame(null, $method->invoke($car, 'horsepower', null), 'Horsepower property');
+        $this->assertSame(65, $method->invoke($car, 'horsepower', 65), 'Horsepower property');
+
+        $this->assertEquals(null, $method->invoke($car, 'released', null), 'Released  property');
+        $this->assertEquals(new \DateTime('1927-10-20'), $method->invoke($car, 'released', new \DateTime('1927-10-20')),
+            'Released  property');
+    }
+
+    /**
+     * @covers ::validatePropertyValueType
+     */
+    public function testValidatePropertyValueTypeInvaidProperty()
+    {
+        $message = 'Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property';
+
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage($message);
+
+        $car = new CarEntity('', '', 0, new \DateTime());
+
+        $reflector = new \ReflectionClass($car);
+
+        $method = $reflector->getMethod('validatePropertyValueType');
+        $method->setAccessible(true);
+
+        $method->invoke($car, 'invalid-property', 'value');
+    }
+
+    /**
+     * @covers ::validatePropertyValueType
+     */
+    public function testValidatePropertyValueTypeInvalidValue()
+    {
+        $message = 'Entity Zortje\MVC\Tests\Model\Fixture\CarEntity property id is of type integer and not string';
+
+        $this->expectException(InvalidValueTypeForEntityPropertyException::class);
+        $this->expectExceptionMessage($message);
+
+        $car = new CarEntity('', '', 0, new \DateTime());
+
+        $reflector = new \ReflectionClass($car);
+
+        $method = $reflector->getMethod('validatePropertyValueType');
+        $method->setAccessible(true);
+
+        $method->invoke($car, 'id', 'string');
     }
 
     /**
@@ -185,7 +266,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $car->set('horsepower', 21);
 
         $expected = [
-            ':id' => null,
+            ':id'         => null,
             ':horsepower' => 21
         ];
 
@@ -209,79 +290,5 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $car->alteredToArray(false));
     }
 
-    // @todo ::getAlteredColumns
-
-    /**
-     * @covers ::validatePropertyForValue
-     */
-    public function testValidatePropertyForValue()
-    {
-        $car = new CarEntity('', '', 0, new \DateTime());
-
-        $reflector = new \ReflectionClass($car);
-
-        $method = $reflector->getMethod('validatePropertyForValue');
-        $method->setAccessible(true);
-
-        /**
-         * Entity
-         */
-        $this->assertSame(null, $method->invoke($car, 'id', null), 'ID property');
-        $this->assertSame(42, $method->invoke($car, 'id', 42), 'ID property');
-
-        $this->assertEquals(new \DateTime(), $method->invoke($car, 'modified', new \DateTime()), 'Modified property');
-        $this->assertEquals(new \DateTime(), $method->invoke($car, 'created', new \DateTime()), 'Created property');
-
-        /**
-         * CarEntity
-         */
-        $this->assertSame(null, $method->invoke($car, 'make', null), 'Make property');
-        $this->assertSame('Ford', $method->invoke($car, 'make', 'Ford'), 'Make property');
-
-        $this->assertSame(null, $method->invoke($car, 'model', null), 'Model property');
-        $this->assertSame('Model A', $method->invoke($car, 'model', 'Model A'), 'Model property');
-
-        $this->assertSame(null, $method->invoke($car, 'horsepower', null), 'Horsepower property');
-        $this->assertSame(65, $method->invoke($car, 'horsepower', 65), 'Horsepower property');
-
-        $this->assertEquals(null, $method->invoke($car, 'released', null), 'Released  property');
-        $this->assertEquals(new \DateTime('1927-10-20'), $method->invoke($car, 'released', new \DateTime('1927-10-20')),
-            'Released  property');
-    }
-
-    /**
-     * @covers ::validatePropertyForValue
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
-     * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
-     */
-    public function testValidatePropertyForValueInvaidProperty()
-    {
-        $car = new CarEntity('', '', 0, new \DateTime());
-
-        $reflector = new \ReflectionClass($car);
-
-        $method = $reflector->getMethod('validatePropertyForValue');
-        $method->setAccessible(true);
-
-        $method->invoke($car, 'invalid-property', 'value');
-    }
-
-    /**
-     * @covers ::validatePropertyForValue
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException
-     * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity property id is of type string and not integer
-     */
-    public function testValidatePropertyForValueInvalidValue()
-    {
-        $car = new CarEntity('', '', 0, new \DateTime());
-
-        $reflector = new \ReflectionClass($car);
-
-        $method = $reflector->getMethod('validatePropertyForValue');
-        $method->setAccessible(true);
-
-        $method->invoke($car, 'id', 'string');
-    }
+    // @todo ::toArrayFromColumns
 }

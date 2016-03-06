@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Model\Fixture;
 
@@ -20,9 +21,11 @@ class CarEntity extends Entity
     ];
 
     /**
+     * CarEntity constructor.
+     *
      * @param string    $make
      * @param string    $model
-     * @param integer   $horsePower
+     * @param int       $horsePower
      * @param \DateTime $released
      */
     public function __construct(string $make, string $model, int $horsePower, \DateTime $released)

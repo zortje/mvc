@@ -1,7 +1,10 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Model\Table;
 
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
 
@@ -153,15 +156,34 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
     /**
      * @covers ::findBy
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
-     * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
      */
     public function testFindByInvalid()
     {
+        $message = 'Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property';
+
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage($message);
+
         $carTable = new CarTable($this->pdo);
 
         $carTable->findBy('invalid-property', 20);
+    }
+
+    /**
+     * @covers ::findBy
+     */
+    public function testFindByException()
+    {
+        $message = 'Entity Zortje\MVC\Tests\Model\Fixture\CarEntity property horsepower is of type integer and not string';
+
+        $this->expectException(InvalidValueTypeForEntityPropertyException::class);
+        $this->expectExceptionMessage($message);
+
+        $carTable = new CarTable($this->pdo);
+
+        $cars = $carTable->findBy('horsepower', '1337');
+
+        $this->assertCount(0, $cars);
     }
 
     /**

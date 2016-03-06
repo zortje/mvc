@@ -39,11 +39,11 @@ class EntityProperty
                 break;
 
             case 'integer':
-                $value = (int) $value;
+                $value = (int)$value;
                 break;
 
             case 'float':
-                $value = (float) $value;
+                $value = (float)$value;
                 break;
 
             case 'date':

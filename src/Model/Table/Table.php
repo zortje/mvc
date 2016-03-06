@@ -92,16 +92,18 @@ abstract class Table
      * Find all entities where key is equal to the given value
      *
      * @param string $key   Entity key
-     * @param string $value Value to search for
+     * @param mixed  $value Value to search for
      *
      * @throws InvalidEntityPropertyException If entity does not have that property
      *
      * @return Entity[] Entities
      */
-    public function findBy(string $key, string $value): array
+    public function findBy(string $key, $value): array
     {
         /**
          * Check if entity have the property
+         *
+         * @var Entity $entity
          */
         $reflector = new \ReflectionClass($this->entityClass);
 
@@ -110,6 +112,11 @@ abstract class Table
         if (!isset($entity::getColumns()[$key])) {
             throw new InvalidEntityPropertyException([$this->entityClass, $key]);
         }
+
+        /**
+         * Validate value
+         */
+        $value = $entity->validatePropertyValueType($key, $value);
 
         /**
          * Execute with key-value condition

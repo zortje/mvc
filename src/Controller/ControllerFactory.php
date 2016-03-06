@@ -3,9 +3,10 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Controller;
 
+use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
-use Zortje\MVC\Storage\Cookie\Cookie;
+use Zortje\MVC\Network\Request;
 use Zortje\MVC\User\User;
 
 /**
@@ -22,14 +23,14 @@ class ControllerFactory
     protected $pdo;
 
     /**
-     * @var array Post
+     * @var Configuration
      */
-    protected $post;
+    protected $configuration;
 
     /**
-     * @var Cookie Cookie
+     * @var Request
      */
-    protected $cookie;
+    protected $request;
 
     /**
      * @var User|null User
@@ -37,26 +38,19 @@ class ControllerFactory
     protected $user;
 
     /**
-     * @var string App file path
-     */
-    protected $appPath;
-
-    /**
      * ControllerFactory constructor.
      *
-     * @param \PDO      $pdo
-     * @param array     $post
-     * @param Cookie    $cookie
-     * @param string    $appPath
-     * @param User|null $user
+     * @param \PDO          $pdo
+     * @param Configuration $configuration
+     * @param Request       $request
+     * @param User|null     $user
      */
-    public function __construct(\PDO $pdo, array $post, Cookie $cookie, string $appPath, User $user = null)
+    public function __construct(\PDO $pdo, Configuration $configuration, Request $request, User $user = null)
     {
-        $this->pdo     = $pdo;
-        $this->post    = $post;
-        $this->cookie  = $cookie;
-        $this->user    = $user;
-        $this->appPath = $appPath;
+        $this->pdo           = $pdo;
+        $this->configuration = $configuration;
+        $this->request       = $request;
+        $this->user          = $user;
     }
 
     /**
@@ -80,7 +74,7 @@ class ControllerFactory
         /**
          * @var Controller $controller
          */
-        $controller = new $controller($this->pdo, $this->post, $this->cookie, $this->appPath, $this->user);
+        $controller = new $controller($this->pdo, $this->configuration, $this->request->getCookie(), $this->user);
 
         return $controller;
     }

@@ -1,8 +1,11 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Network;
 
+use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Network\Request;
+use Zortje\MVC\Storage\Cookie\Cookie;
 
 /**
  * Class RequestTest
@@ -15,20 +18,63 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @var Configuration
+     */
+    private $configuration;
+
+    public function setUp()
+    {
+        $this->configuration = new Configuration();
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getPost
+     * @covers ::getCookie
+     */
+    public function testConstruct()
+    {
+        $cookie  = new Cookie($this->configuration);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => '/'];
+        $post    = ['User.Email' => 'user@example.com'];
+        $request = new Request($cookie, $server, $post);
+
+        $reflector = new \ReflectionClass($request);
+
+        $urlProperty = $reflector->getProperty('url');
+        $urlProperty->setAccessible(true);
+        $this->assertSame('https://www.example.com', $urlProperty->getValue($request));
+
+        $postProperty = $reflector->getProperty('post');
+        $postProperty->setAccessible(true);
+        $this->assertSame($post, $postProperty->getValue($request));
+        $this->assertSame($post, $request->getPost());
+
+        $cookieProperty = $reflector->getProperty('cookie');
+        $cookieProperty->setAccessible(true);
+        $this->assertSame($cookie, $cookieProperty->getValue($request));
+        $this->assertSame($cookie, $request->getCookie());
+    }
+
+    /**
      * @covers ::getPath
      */
     public function testGetPath()
     {
-        $request = new Request('https://www.example.com/cars', []);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => '/cars'];
+        $request = new Request(new Cookie($this->configuration), $server);
         $this->assertEquals('/cars', $request->getPath(), 'Single component path without slash');
 
-        $request = new Request('https://www.example.com/cars/', []);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => '/cars/'];
+        $request = new Request(new Cookie($this->configuration), $server);
         $this->assertEquals('/cars', $request->getPath(), 'Single component path with slash');
 
-        $request = new Request('https://www.example.com/cars/ford', []);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => '/cars/ford'];
+        $request = new Request(new Cookie($this->configuration), $server);
         $this->assertEquals('/cars/ford', $request->getPath(), 'Two component path without slash');
 
-        $request = new Request('https://www.example.com/cars/ford/', []);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => '/cars/ford/'];
+        $request = new Request(new Cookie($this->configuration), $server);
         $this->assertEquals('/cars/ford', $request->getPath(), 'Two component path with slash');
     }
 
@@ -37,28 +83,36 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetPathEmptyPath()
     {
-        $request = new Request('https://www.example.com', []);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => ''];
+        $request = new Request(new Cookie($this->configuration), $server);
         $this->assertEquals('', $request->getPath(), 'Empty path without slash');
 
-        $request = new Request('https://www.example.com/', []);
+        $server  = ['HTTPS' => 'https', 'HTTP_HOST' => 'www.example.com', 'REQUEST_URI' => '/'];
+        $request = new Request(new Cookie($this->configuration), $server);
         $this->assertEquals('', $request->getPath(), 'Empty path with slash');
     }
 
     /**
-     * @covers ::__construct
+     * @covers ::getPost
      */
-    public function testConstruct()
+    public function testGetPost()
     {
-        $request = new Request('https://www.example.com/', []);
+        $post    = ['User.Email' => 'user@example.com'];
+        $request = new Request(new Cookie($this->configuration), [], $post);
 
-        $reflector = new \ReflectionClass($request);
-
-        $url = $reflector->getProperty('url');
-        $url->setAccessible(true);
-        $this->assertSame('https://www.example.com', $url->getValue($request));
-
-        $post = $reflector->getProperty('post');
-        $post->setAccessible(true);
-        $this->assertSame([], $post->getValue($request));
+        $this->assertSame($post, $request->getPost());
     }
+
+    /**
+     * @covers ::getCookie
+     */
+    public function testGetCookie()
+    {
+        $cookie  = new Cookie($this->configuration);
+        $request = new Request($cookie);
+
+        $this->assertSame($cookie, $request->getCookie());
+    }
+
+    // @todo test ::createUrlFromServerArray
 }

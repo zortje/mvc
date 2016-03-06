@@ -8,6 +8,8 @@ use Lcobucci\JWT\Claim;
 use Lcobucci\JWT\Parser;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\ValidationData;
+use Zortje\MVC\Configuration\Configuration;
+use Zortje\MVC\Storage\Cookie\Exception\CookieUndefinedIndexException;
 
 /**
  * Class Cookie
@@ -20,6 +22,11 @@ class Cookie
     const ISSUER = 'zortje/mvc';
 
     /**
+     * @var Configuration
+     */
+    protected $configuration;
+
+    /**
      * @var string[] Internal cookie values
      */
     protected $values = [];
@@ -27,35 +34,13 @@ class Cookie
     /**
      * Cookie constructor.
      *
-     * @param string $token JWT token string
+     * @param Configuration $configuration Configuration
+     * @param string        $token         JWT string
      */
-    public function __construct(string $token = '')
+    public function __construct(Configuration $configuration, string $token = '')
     {
-        // @todo SECRET key should be in configuration
-        $secret = 'super-secret-key';
-
-        try {
-            $token = (new Parser())->parse($token);
-
-            $data = new ValidationData(); // It will use the current time to validate (iat, nbf and exp)
-            $data->setIssuer(self::ISSUER);
-
-            if ($token->validate($data) && $token->verify(new Sha256(), $secret)) {
-                /**
-                 * @var Claim $claim
-                 */
-                $ignored = array_fill_keys(['iss', 'exp'], true);
-
-                foreach ($token->getClaims() as $claim) {
-                    if (isset($ignored[$claim->getName()])) {
-                        continue;
-                    }
-
-                    $this->values[$claim->getName()] = $claim->getValue();
-                }
-            }
-        } catch (\InvalidArgumentException $e) {
-        }
+        $this->configuration = $configuration;
+        $this->values        = $this->parseAndValidateToken($token);
     }
 
     /**
@@ -75,26 +60,29 @@ class Cookie
      * @param string $key Cookie key
      *
      * @return string Cookie value
+     *
+     * @throws CookieUndefinedIndexException
      */
     public function get(string $key): string
     {
+        if (isset($this->values[$key]) === false) {
+            throw new CookieUndefinedIndexException([$key]);
+        }
+
         return $this->values[$key];
     }
 
+    /**
+     * @return string JWT string
+     */
     public function getTokenString(): string
     {
-        // @todo SECRET key should be in configuration
-        $secret = 'super-secret-key';
-
-        // @todo should cookie TTL be set in a configuration?
-        $cookieTTL = '+1 hour';
-
         /**
          * Build Token
          */
         $builder = (new Builder());
         $builder->setIssuer(self::ISSUER);
-        $builder->setExpiration((new \DateTime($cookieTTL))->getTimestamp());
+        $builder->setExpiration((new \DateTime($this->configuration->get('Cookie.TTL')))->getTimestamp());
 
         foreach ($this->values as $key => $value) {
             $builder->set($key, $value);
@@ -103,10 +91,42 @@ class Cookie
         /**
          * Sign and generate new token
          */
-        $builder->sign(new Sha256(), $secret);
+        $builder->sign(new Sha256(), $this->configuration->get('Cookie.Signer.Key'));
 
         $token = $builder->getToken();
 
-        return (string) $token;
+        return (string)$token;
+    }
+
+    protected function parseAndValidateToken(string $token)
+    {
+        try {
+            $token = (new Parser())->parse($token);
+
+            // @todo How to test: It will use the current time to validate (iat, nbf and exp)
+            $data = new ValidationData();
+            $data->setIssuer(self::ISSUER);
+
+            $values = [];
+
+            if ($token->validate($data) && $token->verify(new Sha256(), $this->configuration->get('Cookie.Signer.Key'))) {
+                /**
+                 * @var Claim $claim
+                 */
+                $ignored = array_fill_keys(['iss', 'exp'], true);
+
+                foreach ($token->getClaims() as $claim) {
+                    if (isset($ignored[$claim->getName()])) {
+                        continue;
+                    }
+
+                    $values[$claim->getName()] = $claim->getValue();
+                }
+            }
+
+            return $values;
+        } catch (\InvalidArgumentException $e) {
+            return [];
+        }
     }
 }

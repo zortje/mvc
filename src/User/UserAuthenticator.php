@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\User;
 
+use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\Storage\Cookie\Exception\CookieUndefinedIndexException;
 
@@ -20,20 +21,20 @@ class UserAuthenticator
     protected $pdo;
 
     /**
-     * @var int Password hashing cost
-     *
-     * @todo Get the cost from a configuration class
+     * @var Configuration
      */
-    private $passwordHashingCost = 11;
+    protected $configuration;
 
     /**
      * UserAuthenticator constructor.
      *
-     * @param \PDO $pdo
+     * @param \PDO          $pdo
+     * @param Configuration $configuration
      */
-    public function __construct(\PDO $pdo)
+    public function __construct(\PDO $pdo, Configuration $configuration)
     {
-        $this->pdo = $pdo;
+        $this->pdo           = $pdo;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -85,7 +86,7 @@ class UserAuthenticator
              * Check if a new hashing algorithm is available or the cost has changed
              * If so, create a new hash and replace the old one in the user
              */
-            $options = ['cost' => $this->passwordHashingCost];
+            $options = ['cost' => $this->configuration->get('User.Password.Cost')];
 
             if (password_needs_rehash($user->get('password_hash'), PASSWORD_DEFAULT, $options)) {
                 /**
@@ -108,7 +109,7 @@ class UserAuthenticator
             /**
              * Set User id in session
              */
-            $_SESSION['User.id'] = $user->get('id');
+            $cookie->set('User.id', $user->get('id'));
 
             /**
              * Return true to indicate a successful sign in

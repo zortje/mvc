@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Network;
 
+use Zortje\MVC\Storage\Cookie\Cookie;
+
 /**
  * Class Request
  *
@@ -22,13 +24,22 @@ class Request
     protected $post;
 
     /**
-     * @param string $url  URL of the request, trailing slash are removed automatically
-     * @param array  $post URL post fields
+     * @var Cookie Cookie
      */
-    public function __construct(string $url, array $post)
+    protected $cookie;
+
+    /**
+     * Request constructor.
+     *
+     * @param array  $server
+     * @param array  $post
+     * @param Cookie $cookie
+     */
+    public function __construct(Cookie $cookie, array $server = [], array $post = [])
     {
-        $this->url  = rtrim($url, '/');
-        $this->post = $post;
+        $this->url    = $this->createUrlFromServerArray($server, !empty($server['HTTPS']));
+        $this->post   = $post;
+        $this->cookie = $cookie;
     }
 
     /**
@@ -55,5 +66,34 @@ class Request
     public function getPost(): array
     {
         return $this->post;
+    }
+
+    /**
+     * Get cookie
+     *
+     * @return Cookie
+     */
+    public function getCookie(): Cookie
+    {
+        return $this->cookie;
+    }
+
+    /**
+     * Create URL from _SERVER array
+     *
+     * @param array $server _SERVER array
+     * @param bool  $secure
+     *
+     * @return string URL
+     */
+    protected function createUrlFromServerArray(array $server, bool $secure = true): string
+    {
+        $protocol = $secure ? 'https' : 'http';
+        $host     = !empty($server['HTTP_HOST']) ? $server['HTTP_HOST'] : 'www.example.com';
+        $path     = !empty($server['REQUEST_URI']) ? $server['REQUEST_URI'] : '';
+
+        $url = "$protocol://$host$path";
+
+        return rtrim($url, '/');
     }
 }

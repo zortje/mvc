@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Zortje\MVC\Routing;
 
 use Monolog\Logger;
+use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\ControllerFactory;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
@@ -12,8 +13,6 @@ use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
 use Zortje\MVC\Controller\SignInsController;
 use Zortje\MVC\Controller\NotFoundController;
-use Zortje\MVC\Storage\Cookie\Cookie;
-use Zortje\MVC\User\User;
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Network\Response;
 use Zortje\MVC\Routing\Exception\RouteNonexistentException;
@@ -33,24 +32,9 @@ class Dispatcher
     protected $pdo;
 
     /**
-     * @var Cookie Cookie
+     * @var Configuration Configuration
      */
-    protected $cookie;
-
-    /**
-     * @var User|null User
-     */
-    protected $user;
-
-    /**
-     * @var Router
-     */
-    protected $router;
-
-    /**
-     * @var string App file path
-     */
-    protected $appPath;
+    protected $configuration;
 
     /**
      * @var Logger
@@ -60,24 +44,13 @@ class Dispatcher
     /**
      * Dispatcher constructor.
      *
-     * @param \PDO   $pdo
-     * @param array  $cookie
-     * @param Router $router
-     * @param string $appPath
+     * @param \PDO          $pdo
+     * @param Configuration $configuration
      */
-    public function __construct(\PDO $pdo, array $cookie, Router $router, string $appPath)
+    public function __construct(\PDO $pdo, Configuration $configuration)
     {
-        $this->pdo     = $pdo;
-        $this->cookie  = new Cookie($cookie);
-        $this->router  = $router;
-        $this->appPath = $appPath;
-
-        /**
-         * Authenticate user from cookie
-         */
-        $userAuthenticator = new UserAuthenticator($this->pdo);
-
-        $this->user = $userAuthenticator->userFromCookie($this->cookie);
+        $this->pdo           = $pdo;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -99,10 +72,27 @@ class Dispatcher
      */
     public function dispatch(Request $request): Response
     {
-        $controllerFactory = new ControllerFactory($this->pdo, $request->getPost(), $this->cookie, $this->appPath, $this->user);
+        /**
+         * Authenticate user from cookie
+         */
+        $cookie = $request->getCookie();
+
+        $userAuthenticator = new UserAuthenticator($this->pdo, $this->configuration);
+
+        $user = $userAuthenticator->userFromCookie($cookie);
+
+        /**
+         * Figure out what controller to use and what action to call
+         */
+        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $request, $user);
 
         try {
-            list($controllerName, $action) = array_values($this->router->route($request->getPath()));
+            /**
+             * @var Router $router
+             */
+            $router = $this->configuration->get('Router');
+
+            list($controllerName, $action) = array_values($router->route($request->getPath()));
 
             /**
              * Validate and initialize controller
@@ -171,8 +161,8 @@ class Dispatcher
             /**
              * Save what controller and action was requested and then redirect to sign in form
              */
-            $this->cookie->set('SignIn.onSuccess.controller', $controller->getShortName());
-            $this->cookie->set('SignIn.onSuccess.action', $action);
+            $cookie->set('SignIn.onSuccess.controller', $controller->getShortName());
+            $cookie->set('SignIn.onSuccess.action', $action);
 
             $controller = $controllerFactory->create(SignInsController::class);
             $controller->setAction('form');
@@ -215,7 +205,9 @@ class Dispatcher
          * Performance logging
          */
         if ($this->logger) {
-            $this->logger->addDebug(vsprintf('Dispatched request in %s ms', number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2)), ['path' => $request->getPath()]);
+            $time = number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2);
+
+            $this->logger->addDebug("Dispatched request in $time ms", ['path' => $request->getPath()]);
         }
 
         return new Response($headers, $output);

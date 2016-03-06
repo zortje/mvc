@@ -3,9 +3,11 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Controller;
 
+use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
+use Zortje\MVC\Network\Request;
 use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\User\User;
 use Zortje\MVC\View\Render\HtmlRender;
@@ -46,12 +48,12 @@ class Controller
     protected $pdo;
 
     /**
-     * @var array Post
+     * @var Configuration
      */
-    protected $post;
+    protected $configuration;
 
     /**
-     * @var Cookie Cookie
+     * @var Cookie
      */
     protected $cookie;
 
@@ -59,11 +61,6 @@ class Controller
      * @var User|null User
      */
     protected $user;
-
-    /**
-     * @var string App file path
-     */
-    protected $appPath;
 
     /**
      * @var string Controller action
@@ -102,19 +99,17 @@ class Controller
     /**
      * Controller constructor.
      *
-     * @param \PDO      $pdo
-     * @param array     $post
-     * @param Cookie    $cookie
-     * @param User|null $user
-     * @param string    $appPath
+     * @param \PDO          $pdo
+     * @param Configuration $configuration
+     * @param Cookie        $cookie
+     * @param User|null     $user
      */
-    public function __construct(\PDO $pdo, array $post, Cookie $cookie, string $appPath, User $user = null)
+    public function __construct(\PDO $pdo, Configuration $configuration, Cookie $cookie, User $user = null)
     {
-        $this->pdo     = $pdo;
-        $this->post    = $post;
-        $this->cookie  = $cookie;
-        $this->user    = $user;
-        $this->appPath = $appPath;
+        $this->pdo           = $pdo;
+        $this->configuration = $configuration;
+        $this->cookie        = $cookie;
+        $this->user          = $user;
     }
 
     /**
@@ -248,7 +243,7 @@ class Controller
             $layout = 'View/Layout/default';
         }
 
-        return "{$this->appPath}$layout.layout";
+        return "{$this->configuration->get('App.Path')}$layout.layout";
     }
 
     /**
@@ -264,7 +259,7 @@ class Controller
             $view = sprintf('View/%s/%s', $this->getShortName(), $this->action);
         }
 
-        return "{$this->appPath}$view.view";
+        return "{$this->configuration->get('App.Path')}$view.view";
     }
 
     /**

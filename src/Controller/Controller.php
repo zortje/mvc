@@ -7,7 +7,6 @@ use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
-use Zortje\MVC\Network\Request;
 use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\User\User;
 use Zortje\MVC\View\Render\HtmlRender;

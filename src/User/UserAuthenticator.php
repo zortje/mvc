@@ -109,7 +109,7 @@ class UserAuthenticator
             /**
              * Set User id in session
              */
-            $cookie->set('User.id', $user->get('id'));
+            $this->cookie->set('User.id', $user->get('id'));
 
             /**
              * Return true to indicate a successful sign in

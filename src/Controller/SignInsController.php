@@ -32,7 +32,7 @@ class SignInsController extends Controller
      */
     protected function signIn()
     {
-        if (empty($this->post['User.email']) || empty($this->post['User.password'])) {
+        if (empty($this->post['User.Email']) || empty($this->post['User.Password'])) {
             // @todo Set flash message: Please fill in both username and password
 
             $this->redirect('/form');
@@ -44,7 +44,7 @@ class SignInsController extends Controller
          */
         $userTable = new UserTable($this->pdo);
 
-        $users = $userTable->findBy('email', $this->post['User.email']);
+        $users = $userTable->findBy('email', $this->post['User.Email']);
 
         if (count($users) !== 1) {
             // @todo Set flash message: Incorrect email or password (User dosnt exists or more than one user with that email)
@@ -63,7 +63,7 @@ class SignInsController extends Controller
          */
         $userAuthenticator = new UserAuthenticator($this->pdo);
 
-        if ($userAuthenticator->signIn($user, $this->post['User.password']) == false) {
+        if ($userAuthenticator->signIn($user, $this->post['User.Password']) == false) {
             // @todo Set flash message: Incorrect email or password (Incorrect password)
 
             $this->redirect('/form');

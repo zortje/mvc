@@ -17,12 +17,4 @@ class InvalidEntityPropertyException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Entity %s does not have a property named %s';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

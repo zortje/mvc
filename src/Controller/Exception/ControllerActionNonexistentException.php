@@ -17,12 +17,4 @@ class ControllerActionNonexistentException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Controller %s action %s is nonexistent';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

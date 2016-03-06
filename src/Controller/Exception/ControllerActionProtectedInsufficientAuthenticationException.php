@@ -17,12 +17,4 @@ class ControllerActionProtectedInsufficientAuthenticationException extends Excep
      * {@inheritdoc}
      */
     protected $template = 'Controller %s protected action %s requires authentication';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

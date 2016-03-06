@@ -17,12 +17,4 @@ class RouteAlreadyConnectedException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Route %s is already connected';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

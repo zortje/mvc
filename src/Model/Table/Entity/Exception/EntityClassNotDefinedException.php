@@ -17,12 +17,4 @@ class EntityClassNotDefinedException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Subclass %s does not have a entity class defined';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

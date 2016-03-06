@@ -17,12 +17,4 @@ class InvalidValueTypeForEntityPropertyException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Entity %s property %s is of type %s and not %s';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

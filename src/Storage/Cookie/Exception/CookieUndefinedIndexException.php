@@ -17,12 +17,4 @@ class CookieUndefinedIndexException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Cookie key %s is undefined';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

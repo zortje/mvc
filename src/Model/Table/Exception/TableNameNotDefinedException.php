@@ -17,12 +17,4 @@ class TableNameNotDefinedException extends Exception
      * {@inheritdoc}
      */
     protected $template = 'Subclass %s does not have a table name defined';
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($message)
-    {
-        parent::__construct($message);
-    }
 }

@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Network;
 
+use Zortje\MVC\Storage\Cookie\Cookie;
+
 /**
  * Class Response
  *
@@ -17,28 +19,70 @@ class Response
     protected $headers = [];
 
     /**
+     * @var Cookie
+     */
+    protected $cookie;
+
+    /**
      * @var string Output
      */
     protected $output;
 
     /**
+     * Response constructor.
+     *
      * @param array  $headers
+     * @param Cookie $cookie
      * @param string $output
      */
-    public function __construct(array $headers, string $output)
+    public function __construct(array $headers, Cookie $cookie, string $output)
     {
         $this->headers = $headers;
+        $this->cookie  = $cookie;
         $this->output  = $output;
     }
 
     /**
+     * Get response headers as an array, to be set in the index.php file
+     *
+     * ```
+     * foreach ($response->getHeaders() as $header) {
+     *     header($header);
+     * }
+     * ```
+     *
      * @return array
      */
-    public function output(): array
+    public function getHeaders(): array
     {
-        return [
-            'headers' => $this->headers,
-            'output'  => $this->output
-        ];
+        return $this->headers;
+    }
+
+    /**
+     * Get response cookie, to be set in the index.php file
+     *
+     * ```
+     * setcookie('token', $response->getCookie->getTokenString(), time() + 3600, '/', '', true, true);
+     * ```
+     *
+     * @return Cookie
+     */
+    public function getCookie(): Cookie
+    {
+        return $this->cookie;
+    }
+
+    /**
+     * Get response output, to be echoed in the index.php file
+     *
+     * ```
+     * echo $response->getOutput();
+     * ```
+     *
+     * @return string
+     */
+    public function getOutput(): string
+    {
+        return $this->output;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-require_once 'vendor/autoload.php';
+require_once '../vendor/autoload.php';
 
 /**
  * Error handling
@@ -17,7 +17,7 @@ ini_set('error_log', sprintf('../../shared/errors-%s.log', date('Y-m-d')));
 /**
  * Configuration and routing
  */
-$configuration = new \Zortje\MVC\Configuration\Configuration(include 'config.default.php');
+$configuration = new \Zortje\MVC\Configuration\Configuration(include '../config.default.php');
 
 /**
  * Request
@@ -40,16 +40,12 @@ $dispatcher = new Zortje\MVC\Routing\Dispatcher($pdo, $configuration);
 $response = $dispatcher->dispatch($request);
 
 /**
- * Output
- *
- * @var \Zortje\MVC\Storage\Cookie\Cookie $cookie
+ * Response
  */
-list($headers, $cookie, $output) = array_values($response->output());
-
-foreach ($headers as $header) {
+foreach ($response->getHeaders() as $header) {
     header($header);
 }
 
-setcookie('token', $cookie->getTokenString(), time() + 3600, '/', '', true, true);
+setcookie('token', $response->getCookie()->getTokenString(), time() + 3600, '/', '', true, true);
 
-echo $output;
+echo $response->getOutput();

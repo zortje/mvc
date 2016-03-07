@@ -73,18 +73,9 @@ class Dispatcher
     public function dispatch(Request $request): Response
     {
         /**
-         * Authenticate user from cookie
-         */
-        $cookie = $request->getCookie();
-
-        $userAuthenticator = new UserAuthenticator($this->pdo, $this->configuration);
-
-        $user = $userAuthenticator->userFromCookie($cookie);
-
-        /**
          * Figure out what controller to use and what action to call
          */
-        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $request, $user);
+        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $request, $this->getUserFromRequest($request));
 
         try {
             /**
@@ -161,6 +152,8 @@ class Dispatcher
             /**
              * Save what controller and action was requested and then redirect to sign in form
              */
+            $cookie = $request->getCookie();
+
             $cookie->set('SignIn.onSuccess.controller', $controller->getShortName());
             $cookie->set('SignIn.onSuccess.action', $action);
 
@@ -210,6 +203,20 @@ class Dispatcher
             $this->logger->addDebug("Dispatched request in $time ms", ['path' => $request->getPath()]);
         }
 
-        return new Response($headers, $output);
+        return new Response($headers, $request->getCookie(), $output);
+    }
+
+    protected function getUserFromRequest(Request $request)
+    {
+        /**
+         * Authenticate user from cookie
+         */
+        $cookie = $request->getCookie();
+
+        $userAuthenticator = new UserAuthenticator($this->pdo, $this->configuration);
+
+        $user = $userAuthenticator->userFromCookie($cookie);
+
+        return $user;
     }
 }

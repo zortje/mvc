@@ -37,6 +37,11 @@ $pdo = new \PDO('mysql:host=127.0.0.1;dbname=my_app', 'root', 'password');
 
 $dispatcher = new Zortje\MVC\Routing\Dispatcher($pdo, $configuration);
 
+// @todo $logger = new \Monolog\Logger('mvc');
+// @todo $logger->pushHandler(new \Monolog\Handler\StreamHandler('path/to/log/mvc.log', \Monolog\Logger::DEBUG));
+
+// @todo $dispatcher->setLogger($logger);
+
 $response = $dispatcher->dispatch($request);
 
 /**

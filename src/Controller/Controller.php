@@ -192,7 +192,6 @@ class Controller
 
             return [
                 'headers'      => $this->headers,
-                'cookie_token' => $this->cookie,
                 'output'       => $output
             ];
         }

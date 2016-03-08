@@ -44,7 +44,7 @@ class UserAuthenticator
      *
      * @return User|null User if a user ID is sent in cookie
      */
-    public function userFromCookie(Cookie $cookie): User
+    public function userFromCookie(Cookie $cookie)
     {
         try {
             $userId = $cookie->get('User.id');

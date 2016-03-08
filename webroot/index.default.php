@@ -22,11 +22,7 @@ $configuration = new \Zortje\MVC\Configuration\Configuration(include '../config.
 /**
  * Request
  */
-$cookie = null;
-
-if (!empty($_COOKIE['token'])) {
-    $cookie = new \Zortje\MVC\Storage\Cookie\Cookie($configuration, $_COOKIE['token']);
-}
+$cookie = new \Zortje\MVC\Storage\Cookie\Cookie($configuration, !empty($_COOKIE['token']) ? $_COOKIE['token'] : '');
 
 $request = new Zortje\MVC\Network\Request($cookie, $_SERVER, $_POST);
 

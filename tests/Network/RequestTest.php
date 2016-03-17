@@ -24,11 +24,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->configuration = new Configuration();
+        $this->configuration = new Configuration([]);
     }
 
     /**
      * @covers ::__construct
+     * @covers ::getPath
      * @covers ::getPost
      * @covers ::getCookie
      */
@@ -44,6 +45,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $urlProperty = $reflector->getProperty('url');
         $urlProperty->setAccessible(true);
         $this->assertSame('https://www.example.com', $urlProperty->getValue($request));
+        $this->assertSame('', $request->getPath());
 
         $postProperty = $reflector->getProperty('post');
         $postProperty->setAccessible(true);
@@ -114,5 +116,42 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($cookie, $request->getCookie());
     }
 
-    // @todo test ::createUrlFromServerArray
+    /**
+     * @covers ::createUrlFromServerArray
+     */
+    public function testCreateUrlFromServerArray()
+    {
+        $request = new Request(new Cookie($this->configuration));
+
+        $reflector = new \ReflectionClass($request);
+
+        $method = $reflector->getMethod('createUrlFromServerArray');
+        $method->setAccessible(true);
+
+        /**
+         * HTTPS
+         */
+        $this->assertSame('http://www.example.com', $method->invoke($request, [], false));
+        $this->assertSame('http://www.example.com', $method->invoke($request, [
+            'HTTP_HOST'   => 'www.example.com',
+            'REQUEST_URI' => ''
+        ], false));
+        $this->assertSame('http://www.example.com/foo/bar', $method->invoke($request, [
+            'HTTP_HOST'   => 'www.example.com',
+            'REQUEST_URI' => '/foo/bar'
+        ], false));
+
+        /**
+         * HTTP
+         */
+        $this->assertSame('https://www.example.com', $method->invoke($request, [], true));
+        $this->assertSame('https://www.example.com', $method->invoke($request, [
+            'HTTP_HOST'   => 'www.example.com',
+            'REQUEST_URI' => ''
+        ], true));
+        $this->assertSame('https://www.example.com/foo/bar', $method->invoke($request, [
+            'HTTP_HOST'   => 'www.example.com',
+            'REQUEST_URI' => '/foo/bar'
+        ], true));
+    }
 }

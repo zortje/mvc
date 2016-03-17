@@ -3,7 +3,9 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Network;
 
+use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Network\Response;
+use Zortje\MVC\Storage\Cookie\Cookie;
 
 /**
  * Class ResponseTest
@@ -14,37 +16,66 @@ use Zortje\MVC\Network\Response;
  */
 class ResponseTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @covers ::output
-     */
-    public function testOutput()
-    {
-        $response = new Response(['foo', 'bar'], 'Lorem ipsum');
-
-        $expected = [
-            'headers' => ['foo', 'bar'],
-            'output'  => 'Lorem ipsum'
-        ];
-
-        $this->assertSame($expected, $response->output());
-    }
-
+    
     /**
      * @covers ::__construct
+     * @covers ::getHeaders
+     * @covers ::getCookie
+     * @covers ::getOutput
      */
     public function testConstruct()
     {
-        $response = new Response(['foo', 'bar'], 'Lorem ipsum');
+        $cookie = new Cookie(new Configuration([]));
+
+        $response = new Response(['foo', 'bar'], $cookie, 'Lorem ipsum');
 
         $reflector = new \ReflectionClass($response);
 
-        $headers = $reflector->getProperty('headers');
-        $headers->setAccessible(true);
-        $this->assertSame(['foo', 'bar'], $headers->getValue($response));
+        $headersProperty = $reflector->getProperty('headers');
+        $headersProperty->setAccessible(true);
+        $this->assertSame(['foo', 'bar'], $headersProperty->getValue($response));
+        $this->assertSame(['foo', 'bar'], $response->getHeaders());
 
-        $output = $reflector->getProperty('output');
-        $output->setAccessible(true);
-        $this->assertSame('Lorem ipsum', $output->getValue($response));
+        $cookieProperty = $reflector->getProperty('cookie');
+        $cookieProperty->setAccessible(true);
+        $this->assertSame($cookie, $cookieProperty->getValue($response));
+        $this->assertSame($cookie, $response->getCookie());
+
+        $outputProperty = $reflector->getProperty('output');
+        $outputProperty->setAccessible(true);
+        $this->assertSame('Lorem ipsum', $outputProperty->getValue($response));
+        $this->assertSame('Lorem ipsum', $response->getOutput());
+    }
+
+    /**
+     * @covers ::getHeaders
+     */
+    public function testGetHeaders()
+    {
+        $response = new Response(['foo', 'bar'], new Cookie(new Configuration([])), '');
+
+        $this->assertSame(['foo', 'bar'], $response->getHeaders());
+    }
+
+    /**
+     * @covers ::getCookie
+     */
+    public function testGetCookie()
+    {
+        $cookie = new Cookie(new Configuration([]));
+
+        $response = new Response([], $cookie, '');
+
+        $this->assertSame($cookie, $response->getCookie());
+    }
+
+    /**
+     * @covers ::getOutput
+     */
+    public function testGetOutput()
+    {
+        $response = new Response([], new Cookie(new Configuration([])), 'Lorem ipsum');
+
+        $this->assertSame('Lorem ipsum', $response->getOutput());
     }
 }

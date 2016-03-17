@@ -18,6 +18,10 @@ The recommended way to install MVC is though [Composer](https://getcomposer.org/
 
 ## Setup
 
+**Database**
+
+Init Phinx with `phinx.yml` and run migration to create user tables.
+
 **Webroot**
 
 The NGINX server block root should point to the webroot folder where the index.php file should be, along with any files that should be directly accessible from the web browser.

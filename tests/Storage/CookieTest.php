@@ -23,7 +23,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->configuration = new Configuration();
+        $this->configuration = new Configuration([]);
     }
 
     /**

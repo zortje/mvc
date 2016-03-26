@@ -132,9 +132,9 @@ abstract class Table
      *
      * @param Entity $entity Entity object
      *
-     * @return int Inserted entity ID
+     * @return Entity Inserted entity with ID set
      */
-    public function insert(Entity $entity): int
+    public function insert(Entity $entity): Entity
     {
         $stmt = $this->pdo->prepare($this->sqlCommand->insertInto());
 
@@ -147,7 +147,9 @@ abstract class Table
 
         $stmt->execute($array);
 
-        return (int)$this->pdo->lastInsertId();
+        $entity->set('id', (int) $this->pdo->lastInsertId());
+
+        return $entity;
     }
 
     /**

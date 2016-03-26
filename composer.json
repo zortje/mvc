@@ -20,7 +20,6 @@
     },
     "require": {
         "php": ">=7.0",
-        "robmorgan/phinx": "*",
         "lcobucci/jwt": "~3.0",
         "monolog/monolog": "~1.0"
     },

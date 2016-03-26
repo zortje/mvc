@@ -17,37 +17,37 @@ class ExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Common\Exception\Exception
-     * @expectedExceptionMessage foo
-     * @expectedExceptionCode    0
      */
     public function testMessage()
     {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('foo');
+        $this->expectExceptionCode(0);
+
         throw new Exception('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Common\Exception\Exception
-     * @expectedExceptionMessage
-     * @expectedExceptionCode 0
      */
     public function testMessageArray()
     {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('');
+        $this->expectExceptionCode(0);
+
         throw new Exception(['foo']);
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Common\Exception\Exception
-     * @expectedExceptionMessage
-     * @expectedExceptionCode 42
      */
     public function testCode()
     {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('');
+        $this->expectExceptionCode(42);
+
         throw new Exception('', 42);
     }
 }

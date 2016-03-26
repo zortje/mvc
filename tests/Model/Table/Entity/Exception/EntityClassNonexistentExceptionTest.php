@@ -17,23 +17,23 @@ class EntityClassNonexistentExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(EntityClassNonexistentException::class);
+        $this->expectExceptionMessage('foo');
+
         throw new EntityClassNonexistentException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException
-     * @expectedExceptionMessage Subclass Foo defined entity class Bar is nonexistent
      */
     public function testMessageArray()
     {
+        $this->expectException(EntityClassNonexistentException::class);
+        $this->expectExceptionMessage('Subclass Foo defined entity class Bar is nonexistent');
+
         throw new EntityClassNonexistentException(['Foo', 'Bar']);
     }
 }

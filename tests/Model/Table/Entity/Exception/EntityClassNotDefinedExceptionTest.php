@@ -17,23 +17,23 @@ class EntityClassNotDefinedExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(EntityClassNotDefinedException::class);
+        $this->expectExceptionMessage('foo');
+
         throw new EntityClassNotDefinedException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException
-     * @expectedExceptionMessage Subclass Foo does not have a entity class defined
      */
     public function testMessageArray()
     {
+        $this->expectException(EntityClassNotDefinedException::class);
+        $this->expectExceptionMessage('Subclass Foo does not have a entity class defined');
+
         throw new EntityClassNotDefinedException(['Foo']);
     }
 }

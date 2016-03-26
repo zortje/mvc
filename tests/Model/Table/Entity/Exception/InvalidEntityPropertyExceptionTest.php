@@ -17,23 +17,23 @@ class InvalidEntityPropertyExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage('foo');
+        
         throw new InvalidEntityPropertyException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
-     * @expectedExceptionMessage Entity Foo does not have a property named bar
      */
     public function testMessageArray()
     {
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage('Entity Foo does not have a property named bar');
+        
         throw new InvalidEntityPropertyException(['Foo', 'bar']);
     }
 }

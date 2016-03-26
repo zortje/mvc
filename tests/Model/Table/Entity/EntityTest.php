@@ -53,12 +53,12 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::set
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
-     * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
      */
     public function testSetInvalidProperty()
     {
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage('Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property');
+
         $car = new CarEntity('', '', 0, new \DateTime());
 
         $car->set('invalid-property', 'value');
@@ -66,12 +66,12 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::get
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException
-     * @expectedExceptionMessage Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property
      */
     public function testGetInvalidProperty()
     {
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage('Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property');
+
         $car = new CarEntity('', '', 0, new \DateTime());
 
         $car->get('invalid-property');

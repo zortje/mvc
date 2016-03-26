@@ -17,23 +17,23 @@ class ControllerNonexistentExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(ControllerNonexistentException::class);
+        $this->expectExceptionMessage('foo');
+
         throw new ControllerNonexistentException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerNonexistentException
-     * @expectedExceptionMessage Controller Foo is nonexistent
      */
     public function testMessageArray()
     {
+        $this->expectException(ControllerNonexistentException::class);
+        $this->expectExceptionMessage('Controller Foo is nonexistent');
+
         throw new ControllerNonexistentException(['Foo']);
     }
 }

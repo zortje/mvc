@@ -17,23 +17,23 @@ class ControllerActionProtectedInsufficientAuthenticationExceptionTest extends \
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(ControllerActionProtectedInsufficientAuthenticationException::class);
+        $this->expectExceptionMessage('foo');
+
         throw new ControllerActionProtectedInsufficientAuthenticationException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException
-     * @expectedExceptionMessage Controller Foo protected action bar requires authentication
      */
     public function testMessageArray()
     {
+        $this->expectException(ControllerActionProtectedInsufficientAuthenticationException::class);
+        $this->expectExceptionMessage('Controller Foo protected action bar requires authentication');
+
         throw new ControllerActionProtectedInsufficientAuthenticationException(['Foo', 'bar']);
     }
 }

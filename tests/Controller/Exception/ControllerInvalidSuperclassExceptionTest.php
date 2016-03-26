@@ -17,23 +17,23 @@ class ControllerInvalidSuperclassExceptionTest extends \PHPUnit_Framework_TestCa
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(ControllerInvalidSuperclassException::class);
+        $this->expectExceptionMessage('foo');
+
         throw new ControllerInvalidSuperclassException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException
-     * @expectedExceptionMessage Controller Foo is not a subclass of Controller
      */
     public function testMessageArray()
     {
+        $this->expectException(ControllerInvalidSuperclassException::class);
+        $this->expectExceptionMessage('Controller Foo is not a subclass of Controller');
+
         throw new ControllerInvalidSuperclassException(['Foo']);
     }
 }

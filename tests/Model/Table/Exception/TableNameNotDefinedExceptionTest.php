@@ -17,23 +17,23 @@ class TableNameNotDefinedExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(TableNameNotDefinedException::class);
+        $this->expectExceptionMessage('foo');
+        
         throw new TableNameNotDefinedException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException
-     * @expectedExceptionMessage Subclass Foo does not have a table name defined
      */
     public function testMessageArray()
     {
+        $this->expectException(TableNameNotDefinedException::class);
+        $this->expectExceptionMessage('Subclass Foo does not have a table name defined');
+        
         throw new TableNameNotDefinedException(['Foo']);
     }
 }

@@ -17,23 +17,23 @@ class RouteNonexistentExceptionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Routing\Exception\RouteNonexistentException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(RouteNonexistentException::class);
+        $this->expectExceptionMessage('foo');
+
         throw new RouteNonexistentException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Routing\Exception\RouteNonexistentException
-     * @expectedExceptionMessage Route /foo is not connected
      */
     public function testMessageArray()
     {
+        $this->expectException(RouteNonexistentException::class);
+        $this->expectExceptionMessage('Route /foo is not connected');
+
         throw new RouteNonexistentException(['/foo']);
     }
 }

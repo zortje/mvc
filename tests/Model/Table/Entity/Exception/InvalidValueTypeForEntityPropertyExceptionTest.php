@@ -17,23 +17,23 @@ class InvalidValueTypeForEntityPropertyExceptionTest extends \PHPUnit_Framework_
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException
-     * @expectedExceptionMessage foo
      */
     public function testMessage()
     {
+        $this->expectException(InvalidValueTypeForEntityPropertyException::class);
+        $this->expectExceptionMessage('foo');
+        
         throw new InvalidValueTypeForEntityPropertyException('foo');
     }
 
     /**
      * @covers ::__construct
-     *
-     * @expectedException Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException
-     * @expectedExceptionMessage Entity Foo property bar is of type string and not integer
      */
     public function testMessageArray()
     {
+        $this->expectException(InvalidValueTypeForEntityPropertyException::class);
+        $this->expectExceptionMessage('Entity Foo property bar is of type string and not integer');
+        
         throw new InvalidValueTypeForEntityPropertyException(['Foo', 'bar', 'string', 'integer']);
     }
 }

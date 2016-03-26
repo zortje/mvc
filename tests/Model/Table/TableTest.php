@@ -195,17 +195,18 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $car = new CarEntity('Ford', 'Model B', 65, new \DateTime('1932-01-01'));
 
-        $id = $carTable->insert($car);
+        $insertedCar = $carTable->insert($car);
 
-        $this->assertSame(3, $id);
+        $this->assertSame($car, $insertedCar);
+        $this->assertSame(3, $insertedCar->get('id'));
 
         /**
          * Assert data set
          */
-        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
-        $expectedDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-insertion.csv');
+        $expectedCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
+        $expectedCsvDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-insertion.csv');
 
-        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedDataSet);
+        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedCsvDataSet);
         $expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
 
         $dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
@@ -258,10 +259,10 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         /**
          * Assert data set
          */
-        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
-        $expectedDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-update.csv');
+        $expectedCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet();
+        $expectedCsvDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-update.csv');
 
-        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedDataSet);
+        $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedCsvDataSet);
         $expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
 
         $dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());

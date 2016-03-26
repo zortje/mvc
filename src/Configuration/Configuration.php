@@ -42,6 +42,18 @@ class Configuration
     }
 
     /**
+     * Check if configuration exists
+     *
+     * @param string $key Configuration name
+     *
+     * @return bool TRUE if configuration exists, otherwise FALSE
+     */
+    public function exists(string $key)
+    {
+        return isset($this->configurations[$key]);
+    }
+
+    /**
      * Get configuration
      *
      * @param string $key Configuration name

@@ -38,15 +38,17 @@ $dispatcher = new Zortje\MVC\Routing\Dispatcher($pdo, $configuration);
 
 // @todo $dispatcher->setLogger($logger);
 
-$response = $dispatcher->dispatch($request);
 
 /**
  * Response
  */
+// @todo add example for calling dispatch with user object
+$response = $dispatcher->dispatch($request);
+
 foreach ($response->getHeaders() as $header) {
     header($header);
 }
 
-setcookie('token', $response->getCookie()->getTokenString(), time() + 3600, '/', '', true, true);
+setcookie('token', $response->getCookie()->getTokenString(), time() + 3600, $path = '/', $domain = '', $secureOnly = true, $httpOnly = true);
 
 echo $response->getOutput();

@@ -42,7 +42,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
     {
         $this->pdo           = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', '');
 
-        $this->configuration = new Configuration([]);
+        $this->configuration = new Configuration();
         $this->configuration->set('App.Path', '/var/www/html/');
 
         $this->request = new Request(new Cookie($this->configuration));

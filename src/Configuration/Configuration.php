@@ -23,7 +23,7 @@ class Configuration
      *
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         foreach ($config as $key => $value) {
             $this->set($key, $value);
@@ -50,7 +50,13 @@ class Configuration
      */
     public function exists(string $key)
     {
-        return isset($this->configurations[$key]);
+        if (isset($this->configurations[$key])) {
+            $exists = true;
+        } else {
+            $exists = false;
+        }
+
+        return $exists;
     }
 
     /**

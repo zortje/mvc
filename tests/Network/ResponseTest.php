@@ -25,7 +25,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $cookie = new Cookie(new Configuration([]));
+        $cookie = new Cookie(new Configuration());
 
         $response = new Response(['foo', 'bar'], $cookie, 'Lorem ipsum');
 
@@ -52,7 +52,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHeaders()
     {
-        $response = new Response(['foo', 'bar'], new Cookie(new Configuration([])), '');
+        $response = new Response(['foo', 'bar'], new Cookie(new Configuration()), '');
 
         $this->assertSame(['foo', 'bar'], $response->getHeaders());
     }
@@ -62,7 +62,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetCookie()
     {
-        $cookie = new Cookie(new Configuration([]));
+        $cookie = new Cookie(new Configuration());
 
         $response = new Response([], $cookie, '');
 
@@ -74,7 +74,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetOutput()
     {
-        $response = new Response([], new Cookie(new Configuration([])), 'Lorem ipsum');
+        $response = new Response([], new Cookie(new Configuration()), 'Lorem ipsum');
 
         $this->assertSame('Lorem ipsum', $response->getOutput());
     }

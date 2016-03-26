@@ -55,6 +55,28 @@ class Cookie
     }
 
     /**
+     * Check if value for key exists in cookie
+     *
+     * @param string $key Cookie key
+     *
+     * @return bool TRUE if key exists, otherwise FALSE
+     */
+    public function exists(string $key)
+    {
+        return isset($this->values[$key]);
+    }
+
+    /**
+     * Remove value for key in cookie
+     *
+     * @param string $key Cookie key
+     */
+    public function remove(string $key)
+    {
+        unset($this->values[$key]);
+    }
+
+    /**
      * Get value from cookie
      *
      * @param string $key Cookie key
@@ -98,6 +120,13 @@ class Cookie
         return (string)$token;
     }
 
+    /**
+     * Validates token for cookie and returns values if valid
+     *
+     * @param string $token
+     *
+     * @return array
+     */
     protected function parseAndValidateToken(string $token)
     {
         try {
@@ -109,7 +138,9 @@ class Cookie
 
             $values = [];
 
-            if ($token->validate($data) && $token->verify(new Sha256(), $this->configuration->get('Cookie.Signer.Key'))) {
+            if ($token->validate($data) && $token->verify(new Sha256(),
+                    $this->configuration->get('Cookie.Signer.Key'))
+            ) {
                 /**
                  * @var Claim $claim
                  */

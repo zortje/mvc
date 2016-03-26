@@ -7,8 +7,9 @@ use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
-use Zortje\MVC\Storage\Cookie\Cookie;
-use Zortje\MVC\User\User;
+use Zortje\MVC\Model\Table\Entity\Entity;
+use Zortje\MVC\Network\Request;
+use Zortje\MVC\Network\Response;
 use Zortje\MVC\View\Render\HtmlRender;
 
 /**
@@ -52,12 +53,12 @@ class Controller
     protected $configuration;
 
     /**
-     * @var Cookie
+     * @var Request
      */
-    protected $cookie;
+    protected $request;
 
     /**
-     * @var User|null User
+     * @var Entity|null User
      */
     protected $user;
 
@@ -100,14 +101,14 @@ class Controller
      *
      * @param \PDO          $pdo
      * @param Configuration $configuration
-     * @param Cookie        $cookie
-     * @param User|null     $user
+     * @param Request       $request
+     * @param Entity|null   $user
      */
-    public function __construct(\PDO $pdo, Configuration $configuration, Cookie $cookie, User $user = null)
+    public function __construct(\PDO $pdo, Configuration $configuration, Request $request, Entity $user = null)
     {
         $this->pdo           = $pdo;
         $this->configuration = $configuration;
-        $this->cookie        = $cookie;
+        $this->request       = $request;
         $this->user          = $user;
     }
 
@@ -155,11 +156,11 @@ class Controller
     /**
      * Call action
      *
-     * @return array<string,array|string> Headers and output if render is enabled, otherwise FALSE
+     * @return Response
      *
      * @throws \LogicException If controller action is not set
      */
-    public function callAction(): array
+    public function callAction(): Response
     {
         if (!isset($this->action)) {
             throw new \LogicException('Controller action must be set before being called');
@@ -186,17 +187,24 @@ class Controller
          * Render view
          */
         if ($this->render) {
+            if ($this->request->getCookie()->exists('Flash.Message') && $this->request->getCookie()->exists('Flash.Type')) {
+                $this->set('_flash', [
+                    'message' => $this->request->getCookie()->get('Flash.Message'),
+                    'type'    => $this->request->getCookie()->get('Flash.Type')
+                ]);
+
+                $this->request->getCookie()->remove('Flash.Message');
+                $this->request->getCookie()->remove('Flash.Type');
+            }
+
             $render = new HtmlRender($this->variables);
 
             $output = $render->render(['_view' => $this->getViewTemplate(), '_layout' => $this->getLayoutTemplate()]);
-
-            return [
-                'headers'      => $this->headers,
-                'output'       => $output
-            ];
+        } else {
+            $output = '';
         }
 
-        return [];
+        return new Response($this->headers, $this->request->getCookie(), $output);
     }
 
     /**
@@ -206,12 +214,6 @@ class Controller
      */
     protected function beforeAction()
     {
-        /**
-         * Set New Relic transaction name
-         */
-        if (extension_loaded('newrelic')) {
-            newrelic_name_transaction(sprintf('%s/%s', $this->getShortName(), $this->action));
-        }
     }
 
     /**
@@ -232,6 +234,37 @@ class Controller
     protected function set(string $variable, $value)
     {
         $this->variables[$variable] = $value;
+    }
+
+    /**
+     * Set flash message
+     *
+     * Recommended types: error, warning, success & info
+     *
+     * @param string $message Flash message
+     * @param string $type    Flash type
+     */
+    protected function setFlash(string $message, string $type)
+    {
+        $cookie = $this->request->getCookie();
+
+        $cookie->set('Flash.Message', $message);
+        $cookie->set('Flash.Type', $type);
+    }
+
+    /**
+     * Set a redirect header in the response
+     *
+     * @param string $url URL for redirect
+     */
+    protected function redirect(string $url)
+    {
+        $this->headers['locaction'] = "Location: $url";
+
+        /**
+         * Disable rendering if redirecting
+         */
+        $this->render = false;
     }
 
     /**

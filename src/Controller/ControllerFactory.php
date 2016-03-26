@@ -6,8 +6,8 @@ namespace Zortje\MVC\Controller;
 use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
+use Zortje\MVC\Model\Table\Entity\Entity;
 use Zortje\MVC\Network\Request;
-use Zortje\MVC\User\User;
 
 /**
  * Class ControllerFactory
@@ -33,7 +33,7 @@ class ControllerFactory
     protected $request;
 
     /**
-     * @var User|null User
+     * @var Entity|null User
      */
     protected $user;
 
@@ -43,9 +43,9 @@ class ControllerFactory
      * @param \PDO          $pdo
      * @param Configuration $configuration
      * @param Request       $request
-     * @param User|null     $user
+     * @param Entity|null   $user
      */
-    public function __construct(\PDO $pdo, Configuration $configuration, Request $request, User $user = null)
+    public function __construct(\PDO $pdo, Configuration $configuration, Request $request, Entity $user = null)
     {
         $this->pdo           = $pdo;
         $this->configuration = $configuration;
@@ -74,7 +74,7 @@ class ControllerFactory
         /**
          * @var Controller $controller
          */
-        $controller = new $controller($this->pdo, $this->configuration, $this->request->getCookie(), $this->user);
+        $controller = new $controller($this->pdo, $this->configuration, $this->request, $this->user);
 
         return $controller;
     }

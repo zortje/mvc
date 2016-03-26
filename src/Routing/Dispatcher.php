@@ -6,17 +6,13 @@ namespace Zortje\MVC\Routing;
 use Monolog\Logger;
 use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\ControllerFactory;
-use Zortje\MVC\Controller\Exception\ControllerActionNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerActionPrivateInsufficientAuthenticationException;
 use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthenticationException;
-use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
-use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
-use Zortje\MVC\Controller\SignInsController;
-use Zortje\MVC\Controller\NotFoundController;
+use Zortje\MVC\Controller\NotFoundController; // @todo this is a user implemented controller and should be removed after user stuff is cleaned up
+use Zortje\MVC\Model\Table\Entity\Entity;
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Network\Response;
 use Zortje\MVC\Routing\Exception\RouteNonexistentException;
-use Zortje\MVC\User\UserAuthenticator;
 
 /**
  * Class Dispatcher
@@ -64,19 +60,20 @@ class Dispatcher
     }
 
     /**
-     * @param Request $request Request object
+     * @param Request     $request Request object
+     * @param Entity|null $user
      *
      * @return Response Reponse object
      *
      * @throws \Exception If unexpected exception is thrown
      */
-    public function dispatch(Request $request): Response
+    public function dispatch(Request $request, Entity $user = null): Response
     {
+        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $request, $user);
+
         /**
          * Figure out what controller to use and what action to call
          */
-        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $request, $this->getUserFromRequest($request));
-
         try {
             /**
              * @var Router $router
@@ -88,36 +85,7 @@ class Dispatcher
             /**
              * Validate and initialize controller
              */
-            try {
-                $controller = $controllerFactory->create($controllerName);
-            } catch (\Exception $e) {
-                if ($e instanceof ControllerNonexistentException || $e instanceof ControllerInvalidSuperclassException) {
-                    /**
-                     * Log invalid superclass
-                     */
-                    if ($this->logger && $e instanceof ControllerInvalidSuperclassException) {
-                        $this->logger->addCritical('Controller must be an subclass of Zortje\MVC\Controller', [
-                            'path'       => $request->getPath(),
-                            'controller' => $controllerName
-                        ]);
-                    }
-
-                    /**
-                     * Log nonexistent
-                     */
-                    if ($this->logger && $e instanceof ControllerNonexistentException) {
-                        $this->logger->addCritical('Controller is nonexistent', [
-                            'path'       => $request->getPath(),
-                            'controller' => $controllerName
-                        ]);
-                    }
-
-                    $controller = $controllerFactory->create(NotFoundController::class);
-                    $action     = 'index';
-                } else {
-                    throw $e;
-                }
-            }
+            $controller = $controllerFactory->create($controllerName);
         } catch (RouteNonexistentException $e) {
             /**
              * Log nonexistent route (404)
@@ -149,16 +117,19 @@ class Dispatcher
                 ]);
             }
 
-            /**
-             * Save what controller and action was requested and then redirect to sign in form
-             */
-            $cookie = $request->getCookie();
+            if ($this->configuration->exists('User.SignIn.Controller.Class') && $this->configuration->exists('User.SignIn.Controller.Action')) {
+                /**
+                 * Save what controller and action was requested and then redirect to sign in form
+                 */
+                // @todo test that this works
+                $request->getCookie()->set('SignIn.onSuccess.path', $request->getPath());
 
-            $cookie->set('SignIn.onSuccess.controller', $controller->getShortName());
-            $cookie->set('SignIn.onSuccess.action', $action);
-
-            $controller = $controllerFactory->create(SignInsController::class);
-            $controller->setAction('form');
+                $controller = $controllerFactory->create($this->configuration->get('User.SignIn.Controller.Class'));
+                $controller->setAction($this->configuration->get('User.SignIn.Controller.Action'));
+            } else {
+                $controller = $controllerFactory->create(NotFoundController::class);
+                $controller->setAction('index');
+            }
         } catch (ControllerActionPrivateInsufficientAuthenticationException $e) {
             /**
              * Log unauthed private controller action (403)
@@ -170,29 +141,12 @@ class Dispatcher
                     'action'     => $action
                 ]);
             }
-
-            $controller = $controllerFactory->create(NotFoundController::class);
-            $controller->setAction('index');
-        } catch (ControllerActionNonexistentException $e) {
-            /**
-             * Log nonexistent controller action
-             */
-            if ($this->logger) {
-                $this->logger->addCritical('Controller action is nonexistent', [
-                    'path'       => $request->getPath(),
-                    'controller' => $controller->getShortName(),
-                    'action'     => $action
-                ]);
-            }
-
-            $controller = $controllerFactory->create(NotFoundController::class);
-            $controller->setAction('index');
         }
 
         /**
          * Create response from controller action headers and output
          */
-        list($headers, $output) = array_values($controller->callAction());
+        $response = $controller->callAction();
 
         /**
          * Performance logging
@@ -203,20 +157,6 @@ class Dispatcher
             $this->logger->addDebug("Dispatched request in $time ms", ['path' => $request->getPath()]);
         }
 
-        return new Response($headers, $request->getCookie(), $output);
-    }
-
-    protected function getUserFromRequest(Request $request)
-    {
-        /**
-         * Authenticate user from cookie
-         */
-        $cookie = $request->getCookie();
-
-        $userAuthenticator = new UserAuthenticator($this->pdo, $this->configuration);
-
-        $user = $userAuthenticator->userFromCookie($cookie);
-
-        return $user;
+        return $response;
     }
 }

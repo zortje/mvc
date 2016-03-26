@@ -11,7 +11,7 @@ use Zortje\MVC\Controller\Exception\ControllerActionProtectedInsufficientAuthent
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Storage\Cookie\Cookie;
 use Zortje\MVC\Tests\Controller\Fixture\CarsController;
-use Zortje\MVC\User\User;
+use Zortje\MVC\Tests\Model\Fixture\User;
 
 /**
  * Class ControllerTest
@@ -53,7 +53,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $user = new User('', '');
+        $user = new User(null, new \DateTime(), new \DateTime());
 
         $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $this->request, $user);
 
@@ -69,9 +69,9 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $configProperty->setAccessible(true);
         $this->assertSame($this->configuration, $configProperty->getValue($controller));
 
-        $requestProperty = $reflector->getProperty('cookie');
+        $requestProperty = $reflector->getProperty('request');
         $requestProperty->setAccessible(true);
-        $this->assertSame($this->request->getCookie(), $requestProperty->getValue($controller));
+        $this->assertSame($this->request, $requestProperty->getValue($controller));
 
         $userProperty = $reflector->getProperty('user');
         $userProperty->setAccessible(true);

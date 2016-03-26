@@ -7,11 +7,11 @@ use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Controller\ControllerFactory;
 use Zortje\MVC\Network\Request;
 use Zortje\MVC\Storage\Cookie\Cookie;
-use Zortje\MVC\User\User;
 use Zortje\MVC\Tests\Controller\Fixture\CarsController;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Controller\Exception\ControllerNonexistentException;
 use Zortje\MVC\Controller\Exception\ControllerInvalidSuperclassException;
+use Zortje\MVC\Tests\Model\Fixture\User;
 
 /**
  * Class ControllerFactoryTest
@@ -53,7 +53,7 @@ class ControllerFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $user = new User('', '');
+        $user = new User(null, new \DateTime(), new \DateTime());
 
         $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $this->request, $user);
 

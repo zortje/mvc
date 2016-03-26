@@ -14,6 +14,11 @@ class Request
 {
 
     /**
+     * @var Cookie Cookie
+     */
+    protected $cookie;
+
+    /**
      * @var string Full URL
      */
     protected $url;
@@ -21,12 +26,7 @@ class Request
     /**
      * @var array POST data
      */
-    protected $post;
-
-    /**
-     * @var Cookie Cookie
-     */
-    protected $cookie;
+    public $post;
 
     /**
      * Request constructor.
@@ -37,9 +37,9 @@ class Request
      */
     public function __construct(Cookie $cookie, array $server = [], array $post = [])
     {
+        $this->cookie = $cookie;
         $this->url    = $this->createUrlFromServerArray($server, !empty($server['HTTPS']));
         $this->post   = $post;
-        $this->cookie = $cookie;
     }
 
     /**

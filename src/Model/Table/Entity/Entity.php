@@ -147,6 +147,10 @@ abstract class Entity
                 case 'date':
                     $columnType = 'datetime';
                     break;
+
+                case 'varbinary':
+                    $columnType = 'string';
+                    break;
             }
 
             /**
@@ -194,7 +198,7 @@ abstract class Entity
     }
 
     /**
-     * Return table structur for saving
+     * Return table structure for saving
      * Example: `[':{table_field_name}' => $this->fieldName]`
      *
      * @param bool $includeId Should the ID column be included
@@ -212,6 +216,13 @@ abstract class Entity
         return $this->toArrayFromColumns($columns);
     }
 
+    /**
+     * Return table structure for saving just altered columns
+     *
+     * @param bool $includeId Should the ID column be included
+     *
+     * @return array
+     */
     public function alteredToArray(bool $includeId): array
     {
         $alteredColumns = $this->alteredColumns;
@@ -223,6 +234,13 @@ abstract class Entity
         return $this->toArrayFromColumns(array_intersect_key(self::getColumns(), $alteredColumns));
     }
 
+    /**
+     * Return columns in structure for saving
+     *
+     * @param array $columns Columns to include
+     *
+     * @return array
+     */
     protected function toArrayFromColumns(array $columns): array
     {
         $array = [];

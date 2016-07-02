@@ -16,7 +16,7 @@ use Zortje\MVC\Storage\Cookie\Cookie;
  */
 class ResponseTest extends \PHPUnit_Framework_TestCase
 {
-    
+
     /**
      * @covers ::__construct
      * @covers ::getHeaders
@@ -47,6 +47,18 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('Lorem ipsum', $response->getOutput());
     }
 
+    public function testConstructNoCookie()
+    {
+        $response = new Response([], null, '');
+
+        $reflector = new \ReflectionClass($response);
+
+        $cookieProperty = $reflector->getProperty('cookie');
+        $cookieProperty->setAccessible(true);
+        $this->assertNull($cookieProperty->getValue($response));
+        $this->assertNull($response->getCookie());
+    }
+
     /**
      * @covers ::getHeaders
      */
@@ -67,6 +79,16 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         $response = new Response([], $cookie, '');
 
         $this->assertSame($cookie, $response->getCookie());
+    }
+
+    /**
+     * @covers ::getCookie
+     */
+    public function testGetCookieNull()
+    {
+        $response = new Response([], null, '');
+
+        $this->assertNull($response->getCookie());
     }
 
     /**

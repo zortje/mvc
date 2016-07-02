@@ -209,6 +209,11 @@ class Controller
             $render = new HtmlRender($this->variables);
 
             $output = $render->render(['_view' => $this->getViewTemplate(), '_layout' => $this->getLayoutTemplate()]);
+
+            /**
+             * Return response
+             */
+            return new Response($this->headers, $this->request->getCookie(), $output);
         } elseif ($this->render && $this->contentType === 'json') {
             /**
              * Set content type header
@@ -216,15 +221,12 @@ class Controller
             $this->headers['content-type'] = 'Content-Type: application/javascript;';
 
             /**
-             * Render output
+             * Return response
              */
-            $output = json_encode([$this->variables]);
-
-        } else {
-            $output = '';
+            return new Response($this->headers, null, json_encode([$this->variables]));
         }
 
-        return new Response($this->headers, $this->request->getCookie(), $output);
+        return new Response($this->headers, null, '');
     }
 
     /**

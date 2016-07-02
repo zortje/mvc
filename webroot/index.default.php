@@ -6,13 +6,14 @@ require_once '../vendor/autoload.php';
 /**
  * Error handling
  */
+// @todo Remove usage of ini_set
+
 ini_set('error_reporting', E_ALL); // @todo should be set to maximum error reporting in php.ini
 ini_set('display_errors', true); // @todo should be false in php.ini
 ini_set('log_errors', true); // @todo should be true in php.ini
 ini_set('error_log', sprintf('../../shared/errors-%s.log', date('Y-m-d')));
 
 // @todo Add bugsnag snippet for error logging
-// @todo Remove usage of ini_set
 
 /**
  * Configuration and routing
@@ -49,6 +50,10 @@ foreach ($response->getHeaders() as $header) {
     header($header);
 }
 
-setcookie('token', $response->getCookie()->getTokenString(), time() + 3600, $path = '/', $domain = '', $secureOnly = true, $httpOnly = true);
+$cookie = $response->getCookie();
+
+if (!is_null($cookie)) {
+    setcookie('token', $cookie->getTokenString(), time() + 3600, $path = '/', $domain = '', $secureOnly = true, $httpOnly = true);
+}
 
 echo $response->getOutput();

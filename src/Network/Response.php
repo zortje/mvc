@@ -27,15 +27,15 @@ class Response
      * @var string Output
      */
     protected $output;
-
+    
     /**
      * Response constructor.
      *
-     * @param array  $headers
-     * @param Cookie $cookie
-     * @param string $output
+     * @param array       $headers
+     * @param Cookie|null $cookie
+     * @param string      $output
      */
-    public function __construct(array $headers, Cookie $cookie, string $output)
+    public function __construct(array $headers, Cookie $cookie = null, string $output)
     {
         $this->headers = $headers;
         $this->cookie  = $cookie;
@@ -65,9 +65,9 @@ class Response
      * setcookie('token', $response->getCookie->getTokenString(), time() + 3600, '/', '', true, true);
      * ```
      *
-     * @return Cookie
+     * @return Cookie|null
      */
-    public function getCookie(): Cookie
+    public function getCookie()
     {
         return $this->cookie;
     }

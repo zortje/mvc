@@ -88,13 +88,14 @@ class Controller
     protected $view;
 
     /**
-     * @var array Headers for output
-     *
-     * @todo JSON content type: `Content-Type: application/javascript; charset=utf-8`
+     * @var string Content type
      */
-    protected $headers = [
-        'content-type' => 'Content-Type: text/html; charset=utf-8'
-    ];
+    protected $contentType = 'html';
+
+    /**
+     * @var array Headers for output
+     */
+    protected $headers = [];
 
     /**
      * Controller constructor.
@@ -169,24 +170,24 @@ class Controller
         /**
          * Before controller action hook
          */
-        $this->beforeAction();
+        if ($this->beforeAction()) {
+            /**
+             * Call controller action
+             */
+            $action = $this->action;
 
-        /**
-         * Call controller action
-         */
-        $action = $this->action;
+            $this->$action();
 
-        $this->$action();
-
-        /**
-         * After controller action hook
-         */
-        $this->afterAction();
+            /**
+             * After controller action hook
+             */
+            $this->afterAction();
+        }
 
         /**
          * Render view
          */
-        if ($this->render) {
+        if ($this->render && $this->contentType === 'html') {
             if ($this->request->getCookie()->exists('Flash.Message') && $this->request->getCookie()->exists('Flash.Type')) {
                 $this->set('_flash', [
                     'message' => $this->request->getCookie()->get('Flash.Message'),
@@ -197,9 +198,28 @@ class Controller
                 $this->request->getCookie()->remove('Flash.Type');
             }
 
+            /**
+             * Set content type header
+             */
+            $this->headers['content-type'] = 'Content-Type: text/html; charset=utf-8';
+
+            /**
+             * Render output
+             */
             $render = new HtmlRender($this->variables);
 
             $output = $render->render(['_view' => $this->getViewTemplate(), '_layout' => $this->getLayoutTemplate()]);
+        } elseif ($this->render && $this->contentType === 'json') {
+            /**
+             * Set content type header
+             */
+            $this->headers['content-type'] = 'Content-Type: application/javascript;';
+
+            /**
+             * Render output
+             */
+            $output = json_encode([$this->variables]);
+
         } else {
             $output = '';
         }
@@ -211,15 +231,22 @@ class Controller
      * Before controller action hook
      *
      * Called right before controller action is called
+     *
+     * If FALSE is returned, the action will not be called
+     *
+     * @return bool
      */
-    protected function beforeAction()
+    protected function beforeAction(): bool
     {
+        return true;
     }
 
     /**
      * After controller action hook
      *
-     * Called right after controller action is called, but before rendering of the view
+     * Called right after controller action is called, before rendering of the view
+     *
+     * Only called if action is called
      */
     protected function afterAction()
     {

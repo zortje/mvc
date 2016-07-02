@@ -223,7 +223,7 @@ class Controller
             /**
              * Return response
              */
-            return new Response($this->headers, null, json_encode([$this->variables]));
+            return new Response($this->headers, null, json_encode($this->variables));
         }
 
         return new Response($this->headers, null, '');
@@ -340,8 +340,30 @@ class Controller
     protected function setResponseCode(int $code)
     {
         switch ($code) {
+            /**
+             * Success
+             */
             case 200:
                 $text = 'OK';
+                break;
+
+            case 201:
+                $text = 'Created';
+                break;
+
+            case 202:
+                $text = 'Accepted';
+                break;
+
+            case 204:
+                $text = 'No Content';
+                break;
+
+            /**
+             * Client error
+             */
+            case 400:
+                $text = 'Bad Request';
                 break;
 
             case 403:
@@ -352,6 +374,9 @@ class Controller
                 $text = 'Not Found';
                 break;
 
+            /**
+             * Server error
+             */
             case 500:
                 $text = 'Internal Server Error';
                 break;

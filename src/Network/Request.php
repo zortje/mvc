@@ -14,14 +14,24 @@ class Request
 {
 
     /**
-     * @var Cookie Cookie
+     * @var string Request method
      */
-    protected $cookie;
+    protected $method;
 
     /**
      * @var string Full URL
      */
     protected $url;
+
+    /**
+     * @var array Request headers
+     */
+    protected $headers;
+
+    /**
+     * @var Cookie Cookie
+     */
+    protected $cookie;
 
     /**
      * @var array POST data
@@ -37,9 +47,16 @@ class Request
      */
     public function __construct(Cookie $cookie, array $server = [], array $post = [])
     {
-        $this->cookie = $cookie;
-        $this->url    = $this->createUrlFromServerArray($server, !empty($server['HTTPS']));
-        $this->post   = $post;
+        $this->method  = !empty($server['REQUEST_METHOD']) ? $server['REQUEST_METHOD'] : 'GET';
+        $this->url     = $this->createUrlFromServerArray($server, !empty($server['HTTPS']));
+        $this->headers = $this->parseHeaders($server);
+        $this->cookie  = $cookie;
+        $this->post    = $post;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
     }
 
     /**
@@ -58,14 +75,14 @@ class Request
         return $path;
     }
 
-    /**
-     * Get request POST data
-     *
-     * @return array POST data
-     */
-    public function getPost(): array
+    public function getAcceptHeader(): string
     {
-        return $this->post;
+        return $this->headers['Accept'];
+    }
+
+    public function getAuthorizationHeader(): string
+    {
+        return $this->headers['Authorization'];
     }
 
     /**
@@ -76,6 +93,16 @@ class Request
     public function getCookie(): Cookie
     {
         return $this->cookie;
+    }
+
+    /**
+     * Get request POST data
+     *
+     * @return array POST data
+     */
+    public function getPost(): array
+    {
+        return $this->post;
     }
 
     /**
@@ -95,5 +122,25 @@ class Request
         $url = "$protocol://$host$path";
 
         return rtrim($url, '/');
+    }
+
+    protected function parseHeaders(array $server): array
+    {
+        $headers = [
+            'Accept'        => '',
+            'Authorization' => ''
+        ];
+
+        foreach ($server as $header => $value) {
+            if (substr($header, 0, 5) == 'HTTP_') {
+                $header = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($header, 5)))));
+
+                if (isset($headers[$header])) {
+                    $headers[$header] = $value;
+                }
+            }
+        }
+
+        return $headers;
     }
 }

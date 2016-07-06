@@ -51,12 +51,19 @@ class Router
      */
     public function route(string $route): array
     {
-        if (isset($this->routes[$route]) === false) {
-            throw new RouteNonexistentException([$route]);
+        foreach ($this->routes as $pattern => $result) {
+            if (preg_match("/$pattern/", $route, $matches)) {
+                array_shift($matches);
+
+                $result['arguments'] = $matches;
+
+                return $result;
+            }
         }
 
-        $result = $this->routes[$route];
-
-        return $result;
+        /**
+         * Throw exception if no match for route is found
+         */
+        throw new RouteNonexistentException([$route]);
     }
 }

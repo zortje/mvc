@@ -12,7 +12,7 @@ MVC
 
 ## Installing via Composer
 
-The recommended way to install MVC is though [Composer](https://getcomposer.org/).
+The recommended way to install MVC is through [Composer](https://getcomposer.org/).
 
 ```JSON
 {

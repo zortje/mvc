@@ -40,7 +40,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->pdo           = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', '');
+        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', '');
 
         $this->configuration = new Configuration();
         $this->configuration->set('App.Path', '/var/www/html/');
@@ -88,6 +88,23 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $controller = $controllerFactory->create(CarsController::class);
 
         $this->assertSame('Cars', $controller->getShortName());
+    }
+
+    /**
+     * @covers ::setArguments
+     */
+    public function testSetArguments()
+    {
+        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $this->request);
+
+        $carsController = $controllerFactory->create(CarsController::class);
+        $carsController->setArguments(['foo', 'bar']);
+
+        $reflector = new \ReflectionClass($carsController);
+
+        $property = $reflector->getProperty('arguments');
+        $property->setAccessible(true);
+        $this->assertSame(['foo', 'bar'], $property->getValue($carsController));
     }
 
     /**
@@ -155,7 +172,55 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
 
     // @todo test ::afterAction
 
-    // @todo test ::set
+    /**
+     * @covers ::set
+     */
+    public function testSet()
+    {
+        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $this->request);
+
+        $carsController = $controllerFactory->create(CarsController::class);
+
+        $reflector = new \ReflectionClass($carsController);
+
+        $method = $reflector->getMethod('set');
+        $method->setAccessible(true);
+
+        $method->invoke($carsController, 'foo', 'bar');
+
+        $property = $reflector->getProperty('variables');
+        $property->setAccessible(true);
+        $this->assertSame(['foo' => 'bar'], $property->getValue($carsController));
+    }
+
+    // @todo test ::setFlash
+
+    /**
+     * @covers ::redirect
+     */
+    public function testRedirect()
+    {
+        $controllerFactory = new ControllerFactory($this->pdo, $this->configuration, $this->request);
+
+        $carsController = $controllerFactory->create(CarsController::class);
+
+        $reflector = new \ReflectionClass($carsController);
+
+        $method = $reflector->getMethod('redirect');
+        $method->setAccessible(true);
+
+        $method->invoke($carsController, 'https://www.example.com');
+
+        $expected = ['location' => 'Location: https://www.example.com'];
+
+        $headersProperty = $reflector->getProperty('headers');
+        $headersProperty->setAccessible(true);
+        $this->assertSame($expected, $headersProperty->getValue($carsController));
+
+        $renderProperty = $reflector->getProperty('render');
+        $renderProperty->setAccessible(true);
+        $this->assertFalse($renderProperty->getValue($carsController));
+    }
 
     /**
      * @covers ::getLayoutTemplate
@@ -265,6 +330,10 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [200, 'HTTP/1.1 200 OK'],
+            [201, 'HTTP/1.1 201 Created'],
+            [202, 'HTTP/1.1 202 Accepted'],
+            [204, 'HTTP/1.1 204 No Content'],
+            [400, 'HTTP/1.1 400 Bad Request'],
             [403, 'HTTP/1.1 403 Forbidden'],
             [404, 'HTTP/1.1 404 Not Found'],
             [500, 'HTTP/1.1 500 Internal Server Error']

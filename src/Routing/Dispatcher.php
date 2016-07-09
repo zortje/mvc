@@ -80,7 +80,7 @@ class Dispatcher
              */
             $router = $this->configuration->get('Router');
 
-            list($controllerName, $action) = array_values($router->route($request->getPath()));
+            list($controllerName, $action, $arguments) = array_values($router->route($request->getPath()));
 
             /**
              * Validate and initialize controller
@@ -98,7 +98,13 @@ class Dispatcher
 
             $controller = $controllerFactory->create(NotFoundController::class);
             $action     = 'index';
+            $arguments  = [];
         }
+
+        /**
+         * Set arguments
+         */
+        $controller->setArguments($arguments);
 
         /**
          * Validate and set controller action
@@ -152,7 +158,7 @@ class Dispatcher
          * Performance logging
          */
         if ($this->logger) {
-            $time = number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2);
+            $time = number_format((microtime(true) - $_SERVER['REQUEST_TIME_FLOAT']) * 1000, 2); // @todo $_SERVER usage
 
             $this->logger->addDebug("Dispatched request in $time ms", ['path' => $request->getPath()]);
         }

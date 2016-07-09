@@ -63,6 +63,11 @@ class Controller
     protected $user;
 
     /**
+     * @var array URL Arguments
+     */
+    protected $arguments;
+
+    /**
      * @var string Controller action
      */
     protected $action;
@@ -114,6 +119,8 @@ class Controller
     }
 
     /**
+     * Get short controller name
+     *
      * @return string Controller name without namespace
      */
     public function getShortName(): string
@@ -122,6 +129,18 @@ class Controller
     }
 
     /**
+     * Set URL arguments
+     *
+     * @param array $arguments
+     */
+    public function setArguments(array $arguments)
+    {
+        $this->arguments = $arguments;
+    }
+
+    /**
+     * Set controller action
+     *
      * @param string $action Controller action
      *
      * @throws ControllerActionNonexistentException
@@ -288,7 +307,7 @@ class Controller
      */
     protected function redirect(string $url)
     {
-        $this->headers['locaction'] = "Location: $url";
+        $this->headers['location'] = "Location: $url";
 
         /**
          * Disable rendering if redirecting

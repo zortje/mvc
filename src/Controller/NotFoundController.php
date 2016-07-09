@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Controller;
 
+// @todo custom, should not be in this repo
+
 /**
  * Class NotFoundController
  *

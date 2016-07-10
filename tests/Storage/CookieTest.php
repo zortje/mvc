@@ -5,6 +5,7 @@ namespace Zortje\MVC\Tests\Storage;
 
 use Zortje\MVC\Configuration\Configuration;
 use Zortje\MVC\Storage\Cookie\Cookie;
+use Zortje\MVC\Storage\Cookie\Exception\CookieUndefinedIndexException;
 
 /**
  * Class CookieTest
@@ -31,7 +32,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function testConstruct()
     {
-        $cookie = new Cookie($this->configuration, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ6b3J0amVcL212YyIsImV4cCI6MTQ1Njk1OTI4OSwiZm9vIjoiYmFyIn0.NdrXG2zL3o2BDREHhWy-kdnHrfOHbEvm0iCvfGtUxOw');
+        $cookie = new Cookie($this->configuration,
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ6b3J0amVcL212YyIsImV4cCI6MTQ1Njk1OTI4OSwiZm9vIjoiYmFyIn0.NdrXG2zL3o2BDREHhWy-kdnHrfOHbEvm0iCvfGtUxOw');
 
         $reflector = new \ReflectionClass($cookie);
 
@@ -56,7 +58,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         /**
          * Just one letter changed
          */
-        $cookie = new Cookie($this->configuration, 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ6b3J0bmVcL212YyIsImV4cCI6MTQ1Njg3MTY3MSwiZm9vIjoiYmFyIn0.JYhjaKBJAZAfdT-6kVypFDSLH9uhqwYRoDDTLOvQSgI');
+        $cookie = new Cookie($this->configuration,
+            'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ6b3J0bmVcL212YyIsImV4cCI6MTQ1Njg3MTY3MSwiZm9vIjoiYmFyIn0.JYhjaKBJAZAfdT-6kVypFDSLH9uhqwYRoDDTLOvQSgI');
 
         $reflector = new \ReflectionClass($cookie);
 
@@ -89,6 +92,33 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::exists
+     */
+    public function testExists()
+    {
+        $cookie = new Cookie($this->configuration);
+
+        $this->assertFalse($cookie->exists('foo'));
+
+        $cookie->set('foo', 'bar');
+
+        $this->assertTrue($cookie->exists('foo'));
+    }
+
+    /**
+     * @covers ::remove
+     */
+    public function testRemove()
+    {
+        $cookie = new Cookie($this->configuration);
+        $cookie->set('foo', 'bar');
+
+        $cookie->remove('foo');
+
+        $this->assertFalse($cookie->exists('foo'));
+    }
+
+    /**
      * @covers ::set
      * @covers ::get
      */
@@ -98,6 +128,19 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $cookie->set('foo', 'bar');
 
         $this->assertSame('bar', $cookie->get('foo'));
+    }
+
+    /**
+     * @covers ::get
+     */
+    public function testGetUndefined()
+    {
+        $this->expectException(CookieUndefinedIndexException::class);
+        $this->expectExceptionMessage('Cookie key foo is undefined');
+
+        $cookie = new Cookie($this->configuration);
+
+        $cookie->get('foo');
     }
 
     /**
@@ -117,4 +160,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($expected, $cookie->getTokenString());
     }
+
+    // @todo test ::parseAndValidateToken
+
 }

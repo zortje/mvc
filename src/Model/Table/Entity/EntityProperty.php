@@ -16,6 +16,8 @@ class EntityProperty
      */
     protected $type;
 
+    // @todo Should be aware of the column type length to avoid truncation or even query errors
+
     /**
      * @param string $type
      */

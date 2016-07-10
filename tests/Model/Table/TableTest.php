@@ -273,4 +273,28 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $this->assertDataSetsEqual($expectedDataSet, $dataSet);
     }
+
+    /**
+     * @covers ::delete
+     */
+    public function testDelete()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @covers ::createEntitiesFromStatement
+     */
+    public function testCreateEntitiesFromStatement()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
+     * @covers ::createCommand
+     */
+    public function testCreateCommand()
+    {
+        $this->markTestIncomplete();
+    }
 }

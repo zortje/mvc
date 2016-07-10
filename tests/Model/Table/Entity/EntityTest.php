@@ -18,6 +18,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @covers ::__construct
+     */
+    public function testConstruct()
+    {
+        $this->markTestIncomplete();
+    }
+
+    /**
      * @covers ::getColumns
      */
     public function testGetColumns()
@@ -290,5 +298,11 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $car->alteredToArray(false));
     }
 
-    // @todo ::toArrayFromColumns
+    /**
+     * @covers ::toArrayFromColumns
+     */
+    public function testToArrayFromColumns()
+    {
+        $this->markTestIncomplete();
+    }
 }

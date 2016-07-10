@@ -161,6 +161,11 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($expected, $cookie->getTokenString());
     }
 
-    // @todo test ::parseAndValidateToken
-
+    /**
+     * @covers ::parseAndValidateToken
+     */
+    public function testParseAndValidateToken()
+    {
+        $this->markTestIncomplete();
+    }
 }

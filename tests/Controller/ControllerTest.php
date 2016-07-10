@@ -166,11 +166,29 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $carsController->setAction('add');
     }
 
-    // @todo test ::callAction
+    /**
+     * @covers ::callAction
+     */
+    public function testCallAction()
+    {
+        $this->markTestIncomplete();
+    }
 
-    // @todo test ::beforeAction
+    /**
+     * @covers ::beforeAction
+     */
+    public function testBeforeAction()
+    {
+        $this->markTestIncomplete();
+    }
 
-    // @todo test ::afterAction
+    /**
+     * @covers ::afterAction
+     */
+    public function testAfterAction()
+    {
+        $this->markTestIncomplete();
+    }
 
     /**
      * @covers ::set
@@ -192,8 +210,14 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $property->setAccessible(true);
         $this->assertSame(['foo' => 'bar'], $property->getValue($carsController));
     }
-
-    // @todo test ::setFlash
+    
+    /**
+     * @covers ::setFlash
+     */
+    public function testSetFlash()
+    {
+        $this->markTestIncomplete();
+    }
 
     /**
      * @covers ::redirect

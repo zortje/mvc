@@ -6,6 +6,14 @@ MVC
 [![Travis](https://img.shields.io/travis/zortje/mvc.svg?style=flat)](https://travis-ci.org/zortje/mvc)
 [![Codecov](https://img.shields.io/codecov/c/github/zortje/mvc.svg)](https://codecov.io/github/zortje/mvc)
 [![Scrutinizer](https://img.shields.io/scrutinizer/g/zortje/mvc.svg?style=flat)](https://scrutinizer-ci.com/g/zortje/mvc/?branch=master)
+[![Packagist](https://img.shields.io/packagist/dt/zortje/mvc.svg?style=flat)](https://packagist.org/packages/zortje/mvc)
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/7a0a476d-4956-4bfe-b6d9-f695e6b75f8f/big.png)](https://insight.sensiolabs.com/projects/7a0a476d-4956-4bfe-b6d9-f695e6b75f8f)
+
+[![Packagist](https://img.shields.io/packagist/v/zortje/mvc.svg?style=flat)](https://packagist.org/packages/zortje/mvc)
+[![Travis](https://img.shields.io/travis/zortje/mvc.svg?style=flat)](https://travis-ci.org/zortje/mvc)
+[![Codecov](https://img.shields.io/codecov/c/github/zortje/mvc.svg)](https://codecov.io/github/zortje/mvc)
+[![Scrutinizer](https://img.shields.io/scrutinizer/g/zortje/mvc.svg?style=flat)](https://scrutinizer-ci.com/g/zortje/mvc/?branch=master)
 [![Dependency Status](https://dependencyci.com/github/zortje/mvc/badge)](https://dependencyci.com/github/zortje/mvc)
 [![Packagist](https://img.shields.io/packagist/dt/zortje/mvc.svg?style=flat)](https://packagist.org/packages/zortje/mvc)
 
@@ -13,7 +21,7 @@ MVC
 
 ## Installing via Composer
 
-The recommended way to install MVC is though [Composer](https://getcomposer.org/).
+The recommended way to install MVC is through [Composer](https://getcomposer.org/).
 
 ```JSON
 {

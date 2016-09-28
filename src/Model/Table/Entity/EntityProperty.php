@@ -37,6 +37,7 @@ class EntityProperty
     {
         switch ($this->type) {
             case 'string':
+            case 'uuid':
                 $value = "$value";
                 break;
 

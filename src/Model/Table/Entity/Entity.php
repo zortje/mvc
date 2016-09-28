@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Model\Table\Entity;
 
+use Ramsey\Uuid\Uuid;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
 
@@ -30,13 +31,13 @@ abstract class Entity
     protected $alteredColumns = [];
 
     /**
-     * @param int|null  $id       Entity ID
-     * @param \DateTime $modified Datetime of last modification
-     * @param \DateTime $created  Datetime of creation
+     * @param string|null $uuid     Entity ID
+     * @param \DateTime   $modified Datetime of last modification
+     * @param \DateTime   $created  Datetime of creation
      */
-    public function __construct($id, \DateTime $modified, \DateTime $created)
+    public function __construct($uuid, \DateTime $modified, \DateTime $created)
     {
-        $this->set('id', $id);
+        $this->set('uuid', $uuid ?: Uuid::uuid1()->toString());
         $this->set('modified', $modified);
         $this->set('created', $created);
     }
@@ -49,7 +50,7 @@ abstract class Entity
     public static function getColumns(): array
     {
         $columns = array_merge([
-            'id' => 'integer'
+            'uuid' => 'uuid'
         ], static::$columns);
 
         $columns = array_merge($columns, [
@@ -154,15 +155,17 @@ abstract class Entity
             }
 
             /**
+             * Handle UUID type
+             */
+            if ($columnType === 'uuid' && Uuid::isValid($value)) {
+                $valueType = 'uuid';
+            }
+
+            /**
              * Validate type
              */
             if ($valueType !== $columnType) {
-                throw new InvalidValueTypeForEntityPropertyException([
-                    get_class($this),
-                    $key,
-                    $columnType,
-                    $valueType
-                ]);
+                throw new InvalidValueTypeForEntityPropertyException([get_class($this), $key, $valueType, $columnType]);
             }
         }
 
@@ -201,17 +204,11 @@ abstract class Entity
      * Return table structure for saving
      * Example: `[':{table_field_name}' => $this->fieldName]`
      *
-     * @param bool $includeId Should the ID column be included
-     *
      * @return array
      */
-    public function toArray(bool $includeId): array
+    public function toArray(): array
     {
         $columns = self::getColumns();
-
-        if (!$includeId) {
-            unset($columns['id']);
-        }
 
         return $this->toArrayFromColumns($columns);
     }
@@ -219,16 +216,16 @@ abstract class Entity
     /**
      * Return table structure for saving just altered columns
      *
-     * @param bool $includeId Should the ID column be included
+     * @param bool $includeUuid Should the UUID column be included
      *
      * @return array
      */
-    public function alteredToArray(bool $includeId): array
+    public function alteredToArray(bool $includeUuid): array
     {
         $alteredColumns = $this->alteredColumns;
 
-        if ($includeId) {
-            $alteredColumns['id'] = true;
+        if ($includeUuid) {
+            $alteredColumns['uuid'] = true;
         }
 
         return $this->toArrayFromColumns(array_intersect_key(self::getColumns(), $alteredColumns));

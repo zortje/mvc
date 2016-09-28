@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Zortje\MVC\Tests\Model;
 
 use Zortje\MVC\Model\SQLCommand;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
 
@@ -62,7 +63,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testInsertInto()
     {
-        $expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `horsepower`, `released`, `modified`, `created`) VALUES (NULL, :make, :model, :horsepower, :released, :modified, :created);';
+        $expected = 'INSERT INTO `cars` (`uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created`) VALUES (:uuid, :make, :model, :horsepower, :released, :modified, :created);';
 
         $this->assertSame($expected, $this->carsSqlCommand->insertInto());
     }
@@ -75,14 +76,14 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         /**
          * Single column update
          */
-        $expected = 'UPDATE `cars` SET `model` = :model WHERE `id` = :id;';
+        $expected = 'UPDATE `cars` SET `model` = :model WHERE `uuid` = :uuid;';
 
         $this->assertSame($expected, $this->carsSqlCommand->updateSetWhere(['model']));
 
         /**
          * Multi column update
          */
-        $expected = 'UPDATE `cars` SET `model` = :model, `horsepower` = :horsepower WHERE `id` = :id;';
+        $expected = 'UPDATE `cars` SET `model` = :model, `horsepower` = :horsepower WHERE `uuid` = :uuid;';
 
         $this->assertSame($expected, $this->carsSqlCommand->updateSetWhere(['model', 'horsepower']));
     }
@@ -92,7 +93,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testSelectFrom()
     {
-        $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars`;';
+        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars`;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFrom());
     }
@@ -105,14 +106,14 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         /**
          * Single column
          */
-        $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
+        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
 
         /**
          * Multiple columns
          */
-        $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
+        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make']));
     }
@@ -127,8 +128,8 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         $method = $reflector->getMethod('getColumnNames');
         $method->setAccessible(true);
 
-        $this->assertSame('`id`, `modified`, `created`', $method->invoke($this->carsSqlCommand, [
-            'id'       => 'integer',
+        $this->assertSame('`uuid`, `modified`, `created`', $method->invoke($this->carsSqlCommand, [
+            'uuid'     => 'uuid',
             'modified' => 'string',
             'created'  => 'string'
         ]));
@@ -144,8 +145,8 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         $method = $reflector->getMethod('getColumnValues');
         $method->setAccessible(true);
 
-        $this->assertSame(':id, :modified, :created', $method->invoke($this->carsSqlCommand, [
-            'id'       => 'integer',
+        $this->assertSame(':uuid, :modified, :created', $method->invoke($this->carsSqlCommand, [
+            'uuid'     => 'uuid',
             'modified' => 'string',
             'created'  => 'string'
         ]));
@@ -164,8 +165,8 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         /**
          * Single column with different glues
          */
-        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, ', ', ['id']));
-        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, ' AND ', ['id']));
+        $this->assertSame('`uuid` = :uuid', $method->invoke($this->carsSqlCommand, ', ', ['uuid']));
+        $this->assertSame('`uuid` = :uuid', $method->invoke($this->carsSqlCommand, ' AND ', ['uuid']));
 
         /**
          * Multiple columns with different glues
@@ -174,9 +175,28 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
             'make',
             'model'
         ]));
-        $this->assertSame('`id` = :id AND `make` = :make', $method->invoke($this->carsSqlCommand, ' AND ', [
-            'id',
+        $this->assertSame('`uuid` = :uuid AND `make` = :make', $method->invoke($this->carsSqlCommand, ' AND ', [
+            'uuid',
             'make'
         ]));
+    }
+
+    /**
+     * @covers ::getEqualFromColumns
+     */
+    public function testGetEqualFromColumnsInvalid()
+    {
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage('Entity cars does not have a property named invalid');
+
+        $reflector = new \ReflectionClass($this->carsSqlCommand);
+
+        $method = $reflector->getMethod('getEqualFromColumns');
+        $method->setAccessible(true);
+
+        /**
+         * Single column with different glues
+         */
+        $method->invoke($this->carsSqlCommand, '', ['invalid']);
     }
 }

@@ -132,7 +132,7 @@ abstract class Table
      *
      * @param Entity $entity Entity object
      *
-     * @return Entity Inserted entity with ID set
+     * @return Entity Inserted entity
      */
     public function insert(Entity $entity): Entity
     {
@@ -140,14 +140,12 @@ abstract class Table
 
         $now = (new \DateTime())->format('Y-m-d H:i:s');
 
-        $array = array_merge($entity->toArray(false), [
+        $array = array_merge($entity->toArray(), [
             'modified' => $now,
             'created'  => $now
         ]);
 
         $stmt->execute($array);
-
-        $entity->set('id', (int) $this->pdo->lastInsertId());
 
         return $entity;
     }

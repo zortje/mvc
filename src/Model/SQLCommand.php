@@ -40,18 +40,14 @@ class SQLCommand
      */
     public function insertInto(): string
     {
-        $columnNames = $this->getColumnNames($this->columns);
+        $columnNames  = $this->getColumnNames($this->columns);
+        $columnValues = $this->getColumnValues($this->columns);
 
-        $columns = $this->columns;
-        unset($columns['id']);
-
-        $columnValues = $this->getColumnValues($columns);
-
-        return "INSERT INTO `$this->tableName` ($columnNames) VALUES (NULL, $columnValues);";
+        return "INSERT INTO `$this->tableName` ($columnNames) VALUES ($columnValues);";
     }
 
     /**
-     * Create UPDATE SET command with WHERE for updating a single row with ID
+     * Create UPDATE SET command with WHERE for updating a single row with UUID
      *
      * @param array $columns Columns to use in SET condition
      *
@@ -60,7 +56,7 @@ class SQLCommand
     public function updateSetWhere(array $columns): string
     {
         $set   = $this->getEqualFromColumns(', ', $columns);
-        $where = $this->getEqualFromColumns(' AND ', ['id']);
+        $where = $this->getEqualFromColumns(' AND ', ['uuid']);
 
         return "UPDATE `$this->tableName` SET $set WHERE $where;";
     }
@@ -137,7 +133,7 @@ class SQLCommand
 
         foreach ($columns as $column) {
             if (!isset($this->columns[$column])) {
-                throw new InvalidEntityPropertyException([get_class($this), $column]);
+                throw new InvalidEntityPropertyException([$this->tableName, $column]);
             }
 
             $equal[] = "`$column` = :$column";

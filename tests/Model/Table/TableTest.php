@@ -62,8 +62,6 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $entityClass = $reflector->getProperty('entityClass');
         $entityClass->setAccessible(true);
         $this->assertSame(CarEntity::class, $entityClass->getValue($carTable));
-
-        // @todo Test if SQL Command object is created correct
     }
 
     /**
@@ -93,7 +91,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $car = $cars[0];
 
         $this->assertSame(CarEntity::class, get_class($car));
-        $this->assertSame(1, $car->get('id'));
+        $this->assertSame('634d28b6-8251-11e6-ae22-56b6b6499611', $car->get('uuid'));
         $this->assertSame('Ford', $car->get('make'));
         $this->assertSame('Model T', $car->get('model'));
         $this->assertSame(20, $car->get('horsepower'));
@@ -107,7 +105,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $car = $cars[1];
 
         $this->assertSame(CarEntity::class, get_class($car));
-        $this->assertSame(2, $car->get('id'));
+        $this->assertSame('9b6942f2-8251-11e6-ae22-56b6b6499611', $car->get('uuid'));
         $this->assertSame('Ford', $car->get('make'));
         $this->assertSame('Model A', $car->get('model'));
         $this->assertSame(40, $car->get('horsepower'));
@@ -133,7 +131,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $car = $cars[0];
 
         $this->assertSame(CarEntity::class, get_class($car));
-        $this->assertSame(1, $car->get('id'));
+        $this->assertSame('634d28b6-8251-11e6-ae22-56b6b6499611', $car->get('uuid'));
         $this->assertSame('Ford', $car->get('make'));
         $this->assertSame('Model T', $car->get('model'));
         $this->assertSame(20, $car->get('horsepower'));
@@ -174,7 +172,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testFindByException()
     {
-        $message = 'Entity Zortje\MVC\Tests\Model\Fixture\CarEntity property horsepower is of type integer and not string';
+        $message = 'Entity "Zortje\MVC\Tests\Model\Fixture\CarEntity" property "horsepower" is of type "string" and not expected type "integer"';
 
         $this->expectException(InvalidValueTypeForEntityPropertyException::class);
         $this->expectExceptionMessage($message);
@@ -198,7 +196,6 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $insertedCar = $carTable->insert($car);
 
         $this->assertSame($car, $insertedCar);
-        $this->assertSame(3, $insertedCar->get('id'));
 
         /**
          * Assert data set
@@ -207,13 +204,13 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $expectedCsvDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-insertion.csv');
 
         $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedCsvDataSet);
-        $expectedDataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
+        $expectedDataSet->setExcludeColumnsForTable('cars', ['uuid', 'modified', 'created']);
 
         $dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
-        $dataSet->addTable('cars', 'SELECT * FROM `cars`');
+        $dataSet->addTable('cars', 'SELECT * FROM `cars` ORDER BY `released` ASC');
 
         $dataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($dataSet);
-        $dataSet->setExcludeColumnsForTable('cars', ['modified', 'created']);
+        $dataSet->setExcludeColumnsForTable('cars', ['uuid', 'modified', 'created']);
 
         $this->assertDataSetsEqual($expectedDataSet, $dataSet);
     }
@@ -279,7 +276,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testDelete()
     {
-        $this->markTestIncomplete();
+        $this->markTestIncomplete(); // @todo
     }
 
     /**
@@ -287,7 +284,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testCreateEntitiesFromStatement()
     {
-        $this->markTestIncomplete();
+        $this->markTestIncomplete(); // @todo
     }
 
     /**
@@ -295,6 +292,6 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testCreateCommand()
     {
-        $this->markTestIncomplete();
+        $this->markTestIncomplete(); // @todo
     }
 }

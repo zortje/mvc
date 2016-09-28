@@ -16,5 +16,5 @@ class InvalidValueTypeForEntityPropertyException extends Exception
     /**
      * {@inheritdoc}
      */
-    protected $template = 'Entity %s property %s is of type %s and not %s';
+    protected $template = 'Entity "%s" property "%s" is of type "%s" and not expected type "%s"';
 }

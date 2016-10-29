@@ -222,9 +222,11 @@ class EntityProperty
      */
     public function formatValueForEntity($value)
     {
+
+        // @todo handle null values from database
+
         switch ($this->type) {
             case self::STRING:
-            case self::UUID:
                 $value = "$value";
                 break;
 
@@ -249,6 +251,11 @@ class EntityProperty
 
             case self::BOOL:
                 $value = $value === '1'; // @todo test that this works
+                break;
+
+            case self::UUID:
+                // @todo Implement this
+
                 break;
 
             case self::ENUM:

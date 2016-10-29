@@ -39,7 +39,7 @@ class EntityFactory
         $entity = $reflector->newInstanceWithoutConstructor();
 
         $columns = $entity::getColumns();
-        unset($columns['uuid'], $columns['modified'], $columns['created']);
+        unset($columns['id'], $columns['modified'], $columns['created']);
 
         $arguments = [];
 
@@ -50,7 +50,7 @@ class EntityFactory
         }
 
         $entity = $reflector->newInstanceArgs($arguments);
-        $entity->set('uuid', $array['uuid']);
+        $entity->set('id', $array['id']);
         $entity->set('modified', new \DateTime($array['modified']));
         $entity->set('created', new \DateTime($array['created']));
 

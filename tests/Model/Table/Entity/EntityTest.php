@@ -23,7 +23,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstructNoUuid()
+    public function testConstructNoId()
     {
         /**
          * @var Entity $entityMock
@@ -36,7 +36,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $constructor = (new \ReflectionClass(Entity::class))->getConstructor();
         $constructor->invoke($entityMock, null, $modified, $created);
 
-        $this->assertTrue(Uuid::isValid($entityMock->get('uuid')));
+        $this->assertTrue(Uuid::isValid($entityMock->get('id')));
         $this->assertSame($modified, $entityMock->get('modified'));
         $this->assertSame($created, $entityMock->get('created'));
     }
@@ -44,21 +44,21 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testConstructWithUuid()
+    public function testConstructWithId()
     {
         /**
          * @var Entity $entityMock
          */
         $entityMock = $this->getMockBuilder(Entity::class)->disableOriginalConstructor()->getMockForAbstractClass();
 
-        $uuid     = Uuid::uuid1()->toString();
+        $id       = Uuid::uuid1()->toString();
         $modified = new \DateTime();
         $created  = new \DateTime();
 
         $constructor = (new \ReflectionClass(Entity::class))->getConstructor();
-        $constructor->invoke($entityMock, $uuid, $modified, $created);
+        $constructor->invoke($entityMock, $id, $modified, $created);
 
-        $this->assertSame($uuid, $entityMock->get('uuid'));
+        $this->assertSame($id, $entityMock->get('id'));
         $this->assertSame($modified, $entityMock->get('modified'));
         $this->assertSame($created, $entityMock->get('created'));
     }
@@ -69,7 +69,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     public function testGetColumns()
     {
         $expected = [
-            'uuid'       => EntityProperty::UUID,
+            'id'         => EntityProperty::UUID,
             'make'       => [
                 'type'   => EntityProperty::STRING,
                 'length' => 64
@@ -158,9 +158,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     //        /**
     //         * Entity
     //         */
-    //        $this->assertSame(null, $method->invoke($car, 'uuid', null), 'UUID property');
+    //        $this->assertSame(null, $method->invoke($car, 'id', null), 'ID property');
     //        $this->assertSame('f2a88758-8251-11e6-ae22-56b6b6499611',
-    //            $method->invoke($car, 'uuid', 'f2a88758-8251-11e6-ae22-56b6b6499611'), 'UUID property');
+    //            $method->invoke($car, 'id', 'f2a88758-8251-11e6-ae22-56b6b6499611'), 'ID property');
     //
     //        $this->assertEquals(new \DateTime(), $method->invoke($car, 'modified', new \DateTime()), 'Modified property');
     //        $this->assertEquals(new \DateTime(), $method->invoke($car, 'created', new \DateTime()), 'Created property');
@@ -211,7 +211,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     //     */
     //    public function testValidatePropertyValueTypeInvalidValue()
     //    {
-    //        $message = 'Entity "Zortje\MVC\Tests\Model\Fixture\CarEntity" property "uuid" is of type "string" and not expected type "uuid"';
+    //        $message = 'Entity "Zortje\MVC\Tests\Model\Fixture\CarEntity" property "id" is of type "string" and not expected type "id"';
     //
     //        $this->expectException(InvalidValueTypeForEntityPropertyException::class);
     //        $this->expectExceptionMessage($message);
@@ -223,7 +223,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     //        $method = $reflector->getMethod('validatePropertyValueType'); // @todo is moved
     //        $method->setAccessible(true);
     //
-    //        $method->invoke($car, EntityProperty::UUID, EntityProperty::STRING);
+    //        $method->invoke($car, EntityProperty::ID, EntityProperty::STRING);
     //    }
 
     /**
@@ -237,7 +237,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($car->isAltered());
 
         $expected = [
-            'uuid'       => true,
+            'id'         => true,
             'modified'   => true,
             'created'    => true,
             'make'       => true,
@@ -292,7 +292,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $released = new \DateTime('1908-10-01');
 
         $expected = [
-            ':uuid'       => $car->get('uuid'),
+            ':id'         => $car->get('id'),
             ':make'       => 'Ford',
             ':model'      => 'Model T',
             ':horsepower' => 20,
@@ -308,7 +308,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::alteredToArray
      */
-    public function testAlteredToArrayWithUuid()
+    public function testAlteredToArrayWithId()
     {
         $car = new CarEntity('Ford', 'Model T', 20, 'TWO', new \DateTime('1908-10-01'));
         $car->setUnaltered();
@@ -316,7 +316,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $car->set('horsepower', 21);
 
         $expected = [
-            ':uuid'       => $car->get('uuid'),
+            ':id'         => $car->get('id'),
             ':horsepower' => 21
         ];
 
@@ -326,7 +326,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::alteredToArray
      */
-    public function testAlteredToArrayWithoutUuid()
+    public function testAlteredToArrayWithoutId()
     {
         $car = new CarEntity('Ford', 'Model T', 20, 'TWO', new \DateTime('1908-10-01'));
         $car->setUnaltered();

@@ -41,7 +41,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
          * @var CarEntity $carEntity
          */
         $carEntity = $entityFactory->createFromArray([
-            'uuid'       => 'bb4250bc-8258-11e6-ae22-56b6b6499611',
+            'id'         => 'bb4250bc-8258-11e6-ae22-56b6b6499611',
             'make'       => 'Ford',
             'model'      => 'Model T',
             'horsepower' => '20',
@@ -53,7 +53,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFalse($carEntity->isAltered());
         $this->assertSame(CarEntity::class, get_class($carEntity));
-        $this->assertSame('bb4250bc-8258-11e6-ae22-56b6b6499611', $carEntity->get('uuid'));
+        $this->assertSame('bb4250bc-8258-11e6-ae22-56b6b6499611', $carEntity->get('id'));
         $this->assertSame('Ford', $carEntity->get('make'));
         $this->assertSame('Model T', $carEntity->get('model'));
         $this->assertSame(20, $carEntity->get('horsepower'));

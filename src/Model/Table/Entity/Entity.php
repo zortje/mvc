@@ -31,13 +31,13 @@ abstract class Entity
     protected $alteredColumns = [];
 
     /**
-     * @param string|null $uuid     Entity ID
+     * @param string|null $id       Entity ID
      * @param \DateTime   $modified Datetime of last modification
      * @param \DateTime   $created  Datetime of creation
      */
-    public function __construct($uuid, \DateTime $modified, \DateTime $created)
+    public function __construct($id, \DateTime $modified, \DateTime $created)
     {
-        $this->set('uuid', $uuid ?: Uuid::uuid1()->toString());
+        $this->set('id', $id ?: Uuid::uuid1()->toString());
         $this->set('modified', $modified);
         $this->set('created', $created);
     }
@@ -50,7 +50,7 @@ abstract class Entity
     public static function getColumns(): array
     {
         $columns = array_merge([
-            'uuid' => EntityProperty::UUID
+            'id' => EntityProperty::UUID
         ], static::$columns);
 
         $columns = array_merge($columns, [
@@ -155,16 +155,16 @@ abstract class Entity
     /**
      * Return table structure for saving just altered columns
      *
-     * @param bool $includeUuid Should the UUID column be included
+     * @param bool $includeId Should the ID column be included
      *
      * @return array
      */
-    public function alteredToArray(bool $includeUuid): array
+    public function alteredToArray(bool $includeId): array
     {
         $alteredColumns = $this->alteredColumns;
 
-        if ($includeUuid) {
-            $alteredColumns['uuid'] = true;
+        if ($includeId) {
+            $alteredColumns['id'] = true;
         }
 
         return $this->toArrayFromColumns(array_intersect_key(self::getColumns(), $alteredColumns));

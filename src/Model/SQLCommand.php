@@ -47,7 +47,7 @@ class SQLCommand
     }
 
     /**
-     * Create UPDATE SET command with WHERE for updating a single row with UUID
+     * Create UPDATE SET command with WHERE for updating a single row with ID
      *
      * @param array $columns Columns to use in SET condition
      *
@@ -56,7 +56,7 @@ class SQLCommand
     public function updateSetWhere(array $columns): string
     {
         $set   = $this->getEqualFromColumns(', ', $columns);
-        $where = $this->getEqualFromColumns(' AND ', ['uuid']);
+        $where = $this->getEqualFromColumns(' AND ', ['id']);
 
         return "UPDATE `$this->tableName` SET $set WHERE $where;";
     }

@@ -60,8 +60,8 @@ A optional "convenience" constructor can be added to the class to class to ease 
     {
 
         protected static $columns = [
-            'email'         => 'string',
-            'password_hash' => 'string',
+            'email'         => EntityProperty::STRING,
+            'password_hash' => EntityProperty::STRING,
         ];
 
         public function __construct(string $email, string $passwordHash)

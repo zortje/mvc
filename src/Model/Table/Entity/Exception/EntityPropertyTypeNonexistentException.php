@@ -6,15 +6,15 @@ namespace Zortje\MVC\Model\Table\Entity\Exception;
 use Zortje\MVC\Common\Exception\Exception;
 
 /**
- * Class InvalidValueTypeForEntityPropertyException
+ * Class EntityPropertyTypeNonexistentException
  *
  * @package Zortje\MVC\Model\Table\Entity\Exception
  */
-class InvalidValueTypeForEntityPropertyException extends Exception
+class EntityPropertyTypeNonexistentException extends Exception
 {
 
     /**
      * {@inheritdoc}
      */
-    protected $template = 'Entity property expected value type to be "%s", got "%s" instead';
+    protected $template = 'Entity property type "%s" is not supported';
 }

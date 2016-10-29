@@ -172,7 +172,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testFindByException()
     {
-        $message = 'Entity "Zortje\MVC\Tests\Model\Fixture\CarEntity" property "horsepower" is of type "string" and not expected type "integer"';
+        $message = 'Entity property expected value type to be "string", got "integer" instead';
 
         $this->expectException(InvalidValueTypeForEntityPropertyException::class);
         $this->expectExceptionMessage($message);
@@ -191,7 +191,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $carTable = new CarTable($this->pdo);
 
-        $car = new CarEntity('Ford', 'Model B', 65, new \DateTime('1932-01-01'));
+        $car = new CarEntity('Ford', 'Model B', 65, 'TWO', new \DateTime('1932-01-01'));
 
         $insertedCar = $carTable->insert($car);
 

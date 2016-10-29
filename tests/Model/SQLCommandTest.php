@@ -4,6 +4,7 @@ declare(strict_types = 1);
 namespace Zortje\MVC\Tests\Model;
 
 use Zortje\MVC\Model\SQLCommand;
+use Zortje\MVC\Model\Table\Entity\EntityProperty;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
@@ -63,7 +64,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testInsertInto()
     {
-        $expected = 'INSERT INTO `cars` (`uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created`) VALUES (:uuid, :make, :model, :horsepower, :released, :modified, :created);';
+        $expected = 'INSERT INTO `cars` (`uuid`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created`) VALUES (:uuid, :make, :model, :horsepower, :doors, :released, :modified, :created);';
 
         $this->assertSame($expected, $this->carsSqlCommand->insertInto());
     }
@@ -93,7 +94,7 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
      */
     public function testSelectFrom()
     {
-        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars`;';
+        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created` FROM `cars`;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFrom());
     }
@@ -106,14 +107,14 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         /**
          * Single column
          */
-        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
+        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
 
         /**
          * Multiple columns
          */
-        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
+        $expected = 'SELECT `uuid`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
 
         $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make']));
     }
@@ -129,9 +130,9 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         $this->assertSame('`uuid`, `modified`, `created`', $method->invoke($this->carsSqlCommand, [
-            'uuid'     => 'uuid',
-            'modified' => 'string',
-            'created'  => 'string'
+            'uuid'     => EntityProperty::UUID,
+            'modified' => EntityProperty::STRING,
+            'created'  => EntityProperty::STRING
         ]));
     }
 
@@ -146,9 +147,9 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         $method->setAccessible(true);
 
         $this->assertSame(':uuid, :modified, :created', $method->invoke($this->carsSqlCommand, [
-            'uuid'     => 'uuid',
-            'modified' => 'string',
-            'created'  => 'string'
+            'uuid'     => EntityProperty::UUID,
+            'modified' => EntityProperty::STRING,
+            'created'  => EntityProperty::STRING
         ]));
     }
 

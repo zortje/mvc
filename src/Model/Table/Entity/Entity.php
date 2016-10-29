@@ -50,12 +50,12 @@ abstract class Entity
     public static function getColumns(): array
     {
         $columns = array_merge([
-            'uuid' => 'uuid'
+            'uuid' => EntityProperty::UUID
         ], static::$columns);
 
         $columns = array_merge($columns, [
-            'modified' => 'datetime',
-            'created'  => 'datetime'
+            'modified' => EntityProperty::DATETIME,
+            'created'  => EntityProperty::DATETIME
         ]);
 
         return $columns;
@@ -76,18 +76,20 @@ abstract class Entity
             throw new InvalidEntityPropertyException([get_class($this), $key]);
         }
 
-        $newValue = $this->validatePropertyValueType($key, $value);
+        $entityProperty = new EntityProperty(self::getColumns()[$key]);
 
-        if (!isset($this->properties[$key]) || $this->properties[$key] !== $newValue) {
-            /**
-             * Set internal property
-             */
-            $this->properties[$key] = $newValue;
+        if ($entityProperty->validateValue($value)) {
+            if (!isset($this->properties[$key]) || $this->properties[$key] !== $value) {
+                /**
+                 * Set internal property
+                 */
+                $this->properties[$key] = $value;
 
-            /**
-             * Set altered column
-             */
-            $this->alteredColumns[$key] = true;
+                /**
+                 * Set altered column
+                 */
+                $this->alteredColumns[$key] = true;
+            }
         }
     }
 
@@ -107,69 +109,6 @@ abstract class Entity
         }
 
         return $this->properties[$key];
-    }
-
-    /**
-     * Validate type for given property value
-     *
-     * @param string $key   Entity property name
-     * @param mixed  $value Entity property value
-     *
-     * @return object|int|double|string|array|boolean|null Value
-     *
-     * @throws InvalidEntityPropertyException If entity does not have that property
-     * @throws InvalidValueTypeForEntityPropertyException If value is of the wrong type
-     */
-    public function validatePropertyValueType(string $key, $value)
-    {
-        if (!isset(self::getColumns()[$key])) {
-            throw new InvalidEntityPropertyException([get_class($this), $key]);
-        }
-
-        /**
-         * Allow NULL
-         */
-        if ($value !== null) {
-            $valueType = strtolower(gettype($value));
-
-            /**
-             * Get class if object
-             */
-            if ($valueType === 'object') {
-                $valueType = strtolower(get_class($value));
-            }
-
-            /**
-             * Handle alias types
-             */
-            $columnType = self::getColumns()[$key];
-
-            switch ($columnType) {
-                case 'date':
-                    $columnType = 'datetime';
-                    break;
-
-                case 'varbinary':
-                    $columnType = 'string';
-                    break;
-            }
-
-            /**
-             * Handle UUID type
-             */
-            if ($columnType === 'uuid' && Uuid::isValid($value)) {
-                $valueType = 'uuid';
-            }
-
-            /**
-             * Validate type
-             */
-            if ($valueType !== $columnType) {
-                throw new InvalidValueTypeForEntityPropertyException([get_class($this), $key, $valueType, $columnType]);
-            }
-        }
-
-        return $value;
     }
 
     /**

@@ -32,8 +32,8 @@ class InvalidValueTypeForEntityPropertyExceptionTest extends \PHPUnit_Framework_
     public function testMessageArray()
     {
         $this->expectException(InvalidValueTypeForEntityPropertyException::class);
-        $this->expectExceptionMessage('Entity "Foo" property "bar" is of type "string" and not expected type "integer"');
+        $this->expectExceptionMessage('Entity property expected value type to be "string", got "integer" instead');
         
-        throw new InvalidValueTypeForEntityPropertyException(['Foo', 'bar', 'string', 'integer']);
+        throw new InvalidValueTypeForEntityPropertyException(['string', 'integer']);
     }
 }

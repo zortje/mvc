@@ -45,6 +45,7 @@ class EntityFactoryTest extends \PHPUnit_Framework_TestCase
             'make'       => 'Ford',
             'model'      => 'Model T',
             'horsepower' => '20',
+            'doors'      => 'TWO',
             'released'   => '1908-10-01',
             'modified'   => '2015-05-03 00:53:42',
             'created'    => '2015-05-03 00:53:42'

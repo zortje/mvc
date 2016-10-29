@@ -41,6 +41,8 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', '');
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo->exec('SET NAMES utf8');
 
         $this->configuration = new Configuration();
         $this->configuration->set('App.Path', '/var/www/html/');
@@ -210,7 +212,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase
         $property->setAccessible(true);
         $this->assertSame(['foo' => 'bar'], $property->getValue($carsController));
     }
-    
+
     /**
      * @covers ::setFlash
      */

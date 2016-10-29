@@ -31,6 +31,8 @@ $request = new Zortje\MVC\Network\Request($cookie, $_SERVER, $_POST);
  * Dispatch
  */
 $pdo = new \PDO('mysql:host=127.0.0.1;dbname=my_app', 'root', 'password');
+$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+$pdo->exec('SET NAMES utf8');
 
 $dispatcher = new Zortje\MVC\Routing\Dispatcher($pdo, $configuration);
 

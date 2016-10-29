@@ -28,6 +28,8 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
     protected function getConnection()
     {
         $this->pdo = new \PDO('mysql:host=127.0.0.1;dbname=tests', 'root', '');
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo->exec('SET NAMES utf8');
 
         return $this->createDefaultDBConnection($this->pdo, 'test');
     }
@@ -91,7 +93,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $car = $cars[0];
 
         $this->assertSame(CarEntity::class, get_class($car));
-        $this->assertSame('634d28b6-8251-11e6-ae22-56b6b6499611', $car->get('uuid'));
+        $this->assertSame('634d28b6-8251-11e6-ae22-56b6b6499611', $car->get('id'));
         $this->assertSame('Ford', $car->get('make'));
         $this->assertSame('Model T', $car->get('model'));
         $this->assertSame(20, $car->get('horsepower'));
@@ -105,7 +107,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $car = $cars[1];
 
         $this->assertSame(CarEntity::class, get_class($car));
-        $this->assertSame('9b6942f2-8251-11e6-ae22-56b6b6499611', $car->get('uuid'));
+        $this->assertSame('9b6942f2-8251-11e6-ae22-56b6b6499611', $car->get('id'));
         $this->assertSame('Ford', $car->get('make'));
         $this->assertSame('Model A', $car->get('model'));
         $this->assertSame(40, $car->get('horsepower'));
@@ -131,7 +133,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $car = $cars[0];
 
         $this->assertSame(CarEntity::class, get_class($car));
-        $this->assertSame('634d28b6-8251-11e6-ae22-56b6b6499611', $car->get('uuid'));
+        $this->assertSame('634d28b6-8251-11e6-ae22-56b6b6499611', $car->get('id'));
         $this->assertSame('Ford', $car->get('make'));
         $this->assertSame('Model T', $car->get('model'));
         $this->assertSame(20, $car->get('horsepower'));
@@ -204,13 +206,13 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
         $expectedCsvDataSet->addTable('cars', dirname(__FILE__) . '/../Fixture/cars_after-insertion.csv');
 
         $expectedDataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($expectedCsvDataSet);
-        $expectedDataSet->setExcludeColumnsForTable('cars', ['uuid', 'modified', 'created']);
+        $expectedDataSet->setExcludeColumnsForTable('cars', ['id', 'modified', 'created']);
 
         $dataSet = new \PHPUnit_Extensions_Database_DataSet_QueryDataSet($this->getConnection());
         $dataSet->addTable('cars', 'SELECT * FROM `cars` ORDER BY `released` ASC');
 
         $dataSet = new \PHPUnit_Extensions_Database_DataSet_DataSetFilter($dataSet);
-        $dataSet->setExcludeColumnsForTable('cars', ['uuid', 'modified', 'created']);
+        $dataSet->setExcludeColumnsForTable('cars', ['id', 'modified', 'created']);
 
         $this->assertDataSetsEqual($expectedDataSet, $dataSet);
     }

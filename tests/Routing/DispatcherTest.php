@@ -22,21 +22,31 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
+     * @var \PDO
+     */
+    private $pdo;
+
+    public function setUp()
+    {
+        $this->pdo = new \PDO('mysql:host=127.0.0.1;dbname=tests', 'root', '');
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo->exec('SET NAMES utf8');
+    }
+
+    /**
      * @covers ::__construct
      */
     public function testConstruct()
     {
-        $pdo = new \PDO('mysql:host=127.0.0.1;dbname=tests', 'root', '');
-
         $configuration = new Configuration();
 
-        $dispatcher = new Dispatcher($pdo, $configuration);
+        $dispatcher = new Dispatcher($this->pdo, $configuration);
 
         $reflector = new \ReflectionClass($dispatcher);
 
         $pdoProperty = $reflector->getProperty('pdo');
         $pdoProperty->setAccessible(true);
-        $this->assertSame($pdo, $pdoProperty->getValue($dispatcher));
+        $this->assertSame($this->pdo, $pdoProperty->getValue($dispatcher));
 
         $configurationProperty = $reflector->getProperty('configuration');
         $configurationProperty->setAccessible(true);
@@ -48,13 +58,11 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetLogger()
     {
-        $pdo = new \PDO('mysql:host=127.0.0.1;dbname=tests', 'root', '');
-
         $configuration = new Configuration();
 
         $logger = new Logger('log');
 
-        $dispatcher = new Dispatcher($pdo, $configuration);
+        $dispatcher = new Dispatcher($this->pdo, $configuration);
         $dispatcher->setLogger($logger);
 
         $reflector = new \ReflectionClass($dispatcher);
@@ -69,8 +77,6 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
      */
     public function testDispatch()
     {
-        $pdo = new \PDO('mysql:host=127.0.0.1;dbname=tests', 'root', '');
-
         $router = new Router();
         $router->connect('\/cars', CarsController::class, 'index');
 
@@ -78,7 +84,7 @@ class DispatcherTest extends \PHPUnit_Framework_TestCase
         $configuration->set('Router', $router);
         $configuration->set('App.Path', realpath(dirname(__FILE__)) . '/../../src/');
 
-        $dispatcher = new Dispatcher($pdo, $configuration);
+        $dispatcher = new Dispatcher($this->pdo, $configuration);
 
         $cookie = new Cookie($configuration);
 

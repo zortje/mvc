@@ -19,11 +19,16 @@
         "issues": "https://github.com/zortje/mvc/issues"
     },
     "require": {
-        "php": ">=5.5"
+        "php": ">=7.0",
+        "ramsey/uuid": "~3.0",
+        "lcobucci/jwt": "~3.0",
+        "monolog/monolog": "~1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
-        "phpunit/dbunit": "~1.0"
+        "phpunit/phpunit": "~5.0",
+        "phpunit/dbunit": "~2.0",
+        "phpmd/phpmd": "~2.0",
+        "squizlabs/php_codesniffer": "~2.0"
     },
     "autoload": {
         "psr-4": {

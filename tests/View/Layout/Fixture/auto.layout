@@ -1,0 +1,10 @@
+<?php
+declare(strict_types = 1);
+
+/**
+ * @var string $_view
+ */
+
+echo '<h1>Auto</h1>';
+
+echo $_view;

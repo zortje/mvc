@@ -1,8 +1,10 @@
+DROP TABLE IF EXISTS `cars`;
 CREATE TABLE `cars` (
-	`id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+	`id` CHAR(36) NOT NULL,
 	`make` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_unicode_ci',
 	`model` VARCHAR(64) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-	`hp` INT(10) UNSIGNED NOT NULL,
+	`horsepower` INT(10) UNSIGNED NOT NULL,
+	`doors` ENUM('TWO', 'FOUR') NOT NULL,
 	`released` DATE NOT NULL,
 	`modified` DATETIME NOT NULL,
 	`created` DATETIME NOT NULL,

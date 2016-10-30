@@ -1,8 +1,11 @@
 <?php
+declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Model;
 
 use Zortje\MVC\Model\SQLCommand;
+use Zortje\MVC\Model\Table\Entity\EntityProperty;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
 
@@ -13,143 +16,194 @@ use Zortje\MVC\Tests\Model\Fixture\CarTable;
  *
  * @coversDefaultClass Zortje\MVC\Model\SQLCommand
  */
-class SQLCommandTest extends \PHPUnit_Framework_TestCase {
+class SQLCommandTest extends \PHPUnit_Framework_TestCase
+{
 
-	/**
-	 * @var \PDO
-	 */
-	private $pdo;
+    /**
+     * @var \PDO
+     */
+    private $pdo;
 
-	/**
-	 * @var SQLCommand
-	 */
-	private $carsSqlCommand;
+    /**
+     * @var SQLCommand
+     */
+    private $carsSqlCommand;
 
-	public function setUp() {
-		$this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=myapp_test", 'root', '');
+    public function setUp()
+    {
+        $this->pdo = new \PDO("mysql:host=127.0.0.1;dbname=tests", 'root', '');
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->pdo->exec('SET NAMES utf8');
 
-		/**
-		 * Table cars; SQLCommand
-		 */
-		$table = new CarTable($this->pdo);
+        /**
+         * Table cars; SQLCommand
+         */
+        $table = new CarTable($this->pdo);
 
-		$this->carsSqlCommand = new SQLCommand($table->getTableName(), CarEntity::getColumns());
-	}
+        $this->carsSqlCommand = new SQLCommand($table->getTableName(), CarEntity::getColumns());
+    }
 
-	/**
-	 * @covers ::insertInto
-	 */
-	public function testInsertInto() {
-		$expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `hp`, `released`, `modified`, `created`) VALUES (NULL, :make, :model, :hp, :released, :modified, :created);';
+    /**
+     * @covers ::__construct
+     * @covers ::getTableName
+     * @covers ::getColumns
+     */
+    public function testConstruct()
+    {
+        $sqlCommand = new SQLCommand('cars', ['foo', 'bar']);
 
-		$this->assertSame($expected, $this->carsSqlCommand->insertInto());
-	}
+        $reflector = new \ReflectionClass($sqlCommand);
 
-	/**
-	 * @covers ::selectFrom
-	 */
-	public function testSelectFrom() {
-		$expected = 'SELECT `id`, `make`, `model`, `hp`, `released`, `modified`, `created` FROM `cars`;';
+        $tableName = $reflector->getProperty('tableName');
+        $tableName->setAccessible(true);
+        $this->assertSame('cars', $tableName->getValue($sqlCommand));
+        $this->assertSame('cars', $sqlCommand->getTableName());
 
-		$this->assertSame($expected, $this->carsSqlCommand->selectFrom());
-	}
+        $columns = $reflector->getProperty('columns');
+        $columns->setAccessible(true);
+        $this->assertSame(['foo', 'bar'], $columns->getValue($sqlCommand));
+        $this->assertSame(['foo', 'bar'], $sqlCommand->getColumns());
+    }
 
-	/**
-	 * @covers ::selectFromWhere
-	 */
-	public function testSelectFromWhereWithArray() {
-		$expected = 'SELECT `id`, `make`, `model`, `hp`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
+    /**
+     * @covers ::insertInto
+     */
+    public function testInsertInto()
+    {
+        $expected = 'INSERT INTO `cars` (`id`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created`) VALUES (:id, :make, :model, :horsepower, :doors, :released, :modified, :created);';
 
-		$this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
-	}
+        $this->assertSame($expected, $this->carsSqlCommand->insertInto());
+    }
 
-	/**
-	 * @covers ::selectFromWhere
-	 */
-	public function testSelectFromWhereWithString() {
-		$expected = 'SELECT `id`, `make`, `model`, `hp`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
+    /**
+     * @covers ::updateSetWhere
+     */
+    public function testUpdateSetWhere()
+    {
+        /**
+         * Single column update
+         */
+        $expected = 'UPDATE `cars` SET `model` = :model WHERE `id` = :id;';
 
-		$this->assertSame($expected, $this->carsSqlCommand->selectFromWhere('make'));
-	}
+        $this->assertSame($expected, $this->carsSqlCommand->updateSetWhere(['model']));
 
-	/**
-	 * @covers ::getColumnNames
-	 */
-	public function testGetColumnNames() {
-		$reflector = new \ReflectionClass($this->carsSqlCommand);
+        /**
+         * Multi column update
+         */
+        $expected = 'UPDATE `cars` SET `model` = :model, `horsepower` = :horsepower WHERE `id` = :id;';
 
-		$method = $reflector->getMethod('getColumnNames');
-		$method->setAccessible(true);
+        $this->assertSame($expected, $this->carsSqlCommand->updateSetWhere(['model', 'horsepower']));
+    }
 
-		$this->assertSame('`id`, `modified`, `created`', $method->invoke($this->carsSqlCommand, [
-			'id'       => 'integer',
-			'modified' => 'string',
-			'created'  => 'string'
-		]));
-	}
+    /**
+     * @covers ::selectFrom
+     */
+    public function testSelectFrom()
+    {
+        $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created` FROM `cars`;';
 
-	/**
-	 * @covers ::getColumnValues
-	 */
-	public function testGetColumnValues() {
-		$reflector = new \ReflectionClass($this->carsSqlCommand);
+        $this->assertSame($expected, $this->carsSqlCommand->selectFrom());
+    }
 
-		$method = $reflector->getMethod('getColumnValues');
-		$method->setAccessible(true);
+    /**
+     * @covers ::selectFromWhere
+     */
+    public function testSelectFromWhereWithArray()
+    {
+        /**
+         * Single column
+         */
+        $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make AND `model` = :model;';
 
-		$this->assertSame(':id, :modified, :created', $method->invoke($this->carsSqlCommand, [
-			'id'       => 'integer',
-			'modified' => 'string',
-			'created'  => 'string'
-		]));
-	}
+        $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make', 'model']));
 
-	/**
-	 * @covers ::getWhereConditionFromKeys
-	 */
-	public function testGetWhereConditionFromKeys() {
-		$reflector = new \ReflectionClass($this->carsSqlCommand);
+        /**
+         * Multiple columns
+         */
+        $expected = 'SELECT `id`, `make`, `model`, `horsepower`, `doors`, `released`, `modified`, `created` FROM `cars` WHERE `make` = :make;';
 
-		$method = $reflector->getMethod('getWhereConditionFromKeys');
-		$method->setAccessible(true);
+        $this->assertSame($expected, $this->carsSqlCommand->selectFromWhere(['make']));
+    }
 
-		$this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, 'id'));
-		$this->assertSame('`id` = :id AND `active` = :active', $method->invoke($this->carsSqlCommand, [
-			'id',
-			'active'
-		]));
-	}
+    /**
+     * @covers ::getColumnNames
+     */
+    public function testGetColumnNames()
+    {
+        $reflector = new \ReflectionClass($this->carsSqlCommand);
 
-	/**
-	 * @covers ::getWhereConditionFromKeys
-	 *
-	 * @expectedException \InvalidArgumentException
-	 * @expectedExceptionMessage Keys must be a string or an array of strings
-	 */
-	public function testGetWhereConditionFromKeysInvalidArgument() {
-		$reflector = new \ReflectionClass($this->carsSqlCommand);
+        $method = $reflector->getMethod('getColumnNames');
+        $method->setAccessible(true);
 
-		$method = $reflector->getMethod('getWhereConditionFromKeys');
-		$method->setAccessible(true);
+        $this->assertSame('`id`, `modified`, `created`', $method->invoke($this->carsSqlCommand, [
+            'id'       => EntityProperty::UUID,
+            'modified' => EntityProperty::STRING,
+            'created'  => EntityProperty::STRING
+        ]));
+    }
 
-		$method->invoke($this->carsSqlCommand, 42);
-	}
+    /**
+     * @covers ::getColumnValues
+     */
+    public function testGetColumnValues()
+    {
+        $reflector = new \ReflectionClass($this->carsSqlCommand);
 
-	/**
-	 * @covers ::__construct
-	 */
-	public function testConstruct() {
-		$sqlCommand = new SQLCommand('cars', ['foo', 'bar']);
+        $method = $reflector->getMethod('getColumnValues');
+        $method->setAccessible(true);
 
-		$reflector = new \ReflectionClass($sqlCommand);
+        $this->assertSame(':id, :modified, :created', $method->invoke($this->carsSqlCommand, [
+            'id'       => EntityProperty::UUID,
+            'modified' => EntityProperty::STRING,
+            'created'  => EntityProperty::STRING
+        ]));
+    }
 
-		$tableName = $reflector->getProperty('tableName');
-		$tableName->setAccessible(true);
-		$this->assertSame('cars', $tableName->getValue($sqlCommand));
+    /**
+     * @covers ::getEqualFromColumns
+     */
+    public function testGetEqualFromColumns()
+    {
+        $reflector = new \ReflectionClass($this->carsSqlCommand);
 
-		$columns = $reflector->getProperty('columns');
-		$columns->setAccessible(true);
-		$this->assertSame(['foo', 'bar'], $columns->getValue($sqlCommand));
-	}
+        $method = $reflector->getMethod('getEqualFromColumns');
+        $method->setAccessible(true);
 
+        /**
+         * Single column with different glues
+         */
+        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, ', ', ['id']));
+        $this->assertSame('`id` = :id', $method->invoke($this->carsSqlCommand, ' AND ', ['id']));
+
+        /**
+         * Multiple columns with different glues
+         */
+        $this->assertSame('`make` = :make, `model` = :model', $method->invoke($this->carsSqlCommand, ', ', [
+            'make',
+            'model'
+        ]));
+        $this->assertSame('`id` = :id AND `make` = :make', $method->invoke($this->carsSqlCommand, ' AND ', [
+            'id',
+            'make'
+        ]));
+    }
+
+    /**
+     * @covers ::getEqualFromColumns
+     */
+    public function testGetEqualFromColumnsInvalid()
+    {
+        $this->expectException(InvalidEntityPropertyException::class);
+        $this->expectExceptionMessage('Entity cars does not have a property named invalid');
+
+        $reflector = new \ReflectionClass($this->carsSqlCommand);
+
+        $method = $reflector->getMethod('getEqualFromColumns');
+        $method->setAccessible(true);
+
+        /**
+         * Single column with different glues
+         */
+        $method->invoke($this->carsSqlCommand, '', ['invalid']);
+    }
 }

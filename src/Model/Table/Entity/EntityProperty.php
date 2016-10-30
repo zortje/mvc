@@ -120,7 +120,7 @@ class EntityProperty
         switch ($this->type) {
             case self::STRING:
                 if (!is_string($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException([$this->type, gettype($value)]);
                 }
 
                 /**
@@ -129,35 +129,35 @@ class EntityProperty
                 $length = strlen($value);
 
                 if (!is_null($this->length) && $length > $this->length) {
-                    throw new EntityPropertyValueExceedingLengthException($value, $length);
+                    throw new EntityPropertyValueExceedingLengthException([$value, $this->length]);
                 }
 
                 break;
 
             case self::INTEGER:
                 if (!is_int($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException([$this->type, gettype($value)]);
                 }
 
                 break;
 
             case self::FLOAT:
                 if (!is_float($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException([$this->type, gettype($value)]);
                 }
 
                 break;
 
             case self::DOUBLE:
                 if (!is_double($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException([$this->type, gettype($value)]);
                 }
 
                 break;
 
             case self::BOOL:
                 if (!is_bool($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException([$this->type, gettype($value)]);
                 }
 
                 break;
@@ -165,7 +165,7 @@ class EntityProperty
             case self::DATE:
             case self::DATETIME:
                 if (!is_object($value) || (is_object($value) && get_class($value) !== \DateTime::class)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException([$this->type, gettype($value)]);
                 }
 
                 break;
@@ -177,34 +177,30 @@ class EntityProperty
 
             case self::UUID:
                 if (!is_string($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException(['string', gettype($value)]);
                 }
 
                 /**
                  * Check UUID
                  */
                 if (!Uuid::isValid($value)) {
-                    throw new InvalidUUIDValueForEntityPropertyException($value);
+                    throw new InvalidUUIDValueForEntityPropertyException([$value]);
                 }
 
                 break;
 
             case self::ENUM:
                 if (!is_string($value)) {
-                    throw new InvalidValueTypeForEntityPropertyException([gettype($value), $this->type]);
+                    throw new InvalidValueTypeForEntityPropertyException(['string', gettype($value)]);
                 }
 
                 /**
                  * Check values
                  */
                 if (!isset($this->values[$value])) {
-                    throw new InvalidENUMValueForEntityPropertyException($value);
+                    throw new InvalidENUMValueForEntityPropertyException([$value]);
                 }
 
-                break;
-
-            default:
-                throw new EntityPropertyTypeNotImplementedException($this->type);
                 break;
         }
 
@@ -222,11 +218,14 @@ class EntityProperty
      */
     public function formatValueForEntity($value)
     {
-
-        // @todo handle null values from database
+        if (is_null($value)) {
+            return null;
+        }
 
         switch ($this->type) {
             case self::STRING:
+            case self::UUID:
+            case self::ENUM:
                 $value = "$value";
                 break;
 
@@ -250,21 +249,7 @@ class EntityProperty
                 break;
 
             case self::BOOL:
-                $value = $value === '1'; // @todo test that this works
-                break;
-
-            case self::UUID:
-                // @todo Implement this
-
-                break;
-
-            case self::ENUM:
-                // @todo Implement this
-
-                break;
-
-            default:
-                throw new EntityPropertyTypeNotImplementedException($this->type);
+                $value = $value === '1';
                 break;
         }
 
@@ -293,6 +278,10 @@ class EntityProperty
                  * @var \DateTime $value
                  */
                 $value = $value->format('Y-m-d H:i:s');
+                break;
+
+            case self::BOOL:
+                $value = $value ? '1' : '0';
                 break;
         }
 

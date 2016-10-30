@@ -141,91 +141,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $car->get('invalid-property');
     }
 
-    // @todo this method is moved and work in a different way
-    //
-    //    /**
-    //     * @covers ::validatePropertyValueType
-    //     */
-    //    public function testValidatePropertyValueType()
-    //    {
-    //        $car = new CarEntity('', '', 0, new \DateTime());
-    //
-    //        $reflector = new \ReflectionClass($car);
-    //
-    //        $method = $reflector->getMethod('validatePropertyValueType'); // @todo is moved
-    //        $method->setAccessible(true);
-    //
-    //        /**
-    //         * Entity
-    //         */
-    //        $this->assertSame(null, $method->invoke($car, 'id', null), 'ID property');
-    //        $this->assertSame('f2a88758-8251-11e6-ae22-56b6b6499611',
-    //            $method->invoke($car, 'id', 'f2a88758-8251-11e6-ae22-56b6b6499611'), 'ID property');
-    //
-    //        $this->assertEquals(new \DateTime(), $method->invoke($car, 'modified', new \DateTime()), 'Modified property');
-    //        $this->assertEquals(new \DateTime(), $method->invoke($car, 'created', new \DateTime()), 'Created property');
-    //
-    //        /**
-    //         * CarEntity
-    //         */
-    //        $this->assertSame(null, $method->invoke($car, 'make', null), 'Make property');
-    //        $this->assertSame('Ford', $method->invoke($car, 'make', 'Ford'), 'Make property');
-    //
-    //        $this->assertSame(null, $method->invoke($car, 'model', null), 'Model property');
-    //        $this->assertSame('Model A', $method->invoke($car, 'model', 'Model A'), 'Model property');
-    //
-    //        $this->assertSame(null, $method->invoke($car, 'horsepower', null), 'Horsepower property');
-    //        $this->assertSame(65, $method->invoke($car, 'horsepower', 65), 'Horsepower property');
-    //
-    //        $this->assertEquals(null, $method->invoke($car, 'released', null), 'Released  property');
-    //        $this->assertEquals(new \DateTime('1927-10-20'), $method->invoke($car, 'released', new \DateTime('1927-10-20')),
-    //            'Released  property');
-    //    }
-
-    // @todo this method is moved and work in a different way
-    //
-    //    /**
-    //     * @covers ::validatePropertyValueType
-    //     */
-    //    public function testValidatePropertyValueTypeInvaidProperty()
-    //    {
-    //        $message = 'Entity Zortje\MVC\Tests\Model\Fixture\CarEntity does not have a property named invalid-property';
-    //
-    //        $this->expectException(InvalidEntityPropertyException::class);
-    //        $this->expectExceptionMessage($message);
-    //
-    //        $car = new CarEntity('', '', 0, new \DateTime());
-    //
-    //        $reflector = new \ReflectionClass($car);
-    //
-    //        $method = $reflector->getMethod('validatePropertyValueType'); // @todo is moved
-    //        $method->setAccessible(true);
-    //
-    //        $method->invoke($car, 'invalid-property', 'value');
-    //    }
-
-    // @todo this method is moved and work in a different way
-    //
-    //    /**
-    //     * @covers ::validatePropertyValueType
-    //     */
-    //    public function testValidatePropertyValueTypeInvalidValue()
-    //    {
-    //        $message = 'Entity "Zortje\MVC\Tests\Model\Fixture\CarEntity" property "id" is of type "string" and not expected type "id"';
-    //
-    //        $this->expectException(InvalidValueTypeForEntityPropertyException::class);
-    //        $this->expectExceptionMessage($message);
-    //
-    //        $car = new CarEntity('', '', 0, new \DateTime());
-    //
-    //        $reflector = new \ReflectionClass($car);
-    //
-    //        $method = $reflector->getMethod('validatePropertyValueType'); // @todo is moved
-    //        $method->setAccessible(true);
-    //
-    //        $method->invoke($car, EntityProperty::ID, EntityProperty::STRING);
-    //    }
-
     /**
      * @covers ::isAltered
      * @covers ::setUnaltered
@@ -345,6 +260,24 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testToArrayFromColumns()
     {
-        $this->markTestIncomplete(); // @todo
+        $carEntity = new CarEntity('Ford', 'Model T', 20, 'TWO', new \DateTime('1908-10-01'));
+
+        $reflector = new \ReflectionClass($carEntity);
+
+        $method = $reflector->getMethod('toArrayFromColumns');
+        $method->setAccessible(true);
+
+        $expected = [
+            ':id'         => $carEntity->get('id'),
+            ':make'       => 'Ford',
+            ':model'      => 'Model T',
+            ':horsepower' => 20,
+            ':doors'      => 'TWO',
+            ':released'   => '1908-10-01',
+            ':modified'   => (new \DateTime())->format('Y-m-d H:i:s'),
+            ':created'    => (new \DateTime())->format('Y-m-d H:i:s')
+        ];
+
+        $this->assertSame($expected, $method->invoke($carEntity, $carEntity::getColumns()));
     }
 }

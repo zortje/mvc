@@ -232,7 +232,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testFindByException()
     {
-        $message = 'Entity property expected value type to be "string", got "integer" instead';
+        $message = 'Entity property expected value type to be "integer", got "string" instead';
 
         $this->expectException(InvalidValueTypeForEntityPropertyException::class);
         $this->expectExceptionMessage($message);

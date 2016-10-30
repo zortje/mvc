@@ -34,6 +34,26 @@ class SQLCommand
     }
 
     /**
+     * Get table name
+     *
+     * @return String Table name
+     */
+    public function getTableName(): string
+    {
+        return $this->tableName;
+    }
+
+    /**
+     * Get table columns
+     *
+     * @return \String[] Columns
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
+    }
+
+    /**
      * Create INSERT INTO command
      *
      * @return string INSERT INTO query

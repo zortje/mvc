@@ -45,6 +45,8 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getTableName
+     * @covers ::getColumns
      */
     public function testConstruct()
     {
@@ -55,10 +57,12 @@ class SQLCommandTest extends \PHPUnit_Framework_TestCase
         $tableName = $reflector->getProperty('tableName');
         $tableName->setAccessible(true);
         $this->assertSame('cars', $tableName->getValue($sqlCommand));
+        $this->assertSame('cars', $sqlCommand->getTableName());
 
         $columns = $reflector->getProperty('columns');
         $columns->setAccessible(true);
         $this->assertSame(['foo', 'bar'], $columns->getValue($sqlCommand));
+        $this->assertSame(['foo', 'bar'], $sqlCommand->getColumns());
     }
 
     /**

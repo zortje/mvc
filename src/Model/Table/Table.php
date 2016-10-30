@@ -7,6 +7,7 @@ use Zortje\MVC\Model\SQLCommand;
 use Zortje\MVC\Model\Table\Entity\Entity;
 use Zortje\MVC\Model\Table\Entity\EntityFactory;
 use Zortje\MVC\Model\Table\Entity\EntityProperty;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassInvalidSuperclassException;
 use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException;
 use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
@@ -46,6 +47,7 @@ abstract class Table
      * @throws TableNameNotDefinedException If table name is not defined in subclass
      * @throws EntityClassNotDefinedException If entity class is not defined in subclass
      * @throws EntityClassNonexistentException If entity class is nonexistent
+     * @throws EntityClassInvalidSuperclassException If entity class is not extending base entity class
      */
     public function __construct(\PDO $pdo)
     {
@@ -57,9 +59,9 @@ abstract class Table
             throw new EntityClassNotDefinedException([get_class($this)]);
         } elseif (!class_exists($this->entityClass)) {
             throw new EntityClassNonexistentException([get_class($this), $this->entityClass]);
+        } elseif (!is_subclass_of($this->entityClass, Entity::class)) {
+            throw new EntityClassInvalidSuperclassException([$this->entityClass]);
         }
-
-        // @todo should check if `$this->entityClass` is subclass of Entity class
 
         $this->pdo = $pdo;
 
@@ -118,18 +120,15 @@ abstract class Table
          * Validate value
          */
         $entityProperty = new EntityProperty($entity::getColumns()[$key]);
+        $entityProperty->validateValue($value);
 
-        if ($entityProperty->validateValue($value)) {
-            /**
-             * Execute with key-value condition
-             */
-            $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere([$key]));
-            $stmt->execute([":$key" => $value]);
+        /**
+         * Execute with key-value condition
+         */
+        $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere([$key]));
+        $stmt->execute([":$key" => $value]);
 
-            return $this->createEntitiesFromStatement($stmt);
-        }
-
-        return [];
+        return $this->createEntitiesFromStatement($stmt);
     }
 
     /**

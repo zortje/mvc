@@ -3,10 +3,20 @@ declare(strict_types = 1);
 
 namespace Zortje\MVC\Tests\Model\Table;
 
+use Zortje\MVC\Model\SQLCommand;
+use Zortje\MVC\Model\Table\Entity\Entity;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassInvalidSuperclassException;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNonexistentException;
+use Zortje\MVC\Model\Table\Entity\Exception\EntityClassNotDefinedException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidEntityPropertyException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
+use Zortje\MVC\Model\Table\Exception\TableNameNotDefinedException;
 use Zortje\MVC\Tests\Model\Fixture\CarEntity;
 use Zortje\MVC\Tests\Model\Fixture\CarTable;
+use Zortje\MVC\Tests\Model\Fixture\CarTableInvalidEntityClassSuperclass;
+use Zortje\MVC\Tests\Model\Fixture\CarTableNoEntityClass;
+use Zortje\MVC\Tests\Model\Fixture\CarTableNonexistentEntityClass;
+use Zortje\MVC\Tests\Model\Fixture\CarTableNoTableName;
 
 /**
  * Class TableTest
@@ -57,13 +67,61 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $reflector = new \ReflectionClass($carTable);
 
-        $tableName = $reflector->getProperty('tableName');
-        $tableName->setAccessible(true);
-        $this->assertSame('cars', $tableName->getValue($carTable));
+        $tableNameProperty = $reflector->getProperty('tableName');
+        $tableNameProperty->setAccessible(true);
+        $this->assertSame('cars', $tableNameProperty->getValue($carTable));
 
-        $entityClass = $reflector->getProperty('entityClass');
-        $entityClass->setAccessible(true);
-        $this->assertSame(CarEntity::class, $entityClass->getValue($carTable));
+        $entityClassProperty = $reflector->getProperty('entityClass');
+        $entityClassProperty->setAccessible(true);
+        $this->assertSame(CarEntity::class, $entityClassProperty->getValue($carTable));
+
+        $pdoProperty = $reflector->getProperty('pdo');
+        $pdoProperty->setAccessible(true);
+        $this->assertSame($this->pdo, $pdoProperty->getValue($carTable));
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstructNoTableNameDefined()
+    {
+        $this->expectException(TableNameNotDefinedException::class);
+        $this->expectExceptionMessage('Subclass Zortje\MVC\Tests\Model\Fixture\CarTableNoTableName does not have a table name defined');
+
+        new CarTableNoTableName($this->pdo);
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstructEntityClassNotDefined()
+    {
+        $this->expectException(EntityClassNotDefinedException::class);
+        $this->expectExceptionMessage('Subclass Zortje\MVC\Tests\Model\Fixture\CarTableNoEntityClass does not have a entity class defined');
+
+        new CarTableNoEntityClass($this->pdo);
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstructEntityClassNonexistent()
+    {
+        $this->expectException(EntityClassNonexistentException::class);
+        $this->expectExceptionMessage('Subclass Zortje\MVC\Tests\Model\Fixture\CarTableNonexistentEntityClass defined entity class NonexistentClass is nonexistent');
+
+        new CarTableNonexistentEntityClass($this->pdo);
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testConstructInvalidEntityClassSuperclass()
+    {
+        $this->expectException(EntityClassInvalidSuperclassException::class);
+        $this->expectExceptionMessage('Entity class Zortje\MVC\Tests\Model\Fixture\EntityInvalidSuperclass is not extending Zortje\MVC\Model\Table\Entity\Entity');
+
+        new CarTableInvalidEntityClassSuperclass($this->pdo);
     }
 
     /**
@@ -294,6 +352,30 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
      */
     public function testCreateCommand()
     {
-        $this->markTestIncomplete(); // @todo
+        $carTable = new CarTable($this->pdo);
+
+        $reflector = new \ReflectionClass($carTable);
+
+        $method = $reflector->getMethod('createCommand');
+        $method->setAccessible(true);
+
+        /**
+         * @var SQLCommand $sqlCommand
+         */
+        $sqlCommand = $method->invoke($carTable);
+
+        $entityClassProperty = $reflector->getProperty('entityClass');
+        $entityClassProperty->setAccessible(true);
+        $entityClass = $entityClassProperty->getValue($carTable);
+
+        $reflector = new \ReflectionClass($entityClass);
+
+        /**
+         * @var Entity $entity
+         */
+        $entity = $reflector->newInstanceWithoutConstructor();
+
+        $this->assertSame($carTable->getTableName(), $sqlCommand->getTableName());
+        $this->assertSame($entity::getColumns(), $sqlCommand->getColumns());
     }
 }

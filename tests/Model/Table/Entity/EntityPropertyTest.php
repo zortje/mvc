@@ -6,9 +6,9 @@ namespace Zortje\MVC\Tests\Model\Table\Entity;
 use Ramsey\Uuid\Uuid;
 use Zortje\MVC\Model\Table\Entity\EntityProperty;
 use Zortje\MVC\Model\Table\Entity\Exception\EntityPropertyTypeNonexistentException;
-use Zortje\MVC\Model\Table\Entity\Exception\EntityPropertyTypeNotImplementedException;
 use Zortje\MVC\Model\Table\Entity\Exception\EntityPropertyValueExceedingLengthException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidENUMValueForEntityPropertyException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidIPAddressValueForEntityPropertyException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidUUIDValueForEntityPropertyException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
 
@@ -65,7 +65,7 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
             [EntityProperty::BOOL, 'bool', null, null],
             [EntityProperty::DATE, 'date', null, null],
             [EntityProperty::DATETIME, 'datetime', null, null],
-            [EntityProperty::VARBINARY, 'varbinary', null, null],
+            [EntityProperty::IPADDRESS, 'ipaddress', null, null],
             [EntityProperty::UUID, 'uuid', null, null],
             [EntityProperty::ENUM, 'enum', null, null],
             [['type' => EntityProperty::STRING, 'length' => 64], 'string', 64, null],
@@ -279,7 +279,28 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
         $property->validateValue('2016-10-30 22:11:42');
     }
 
-    // @todo test validateValue VARBINARY
+    /**
+     * @covers ::validateValue
+     */
+    public function testValidateValueIPAddress()
+    {
+        $property = new EntityProperty(EntityProperty::IPADDRESS);
+
+        $this->assertTrue($property->validateValue('192.0.2.1'));
+        $this->assertTrue($property->validateValue('FF01:0:0:0:0:0:0:FB'));
+    }
+
+    /**
+     * @covers ::validateValue
+     */
+    public function testValidateValueIPAddressInvalidIPAddress()
+    {
+        $this->expectException(InvalidIPAddressValueForEntityPropertyException::class);
+        $this->expectExceptionMessage('"42" is not a valid IP address');
+
+        $property = new EntityProperty(EntityProperty::IPADDRESS);
+        $property->validateValue('42');
+    }
 
     /**
      * @covers ::validateValue
@@ -409,8 +430,10 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
     {
         $property = new EntityProperty(EntityProperty::DATETIME);
 
-        $this->assertEquals(new \DateTime('2015-05-03 01:15:42'),
-            $property->formatValueForEntity('2015-05-03 01:15:42'));
+        $this->assertEquals(
+            new \DateTime('2015-05-03 01:15:42'),
+            $property->formatValueForEntity('2015-05-03 01:15:42')
+        );
     }
 
     /**
@@ -423,7 +446,16 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new \DateTime('2015-05-04'), $property->formatValueForEntity('2015-05-04'));
     }
 
-    // @todo test formatValueForEntity VARBINARY
+    /**
+     * @covers ::formatValueForEntity
+     */
+    public function testFormatValueVarbinaryToIP()
+    {
+        $property = new EntityProperty(EntityProperty::IPADDRESS);
+
+        $this->assertEquals('192.0.2.1', $property->formatValueForEntity(inet_pton('192.0.2.1')));
+        $this->assertEquals('ff01::fb', $property->formatValueForEntity(inet_pton('ff01::fb')));
+    }
 
     /**
      * @covers ::formatValueForEntity
@@ -443,8 +475,10 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
     {
         $property = new EntityProperty(EntityProperty::DATETIME);
 
-        $this->assertEquals('2015-05-08 22:42:42',
-            $property->formatValueForDatabase(new \DateTime('2015-05-08 22:42:42')));
+        $this->assertEquals(
+            '2015-05-08 22:42:42',
+            $property->formatValueForDatabase(new \DateTime('2015-05-08 22:42:42'))
+        );
     }
 
     /**
@@ -466,5 +500,16 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('0', $property->formatValueForDatabase(false));
         $this->assertEquals('1', $property->formatValueForDatabase(true));
+    }
+
+    /**
+     * @covers ::formatValueForDatabase
+     */
+    public function testFormatValueForDatabaseIPAddress()
+    {
+        $property = new EntityProperty(EntityProperty::IPADDRESS);
+
+        $this->assertEquals(inet_pton('192.0.2.1'), $property->formatValueForDatabase('192.0.2.1'));
+        $this->assertEquals(inet_pton('ff01::fb'), $property->formatValueForDatabase('ff01::fb'));
     }
 }

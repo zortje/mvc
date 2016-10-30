@@ -8,6 +8,7 @@ use Zortje\MVC\Model\Table\Entity\Exception\EntityPropertyTypeNonexistentExcepti
 use Zortje\MVC\Model\Table\Entity\Exception\EntityPropertyTypeNotImplementedException;
 use Zortje\MVC\Model\Table\Entity\Exception\EntityPropertyValueExceedingLengthException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidENUMValueForEntityPropertyException;
+use Zortje\MVC\Model\Table\Entity\Exception\InvalidIPAddressValueForEntityPropertyException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidUUIDValueForEntityPropertyException;
 use Zortje\MVC\Model\Table\Entity\Exception\InvalidValueTypeForEntityPropertyException;
 
@@ -28,7 +29,7 @@ class EntityProperty
     const DATE = 'date';
     const DATETIME = 'datetime';
 
-    const VARBINARY = 'varbinary';
+    const IPADDRESS = 'ipaddress';
 
     const UUID = 'uuid';
 
@@ -110,6 +111,7 @@ class EntityProperty
      * @throws InvalidENUMValueForEntityPropertyException If ENUM value is invalid for entity property
      * @throws InvalidUUIDValueForEntityPropertyException If UUID value is invalid for entity property
      * @throws InvalidValueTypeForEntityPropertyException If value is invalid for entity property
+     * @throws InvalidIPAddressValueForEntityPropertyException If IP address value is invalid
      */
     public function validateValue($value): bool
     {
@@ -170,8 +172,10 @@ class EntityProperty
 
                 break;
 
-            case self::VARBINARY:
-                // @todo Implement this
+            case self::IPADDRESS:
+                if (filter_var($value, FILTER_VALIDATE_IP) === false) {
+                    throw new InvalidIPAddressValueForEntityPropertyException([$value]);
+                }
 
                 break;
 
@@ -243,9 +247,8 @@ class EntityProperty
                 $value = new \DateTime($value);
                 break;
 
-            case self::VARBINARY:
-                // @todo Implement this
-
+            case self::IPADDRESS:
+                $value = inet_ntop($value);
                 break;
 
             case self::BOOL:
@@ -282,6 +285,10 @@ class EntityProperty
 
             case self::BOOL:
                 $value = $value ? '1' : '0';
+                break;
+
+            case self::IPADDRESS:
+                $value = inet_pton($value);
                 break;
         }
 

@@ -181,7 +181,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $carTable = new CarTable($this->pdo);
 
-        $cars = $carTable->findBy('horsepower', 20);
+        $cars = $carTable->findBy(['horsepower' => 20]);
 
         $this->assertCount(1, $cars);
 
@@ -207,7 +207,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
     {
         $carTable = new CarTable($this->pdo);
 
-        $cars = $carTable->findBy('horsepower', 1337);
+        $cars = $carTable->findBy(['horsepower' => 1337]);
 
         $this->assertCount(0, $cars);
     }
@@ -224,7 +224,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $carTable = new CarTable($this->pdo);
 
-        $carTable->findBy('invalid-property', 20);
+        $carTable->findBy(['invalid-property' => 20]);
     }
 
     /**
@@ -239,7 +239,7 @@ class TableTest extends \PHPUnit_Extensions_Database_TestCase
 
         $carTable = new CarTable($this->pdo);
 
-        $cars = $carTable->findBy('horsepower', '1337');
+        $cars = $carTable->findBy(['horsepower' => '1337']);
 
         $this->assertCount(0, $cars);
     }

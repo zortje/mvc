@@ -92,19 +92,24 @@ abstract class Table
     }
 
     /**
-     * Find all entities where key is equal to the given value
+     * Find all entities for given conditions
      *
-     * @param string $key   Entity key
-     * @param mixed  $value Value to search for
+     * ```
+     * [
+     *     '{entity_property}' => '{property_value}'
+     * ]
+     * ```
+     *
+     * @param array $conditions
      *
      * @throws InvalidEntityPropertyException If entity does not have that property
      *
      * @return Entity[] Entities
      */
-    public function findBy(string $key, $value): array
+    public function findBy(array $conditions): array
     {
         /**
-         * Check if entity have the property
+         * Check if entity have the properties in conditions
          *
          * @var Entity $entity
          */
@@ -112,21 +117,31 @@ abstract class Table
 
         $entity = $reflector->newInstanceWithoutConstructor();
 
-        if (!isset($entity::getColumns()[$key])) {
-            throw new InvalidEntityPropertyException([$this->entityClass, $key]);
+        foreach (array_keys($conditions) as $key) {
+            if (!isset($entity::getColumns()[$key])) {
+                throw new InvalidEntityPropertyException([$this->entityClass, $key]);
+            }
         }
 
         /**
-         * Validate value
+         * Validate values in conditions
          */
-        $entityProperty = new EntityProperty($entity::getColumns()[$key]);
-        $entityProperty->validateValue($value);
+        foreach ($conditions as $key => $value) {
+            $entityProperty = new EntityProperty($entity::getColumns()[$key]);
+            $entityProperty->validateValue($value);
+        }
 
         /**
          * Execute with key-value condition
          */
-        $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere([$key]));
-        $stmt->execute([":$key" => $value]);
+        $parameters = [];
+
+        foreach ($conditions as $key => $value) {
+            $parameters[":$key"] = $value;
+        }
+
+        $stmt = $this->pdo->prepare($this->sqlCommand->selectFromWhere(array_keys($conditions)));
+        $stmt->execute($parameters);
 
         return $this->createEntitiesFromStatement($stmt);
     }

@@ -471,6 +471,26 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::formatValueForDatabase
      */
+    public function testFormatValueForDatabaseDate()
+    {
+        $property = new EntityProperty(EntityProperty::DATE);
+
+        $this->assertEquals('2015-05-08', $property->formatValueForDatabase(new \DateTime('2015-05-08')));
+    }
+
+    /**
+     * @covers ::formatValueForDatabase
+     */
+    public function testFormatNullForDatabaseDate()
+    {
+        $property = new EntityProperty(EntityProperty::DATE);
+
+        $this->assertNull($property->formatValueForDatabase(null));
+    }
+
+    /**
+     * @covers ::formatValueForDatabase
+     */
     public function testFormatValueForDatabaseDateTime()
     {
         $property = new EntityProperty(EntityProperty::DATETIME);
@@ -484,11 +504,11 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::formatValueForDatabase
      */
-    public function testFormatValueForDatabaseDate()
+    public function testFormatNullForDatabaseDateTime()
     {
-        $property = new EntityProperty(EntityProperty::DATE);
+        $property = new EntityProperty(EntityProperty::DATETIME);
 
-        $this->assertEquals('2015-05-08', $property->formatValueForDatabase(new \DateTime('2015-05-08')));
+        $this->assertNull($property->formatValueForDatabase(null));
     }
 
     /**
@@ -505,11 +525,31 @@ class EntityPropertyTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::formatValueForDatabase
      */
+    public function testFormatNullForDatabaseBool()
+    {
+        $property = new EntityProperty(EntityProperty::BOOL);
+
+        $this->assertNull($property->formatValueForDatabase(null));
+    }
+
+    /**
+     * @covers ::formatValueForDatabase
+     */
     public function testFormatValueForDatabaseIPAddress()
     {
         $property = new EntityProperty(EntityProperty::IPADDRESS);
 
         $this->assertEquals(inet_pton('192.0.2.1'), $property->formatValueForDatabase('192.0.2.1'));
         $this->assertEquals(inet_pton('ff01::fb'), $property->formatValueForDatabase('ff01::fb'));
+    }
+
+    /**
+     * @covers ::formatValueForDatabase
+     */
+    public function testFormatNullForDatabaseIPAddress()
+    {
+        $property = new EntityProperty(EntityProperty::IPADDRESS);
+
+        $this->assertNull($property->formatValueForDatabase(null));
     }
 }

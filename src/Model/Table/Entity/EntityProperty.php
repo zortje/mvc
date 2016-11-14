@@ -268,6 +268,10 @@ class EntityProperty
      */
     public function formatValueForDatabase($value)
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         switch ($this->type) {
             case self::DATE:
                 /**
